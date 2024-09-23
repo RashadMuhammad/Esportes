@@ -6,6 +6,7 @@ const User = require("../models/user");
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
+const { product } = require("./usercontroller");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -168,7 +169,6 @@ exports.addProduct = async (req, res) => {
     });
 
     await newProduct.save();
-
     res.redirect("/admin/products");
   } catch (error) {
     console.error("Error adding product:", error);
@@ -187,49 +187,27 @@ exports.addProduct = async (req, res) => {
 // };
 
 exports.editProduct = async (req, res) => {
-  const {
-    productNo,
-    name,
-    description,
-    price,
-    stock,
-    category,
-    croppedImage1,
-    croppedImage2,
-    croppedImage3,
-  } = req.body;
-
 
   console.log(req.body);
-  
 
   try {
-    // const product = await Product.findById(req.params.id);
+    const { productNo, name, description, category, stock, price } = req.body;
+    const imageNames = req.files.map((file) => file.filename);
 
-    // product.productNo = productNo;
-    // product.name = name;
-    // product.description = description;
-    // product.price = price;
-    // product.stock = stock;
-    // product.category = category;
+    const newProduct = new Product({
+      productNo,
+      name,
+      description,
+      category,
+      stock,
+      price,
+      images: imageNames,
+    });
 
-    // const images = product.images;
-
-    // if (croppedImage1) {
-    //   images[0] = saveCroppedImage(croppedImage1, `image1-${product._id}.png`);
-    // }
-    // if (croppedImage2) {
-    //   images[1] = saveCroppedImage(croppedImage2, `image2-${product._id}.png`);
-    // }
-    // if (croppedImage3) {
-    //   images[2] = saveCroppedImage(croppedImage3, `image3-${product._id}.png`);
-    // }
-    // product.images = images;
-    
-    res.redirect("/admin/products");
-
+    // await Product.findByIdAndUpdate(req.params.id, req.body);
+    res.status(201).redirect("/admin/products");
   } catch (error) {
-    res.status(400).send("All update data is required");
+    res.status(400).send("Error adding product.");
   }
 };
 
@@ -341,13 +319,11 @@ exports.unlistcategories = async (req, res) => {
     await category.save();
 
     // Respond with success and updated `isListed` status
-    res
-      .status(200)
-      .json({
-        success: true,
-        isListed: category.isListed,
-        message: "Category status updated",
-      });
+    res.status(200).json({
+      success: true,
+      isListed: category.isListed,
+      message: "Category status updated",
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: "Server Error" });

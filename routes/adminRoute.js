@@ -34,7 +34,7 @@ router.get('/products', adminController.getAllProducts);
 router.post('/products/add', upload.array('images', 3), adminController.addProduct);
 
 // Route to handle editing a product
-router.post('/products/edit/:id', adminController.editProduct);
+router.post('/products/edit', adminController.editProduct);
 
 // Route to unlist a product
 router.post('/products/toggle-listing/:id', adminController.toggleProductListing);

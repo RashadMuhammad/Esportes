@@ -1,10 +1,8 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const session = require('express-session');
 require('dotenv').config();
 const mongoose = require('mongoose');
-const path = require('path')
-const Category = require('./models/Category');
+const path = require('path');
 const passport = require('passport');
 const authRoutes = require('./routes/auth');
 
@@ -20,12 +18,12 @@ mongoose.connect('mongodb://localhost:27017/Esportes')
     });
 
 // Middleware to parse request body
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-app.use(bodyParser.json({ limit: '50mb' }));  // For JSON data
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));  // For URL-encoded data
+app.use(express.json({ limit: '50mb' }));  // For JSON data
+app.use(express.urlencoded({ limit: '50mb', extended: true }));  // For URL-encoded data
 
 // Or if you're using express built-in parser instead of body-parser
 app.use(express.json({ limit: '50mb' }));

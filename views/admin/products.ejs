@@ -572,13 +572,10 @@
                       </button>
                     </div>
 
-                    <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data">
-                      <input type="text" name="email" id="" value="hello value">
-                    </form>
 
+                    <!-- <form id="editProductForm" action="/admin/products/edit/<%=product._id%>" method="POST"> -->
+                    <form id="editProductForm" data-id=<%=product._id%>>
 
-
-                    <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data">
                       <div class="modal-body">
                         <!-- Product details form -->
                         <label>Product Number:</label>
@@ -654,14 +651,10 @@
                       </div>
                     </form>
 
-
-
-
                   </div>
                 </div>
               </div>
               <% }) %>
-
 
                 <!-- Unlist/List Modal -->
                 <% product.forEach((product)=> { %>
@@ -816,46 +809,49 @@
             const cropButton = document.getElementById(cropButtonId);
             const croppedInput = document.getElementById(croppedInputId);
             let cropper;
-      
-            imageInput.addEventListener('change', function (event) {
-              const file = event.target.files[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                  imagePreview.src = e.target.result;
-                  imagePreview.style.display = 'block';
-                  cropButton.style.display = 'inline-block';
-                  
-                  if (cropper) {
-                    cropper.destroy();
-                  }
-                  cropper = new Cropper(imagePreview, {
-                    aspectRatio: 1,
-                    viewMode: 1,
-                  });
-                };
-                reader.readAsDataURL(file);
-              }
-            });
-      
-            cropButton.addEventListener('click', function () {
-              const canvas = cropper.getCroppedCanvas();
-              canvas.toBlob(function (blob) {
-                const reader = new FileReader();
-                reader.onloadend = function () {
-                  croppedInput.value = reader.result;
-                };
-                reader.readAsDataURL(blob);
+
+            // if (imageInput) {
+
+              imageInput.addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    cropButton.style.display = 'inline-block';
+
+                    if (cropper) {
+                      cropper.destroy();
+                    }
+                    cropper = new Cropper(imagePreview, {
+                      aspectRatio: 1,
+                      viewMode: 1,
+                    });
+                  };
+                  reader.readAsDataURL(file);
+                }
               });
-            });
+
+              cropButton.addEventListener('click', function () {
+                const canvas = cropper.getCroppedCanvas();
+                canvas.toBlob(function (blob) {
+                  const reader = new FileReader();
+                  reader.onloadend = function () {
+                    croppedInput.value = reader.result;
+                  };
+                  reader.readAsDataURL(blob);
+                });
+              });
+            // }
           }
-      
+
           setupCropping('imageUpload1-edit-<%= product._id %>', 'imagePreview1-edit-<%= product._id %>', 'cropButton1-edit-<%= product._id %>', 'croppedImage1-edit-<%= product._id %>');
           setupCropping('imageUpload2-edit-<%= product._id %>', 'imagePreview2-edit-<%= product._id %>', 'cropButton2-edit-<%= product._id %>', 'croppedImage2-edit-<%= product._id %>');
           setupCropping('imageUpload3-edit-<%= product._id %>', 'imagePreview3-edit-<%= product._id %>', 'cropButton3-edit-<%= product._id %>', 'croppedImage3-edit-<%= product._id %>');
         });
       </script>
-      
+
 
 
 
@@ -948,6 +944,59 @@
           });
         });
 
+
+
+
+        document.getElementById('editProductForm').addEventListener('submit', function (e) {
+          e.preventDefault();
+
+          const formData = new FormData(e.target);
+          formData.append('id', e.target.dataset.id);
+
+          // Array to store promises for image cropping
+          let imageUploadPromises = [];
+
+          // Loop through images 1, 2, 3
+          ['1', '2', '3'].forEach((i) => {
+            const cropper = window[`croppedImage${i}`];  // Assuming cropper instances are in window scope
+            if (cropper) {
+              // Create a promise for each image cropping and convert it to Blob
+              const promise = new Promise((resolve, reject) => {
+                cropper.getCroppedCanvas().toBlob((blob) => {
+                  if (blob) {
+                    formData.append(`images`, blob, `image${i}.png`);  // Add each cropped image to formData
+                    resolve();  // Resolve the promise when the blob is successfully appended
+                  } else {
+                    reject('Error cropping image');  // Reject in case of error
+                  }
+                });
+              });
+              imageUploadPromises.push(promise);  // Push the promise to the array
+            }
+          });
+
+          // Wait for all image cropping promises to resolve before proceeding with fetch
+          Promise.all(imageUploadPromises)
+            .then(() => {
+              // Log form data to see it in the console
+              for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+              }
+
+              // Now make the fetch call after all images have been processed
+              return fetch('/admin/products/edit', {
+                method: 'POST',
+                body: formData,
+              });
+            })
+            .then(response => response.json())  // Handle the fetch response
+            .then(data => {
+              console.log('Success:', data);  // Log the success response
+            })
+            .catch((error) => {
+              console.error('Error:', error);  // Log any errors in cropping or fetch
+            });
+        });
 
       </script>
       <!-- endinject -->
