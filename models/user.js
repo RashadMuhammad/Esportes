@@ -1,9 +1,10 @@
 const mongoose = require('mongoose')
 
 const users = mongoose.Schema({
+    googleId: String,
     username:{
         type:String,
-        required:true,
+        required:false,
         unique: true
     },
     email:{
@@ -12,7 +13,7 @@ const users = mongoose.Schema({
     },
     password:{
         type:String,
-        required:true
+        required:false
     },
     status: {  // Field to track user status (blocked or active)
         type: String,
