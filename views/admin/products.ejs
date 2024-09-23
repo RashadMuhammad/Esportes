@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Esportes Admin</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="../../assets/vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="../../assets/vendors/css/vendor.bundle.base.css">
+  <!-- Include Cropper.js CSS and JS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <!-- End Plugin css for this page -->
+  <!-- inject:css -->
+  <!-- endinject -->
+  <!-- Layout styles -->
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <!-- End layout styles -->
+  <link rel="shortcut icon" href="/favicon.png" />
+
+
+</head>
+
+<body>
+  <div class="container-scroller">
+    <!-- partial:../../partials/_sidebar.html -->
+    <nav class="sidebar sidebar-offcanvas" id="sidebar">
+      <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+        <a class="sidebar-brand brand-logo" href="../../index.html"><img src="../../assets/images/Heading.png"
+            style="height: 2.5rem" alt="logo" /></a>
+        <!-- <a class="sidebar-brand brand-logo-mini" href="../../index.html"><img src="../../assets/images/Heading.png" alt="logo" /></a> -->
+      </div>
+      <ul class="nav">
+        <li class="nav-item profile">
+          <div class="profile-desc">
+            <div class="profile-pic">
+              <div class="count-indicator">
+                <img class="img-xs rounded-circle " src="../../assets/images/faces/rash.jpg" alt="">
+                <span class="count bg-success"></span>
+              </div>
+              <div class="profile-name">
+                <h5 class="mb-0 font-weight-normal">Muhammad Rashad</h5>
+                <!-- <span>Gold Member</span> -->
+              </div>
+            </div>
+            <a href="#" id="profile-dropdown" data-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></a>
+            <div class="dropdown-menu dropdown-menu-right sidebar-dropdown preview-list"
+              aria-labelledby="profile-dropdown">
+              <a href="#" class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                  <div class="preview-icon bg-dark rounded-circle">
+                    <i class="mdi mdi-settings text-primary"></i>
+                  </div>
+                </div>
+                <div class="preview-item-content">
+                  <p class="preview-subject ellipsis mb-1 text-small">Account settings</p>
+                </div>
+              </a>
+              <div class="dropdown-divider"></div>
+              <a href="#" class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                  <div class="preview-icon bg-dark rounded-circle">
+                    <i class="mdi mdi-onepassword  text-info"></i>
+                  </div>
+                </div>
+                <div class="preview-item-content">
+                  <p class="preview-subject ellipsis mb-1 text-small">Change Password</p>
+                </div>
+              </a>
+              <div class="dropdown-divider"></div>
+              <a href="#" class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                  <div class="preview-icon bg-dark rounded-circle">
+                    <i class="mdi mdi-calendar-today text-success"></i>
+                  </div>
+                </div>
+                <div class="preview-item-content">
+                  <p class="preview-subject ellipsis mb-1 text-small">To-do list</p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item nav-category">
+          <span class="nav-link">Navigation</span>
+        </li>
+        <li class="nav-item menu-items">
+          <a class="nav-link" href="/admin/Dashboard">
+            <span class="menu-icon">
+              <i class="mdi mdi-speedometer"></i>
+            </span>
+            <span class="menu-title">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item menu-items">
+          <a class="nav-link" href="/admin/users">
+            <span class="menu-icon">
+              <i class="mdi mdi-laptop"></i>
+            </span>
+            <span class="menu-title">Users</span>
+            <!-- <i class="menu-arrow"></i> -->
+          </a>
+          <!-- <div class="collapse" id="ui-basic">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="../../pages/ui-features/buttons.html">Buttons</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../../pages/ui-features/dropdowns.html">Dropdowns</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../../pages/ui-features/typography.html">Typography</a></li>
+              </ul>
+            </div> -->
+        </li>
+        <li class="nav-item menu-items">
+          <a class="nav-link" href="/admin/Products">
+            <span class="menu-icon">
+              <i class="mdi mdi-playlist-play"></i>
+            </span>
+            <span class="menu-title">Products</span>
+          </a>
+        </li>
+        <li class="nav-item menu-items">
+          <a class="nav-link" href="/admin/Orders">
+            <span class="menu-icon">
+              <i class="mdi mdi-table-large"></i>
+            </span>
+            <span class="menu-title">Orders</span>
+          </a>
+        </li>
+        <li class="nav-item menu-items">
+          <a class="nav-link" href="/admin/Categories">
+            <span class="menu-icon">
+              <i class="mdi mdi-chart-bar"></i>
+            </span>
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        <li class="nav-item menu-items">
+          <a class="nav-link" href="/admin/Coupons">
+            <span class="menu-icon">
+              <i class="mdi mdi-contacts"></i>
+            </span>
+            <span class="menu-title">Coupons</span>
+          </a>
+        </li>
+        <li class="nav-item menu-items">
+          <a class="nav-link" href="/admin/Offers">
+            <span class="menu-icon">
+              <i class="mdi mdi-security"></i>
+            </span>
+            <span class="menu-title">Offers</span>
+            <!-- <i class="menu-arrow"></i> -->
+          </a>
+          <!-- <div class="collapse" id="auth">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="../../pages/samples/blank-page.html"> Blank Page </a></li>
+                <li class="nav-item"> <a class="nav-link" href="../../pages/samples/error-404.html"> 404 </a></li>
+                <li class="nav-item"> <a class="nav-link" href="../../pages/samples/error-500.html"> 500 </a></li>
+                <li class="nav-item"> <a class="nav-link" href="../../pages/samples/login.html"> Login </a></li>
+                <li class="nav-item"> <a class="nav-link" href="../../pages/samples/register.html"> Register </a></li>
+              </ul>
+            </div> -->
+        </li>
+        <li class="nav-item menu-items">
+          <a class="nav-link" href="/admin/Deals">
+            <span class="menu-icon">
+              <i class="mdi mdi-file-document-box"></i>
+            </span>
+            <span class="menu-title">Deals</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:../../partials/_navbar.html -->
+      <nav class="navbar p-0 fixed-top d-flex flex-row">
+        <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+          <a class="navbar-brand brand-logo-mini" href="../../index.html"><img src="../../assets/images/logo-mini.svg"
+              alt="logo" /></a>
+        </div>
+        <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+          <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+            <span class="mdi mdi-menu"></span>
+          </button>
+          <ul class="navbar-nav w-100">
+            <li class="nav-item w-100">
+              <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                <input type="text" class="form-control" placeholder="Search products">
+              </form>
+            </li>
+          </ul>
+          <ul class="navbar-nav navbar-nav-right">
+            <li class="nav-item dropdown d-none d-lg-block">
+              <!-- Button to trigger Add New Product modal -->
+              <!-- Add New Product Button -->
+              <a class="nav-link btn btn-success create-new-button" data-toggle="modal" href="#addProductModal">
+                + Add New Product
+              </a>
+
+              <!-- Modal for Adding Product -->
+              <!-- Modal for adding product -->
+              <!-- Modal for Adding Product -->
+              <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog"
+                aria-labelledby="addProductModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+
+
+
+                    <div class="modal-body">
+                      <form id="addProductForm" action="/admin/products/add" method="POST">
+                        <!-- Product details -->
+                        <div class="form-group">
+                          <label for="productNo">Product No</label>
+                          <input type="number" class="form-control" id="productNo" name="productNo" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="name">Product Name</label>
+                          <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="description">Product Description</label>
+                          <input type="text" class="form-control" id="description" name="description" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="category">Category</label>
+                          <select class="form-control" id="category" name="category" required>
+                            <% categories.forEach(category=> { %>
+                              <option value="<%= category._id %>">
+                                <%= category.name %>
+                              </option>
+                              <% }) %>
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <label for="stock">Stock</label>
+                          <input type="number" class="form-control" id="stock" name="stock" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="price">Price</label>
+                          <input type="number" class="form-control" id="price" name="price" required>
+                        </div>
+
+                        <!-- Image upload and cropper -->
+                        <div class="form-group">
+                          <label for="imageUpload">Upload 3 Images</label><br>
+                          <input type="file" id="imageUpload1" accept="image/*" required>
+                          <img id="imagePreview1" style="max-width: 100%; display: none;" />
+                          <input type="hidden" id="croppedImage1" name="croppedImage1">
+                          <br>
+
+                          <input type="file" id="imageUpload2" accept="image/*" required>
+                          <img id="imagePreview2" style="max-width: 100%; display: none;" />
+                          <input type="hidden" id="croppedImage2" name="croppedImage2">
+                          <br>
+
+                          <input type="file" id="imageUpload3" accept="image/*" required>
+                          <img id="imagePreview3" style="max-width: 100%; display: none;" />
+                          <input type="hidden" id="croppedImage3" name="croppedImage3">
+                        </div>
+
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-primary">Add Product</button>
+                        </div>
+                      </form>
+
+
+
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+
+
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
+                aria-labelledby="createbuttonDropdown">
+                <h6 class="p-3 mb-0">Projects</h6>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-dark rounded-circle">
+                      <i class="mdi mdi-file-outline text-primary"></i>
+                    </div>
+                  </div>
+                  <div class="preview-item-content">
+                    <p class="preview-subject ellipsis mb-1">Software Development</p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-dark rounded-circle">
+                      <i class="mdi mdi-web text-info"></i>
+                    </div>
+                  </div>
+                  <div class="preview-item-content">
+                    <p class="preview-subject ellipsis mb-1">UI Development</p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-dark rounded-circle">
+                      <i class="mdi mdi-layers text-danger"></i>
+                    </div>
+                  </div>
+                  <div class="preview-item-content">
+                    <p class="preview-subject ellipsis mb-1">Software Testing</p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <p class="p-3 mb-0 text-center">See all projects</p>
+              </div>
+            </li>
+            <!-- <li class="nav-item nav-settings d-none d-lg-block">
+                <a class="nav-link" href="#">
+                  <i class="mdi mdi-view-grid"></i>
+                </a>
+              </li> -->
+            <li class="nav-item dropdown border-left">
+              <a class="nav-link count-indicator dropdown-toggle" id="messageDropdown" href="#" data-toggle="dropdown"
+                aria-expanded="false">
+                <i class="mdi mdi-email"></i>
+                <span class="count bg-success"></span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
+                aria-labelledby="messageDropdown">
+                <h6 class="p-3 mb-0">Messages</h6>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <img src="../../assets/images/faces/face4.jpg" alt="image" class="rounded-circle profile-pic">
+                  </div>
+                  <div class="preview-item-content">
+                    <p class="preview-subject ellipsis mb-1">Mark send you a message</p>
+                    <p class="text-muted mb-0"> 1 Minutes ago </p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <img src="../../assets/images/faces/face2.jpg" alt="image" class="rounded-circle profile-pic">
+                  </div>
+                  <div class="preview-item-content">
+                    <p class="preview-subject ellipsis mb-1">Cregh send you a message</p>
+                    <p class="text-muted mb-0"> 15 Minutes ago </p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <img src="../../assets/images/faces/face3.jpg" alt="image" class="rounded-circle profile-pic">
+                  </div>
+                  <div class="preview-item-content">
+                    <p class="preview-subject ellipsis mb-1">Profile picture updated</p>
+                    <p class="text-muted mb-0"> 18 Minutes ago </p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <p class="p-3 mb-0 text-center">4 new messages</p>
+              </div>
+            </li>
+            <li class="nav-item dropdown border-left">
+              <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#"
+                data-toggle="dropdown">
+                <i class="mdi mdi-bell"></i>
+                <span class="count bg-danger"></span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
+                aria-labelledby="notificationDropdown">
+                <h6 class="p-3 mb-0">Notifications</h6>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-dark rounded-circle">
+                      <i class="mdi mdi-calendar text-success"></i>
+                    </div>
+                  </div>
+                  <div class="preview-item-content">
+                    <p class="preview-subject mb-1">Event today</p>
+                    <p class="text-muted ellipsis mb-0"> Just a reminder that you have an event today </p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-dark rounded-circle">
+                      <i class="mdi mdi-settings text-danger"></i>
+                    </div>
+                  </div>
+                  <div class="preview-item-content">
+                    <p class="preview-subject mb-1">Settings</p>
+                    <p class="text-muted ellipsis mb-0"> Update dashboard </p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-dark rounded-circle">
+                      <i class="mdi mdi-link-variant text-warning"></i>
+                    </div>
+                  </div>
+                  <div class="preview-item-content">
+                    <p class="preview-subject mb-1">Launch Admin</p>
+                    <p class="text-muted ellipsis mb-0"> New admin wow! </p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <p class="p-3 mb-0 text-center">See all notifications</p>
+              </div>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
+                <div class="navbar-profile">
+                  <img class="img-xs rounded-circle" src="../../assets/images/faces/rash.jpg" alt="">
+                  <p class="mb-0 d-none d-sm-block navbar-profile-name">Muhammad Rashad</p>
+                  <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                </div>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
+                aria-labelledby="profileDropdown">
+                <h6 class="p-3 mb-0">Profile</h6>
+                <div class="dropdown-divider"></div>
+                <a href="/Settings" class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-dark rounded-circle">
+                      <i class="mdi mdi-settings text-success"></i>
+                    </div>
+                  </div>
+                  <div class="preview-item-content">
+                    <p class="preview-subject mb-1">Settings</p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="/logout" class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-dark rounded-circle">
+                      <i class="mdi mdi-logout text-danger"></i>
+                    </div>
+                  </div>
+                  <div class="preview-item-content">
+                    <p class="preview-subject mb-1">Log out</p>
+                  </div>
+                </a>
+                <!-- <div class="dropdown-divider"></div>
+                  <p class="p-3 mb-0 text-center">Advanced settings</p>
+                </div> -->
+            </li>
+          </ul>
+          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+            data-toggle="offcanvas">
+            <span class="mdi mdi-format-line-spacing"></span>
+          </button>
+        </div>
+      </nav>
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="page-header">
+            <h3 class="page-title"> Products Management </h3>
+            <!-- <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="#">Tables</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Basic tables</li>
+                </ol>
+              </nav> -->
+          </div>
+          <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Products</h4>
+                  <!-- <p class="card-description"> Add class <code>.table</code> -->
+                  </p>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Sl.No</th>
+                          <th>Product Name</th>
+                          <th>Image</th>
+                          <th>Description</th>
+                          <th>Stock</th>
+                          <th>Category</th>
+                          <th>Price</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% product.forEach((product, index)=> { %>
+                          <tr>
+                            <td>
+                              <%= index + 1 %>
+                            </td>
+                            <td>
+                              <%= product.name %>
+                            </td>
+                            <td>
+                              <% if (product.images && product.images.length> 0) { %>
+                                <% product.images.forEach(image=> { %>
+                                  <img src="/uploads/<%= image %>" alt="Product Image"
+                                    style="width: 40px; margin-right: 5px;">
+                                  <% }) %>
+                                    <% } else { %>
+                                      <p>No images available</p>
+                                      <% } %>
+                            </td>
+                            <td>
+                              <%= product.description %>
+                            </td>
+                            <td>
+                              <%= product.stock %>
+                            </td>
+                            <td>
+                              <% if (product.category) { %>
+                                <%= product.category.name %>
+                                  <% } else { %>
+                                    <p>No category assigned</p>
+                                    <% } %>
+                            </td>
+                            <td>₹ <%= product.price %>
+                            </td>
+                            <td>
+                              <!-- Edit Button -->
+                              <button type="button" class="badge badge-warning" data-toggle="modal"
+                                data-target="#editModal-<%= product._id %>" <%=!product.listed ? 'disabled' : ''
+                                %>>Edit</button>
+
+                              <!-- Toggle Listing Button -->
+                              <button type="button"
+                                class="badge <%= product.listed ? 'badge-primary' : 'badge-success' %>"
+                                data-toggle="modal" data-target="#toggleListingModal-<%= product._id %>">
+                                <%= product.listed ? 'Unlist' : 'List' %>
+                              </button>
+
+                              <!-- Delete Button -->
+                              <button type="button" class="badge badge-danger" data-toggle="modal"
+                                data-target="#deleteModal-<%= product._id %>">Delete</button>
+                            </td>
+
+                          </tr>
+                          <% }) %>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Edit Modal -->
+            <% product.forEach((product)=> { %>
+              <div class="modal fade" id="editModal-<%= product._id %>" tabindex="-1" role="dialog"
+                aria-labelledby="editModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="editModalLabel">Edit Product</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+
+                    <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data">
+                      <input type="text" name="email" id="" value="hello value">
+                    </form>
+
+
+
+                    <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data">
+                      <div class="modal-body">
+                        <!-- Product details form -->
+                        <label>Product Number:</label>
+                        <input type="number" name="productNo" value="<%= product.productNo %>" class="form-control"
+                          required>
+
+                        <label>Name:</label>
+                        <input type="text" name="name" value="<%= product.name %>" class="form-control" required>
+
+                        <label>Description:</label>
+                        <textarea name="description" class="form-control" required><%= product.description %></textarea>
+
+                        <label>Price:</label>
+                        <input type="number" name="price" value="<%= product.price %>" class="form-control" required>
+
+                        <label>Stock:</label>
+                        <input type="number" name="stock" value="<%= product.stock %>" class="form-control" required>
+
+                        <label>Category:</label>
+                        <select name="category" class="form-control" required>
+                          <% categories.forEach((category)=> { %>
+                            <option value="<%= category._id %>" <%=product.category &&
+                              product.category._id.toString()===category._id.toString() ? 'selected' : '' %>>
+                              <%= category.name %>
+                            </option>
+                            <% }) %>
+                        </select>
+
+                        <!-- Image Upload with Cropping Feature -->
+                        <div class="form-group">
+                          <label for="imageUpload1">Upload 3 Images</label><br>
+
+                          <!-- First Image -->
+                          <input type="file" id="imageUpload1-edit-<%= product._id %>" accept="image/*">
+                          <img id="imagePreview1-edit-<%= product._id %>" style="max-width: 100%; display: none;">
+                          <button type="button" id="cropButton1-edit-<%= product._id %>"
+                            style="display: none;">Crop</button>
+                          <input type="hidden" id="croppedImage1-edit-<%= product._id %>" name="croppedImage1">
+
+                          <br>
+
+                          <!-- Second Image -->
+                          <input type="file" id="imageUpload2-edit-<%= product._id %>" accept="image/*">
+                          <img id="imagePreview2-edit-<%= product._id %>" style="max-width: 100%; display: none;">
+                          <button type="button" id="cropButton2-edit-<%= product._id %>"
+                            style="display: none;">Crop</button>
+                          <input type="hidden" id="croppedImage2-edit-<%= product._id %>" name="croppedImage2">
+
+                          <br>
+
+                          <!-- Third Image -->
+                          <input type="file" id="imageUpload3-edit-<%= product._id %>" accept="image/*">
+                          <img id="imagePreview3-edit-<%= product._id %>" style="max-width: 100%; display: none;">
+                          <button type="button" id="cropButton3-edit-<%= product._id %>"
+                            style="display: none;">Crop</button>
+                          <input type="hidden" id="croppedImage3-edit-<%= product._id %>" name="croppedImage3">
+                        </div>
+
+                        <!-- Display existing images -->
+                        <div class="mt-2">
+                          <p>Current Images:</p>
+                          <div class="d-flex">
+                            <% product.images.forEach((image)=> { %>
+                              <img src="/uploads/<%= image %>" alt="product image" class="img-thumbnail mr-2"
+                                width="100">
+                              <% }) %>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-warning">Save Changes</button>
+                      </div>
+                    </form>
+
+
+
+
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+
+
+                <!-- Unlist/List Modal -->
+                <% product.forEach((product)=> { %>
+                  <div class="modal fade" id="toggleListingModal-<%= product._id %>" tabindex="-1" role="dialog"
+                    aria-labelledby="toggleListingModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="toggleListingModalLabel">
+                            <%= product.listed ? 'Unlist Product' : 'List Product' %>
+                          </h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <form action="/admin/products/toggle-listing/<%= product._id %>" method="POST">
+                          <div class="modal-body">
+                            Are you sure you want to <%= product.listed ? 'unlist' : 'list' %> the product "<%=
+                                product.name %>"?
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">
+                              Yes, <%= product.listed ? 'Unlist' : 'List' %>
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  <% }) %>
+                    <!-- Delete Modal -->
+                    <div class="modal fade" id="deleteModal-<%= product._id %>" tabindex="-1" role="dialog"
+                      aria-labelledby="deleteModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModalLabel">Delete Product</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <form action="/admin/products/delete/<%= product._id %>" method="POST">
+                            <div class="modal-body">
+                              Are you sure you want to delete the product "<%= product.name %>"? This action cannot be
+                                undone.
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                              <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Delete Confirmation Modal -->
+                    <% product.forEach((product)=> { %>
+                      <div class="modal fade" id="deleteModal-<%= product._id %>" tabindex="-1" role="dialog"
+                        aria-labelledby="deleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <form action="/admin/products/delete/<%= product._id %>" method="POST">
+                              <div class="modal-body">
+                                Are you sure you want to delete the product "<%= product.name %>"? This action cannot be
+                                  undone.
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                      <% }) %>
+
+                        <!-- Unlist/Listing Confirmation Modal -->
+                        <% product.forEach((product)=> { %>
+                          <div class="modal fade" id="toggleListingModal-<%= product._id %>" tabindex="-1" role="dialog"
+                            aria-labelledby="toggleListingModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="toggleListingModalLabel">
+                                    <%= product.listed ? 'Unlist Product' : 'List Product' %>
+                                  </h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <form action="/admin/products/toggle-listing/<%= product._id %>" method="POST">
+                                  <div class="modal-body">
+                                    Are you sure you want to <%= product.listed ? 'unlist' : 'list' %> the product "<%=
+                                        product.name %>"?
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">
+                                      Yes, <%= product.listed ? 'Unlist' : 'List' %>
+                                    </button>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                          <% }) %>
+
+
+
+
+
+
+                            <!-- content-wrapper ends -->
+                            <!-- partial:../../partials/_footer.html -->
+                            <!-- <footer class="footer">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+              <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>
+              <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin templates</a> from Bootstrapdash.com</span>
+            </div>
+          </footer> -->
+                            <!-- partial -->
+          </div>
+          <!-- main-panel ends -->
+        </div>
+        <!-- page-body-wrapper ends -->
+      </div>
+      <!-- container-scroller -->
+      <!-- plugins:js -->
+      <script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
+      <!-- endinject -->
+      <!-- Plugin js for this page -->
+      <!-- End plugin js for this page -->
+      <!-- inject:js -->
+      <script src="../../assets/js/off-canvas.js"></script>
+      <script src="../../assets/js/hoverable-collapse.js"></script>
+      <script src="../../assets/js/misc.js"></script>
+      <script src="../../assets/js/settings.js"></script>
+      <script src="../../assets/js/todolist.js"></script>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          function setupCropping(imageInputId, imagePreviewId, cropButtonId, croppedInputId) {
+            const imageInput = document.getElementById(imageInputId);
+            const imagePreview = document.getElementById(imagePreviewId);
+            const cropButton = document.getElementById(cropButtonId);
+            const croppedInput = document.getElementById(croppedInputId);
+            let cropper;
+      
+            imageInput.addEventListener('change', function (event) {
+              const file = event.target.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                  imagePreview.src = e.target.result;
+                  imagePreview.style.display = 'block';
+                  cropButton.style.display = 'inline-block';
+                  
+                  if (cropper) {
+                    cropper.destroy();
+                  }
+                  cropper = new Cropper(imagePreview, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                  });
+                };
+                reader.readAsDataURL(file);
+              }
+            });
+      
+            cropButton.addEventListener('click', function () {
+              const canvas = cropper.getCroppedCanvas();
+              canvas.toBlob(function (blob) {
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                  croppedInput.value = reader.result;
+                };
+                reader.readAsDataURL(blob);
+              });
+            });
+          }
+      
+          setupCropping('imageUpload1-edit-<%= product._id %>', 'imagePreview1-edit-<%= product._id %>', 'cropButton1-edit-<%= product._id %>', 'croppedImage1-edit-<%= product._id %>');
+          setupCropping('imageUpload2-edit-<%= product._id %>', 'imagePreview2-edit-<%= product._id %>', 'cropButton2-edit-<%= product._id %>', 'croppedImage2-edit-<%= product._id %>');
+          setupCropping('imageUpload3-edit-<%= product._id %>', 'imagePreview3-edit-<%= product._id %>', 'cropButton3-edit-<%= product._id %>', 'croppedImage3-edit-<%= product._id %>');
+        });
+      </script>
+      
+
+
+
+      <script>
+        let cropper1, cropper2, cropper3;
+
+        document.getElementById('imageUpload1').addEventListener('change', function (event) {
+          handleFileUpload(event, 'imagePreview1', 'croppedImage1', cropper1);
+        });
+
+        document.getElementById('imageUpload2').addEventListener('change', function (event) {
+          handleFileUpload(event, 'imagePreview2', 'croppedImage2', cropper2);
+        });
+
+        document.getElementById('imageUpload3').addEventListener('change', function (event) {
+          handleFileUpload(event, 'imagePreview3', 'croppedImage3', cropper3);
+        });
+
+        function handleFileUpload(event, previewId, hiddenFieldId, cropper) {
+          const file = event.target.files[0];
+          if (file) {
+            const imgURL = URL.createObjectURL(file);
+            const previewImage = document.getElementById(previewId);
+            previewImage.src = imgURL;
+            previewImage.style.display = 'block';
+
+            if (cropper) {
+              cropper.destroy(); // Destroy previous cropper instance
+            }
+
+            cropper = new Cropper(previewImage, {
+              aspectRatio: 1,
+              viewMode: 2,
+              ready() {
+                // You can do something when the cropper is ready
+              }
+            });
+
+            // Store cropper instance
+            window[hiddenFieldId] = cropper;
+          }
+        }
+
+        document.getElementById('addProductForm').addEventListener('submit', function (event) {
+          event.preventDefault(); // Prevent form submission
+
+          // Get cropped images as blobs
+          const formData = new FormData();
+          formData.append('productNo', document.getElementById('productNo').value);
+          formData.append('name', document.getElementById('name').value);
+          formData.append('description', document.getElementById('description').value);
+          formData.append('category', document.getElementById('category').value);
+          formData.append('stock', document.getElementById('stock').value);
+          formData.append('price', document.getElementById('price').value);
+
+          let imageUploadPromises = [];
+          ['1', '2', '3'].forEach((i) => {
+            const cropper = window[`croppedImage${i}`];
+            if (cropper) {
+              const promise = new Promise((resolve, reject) => {
+                cropper.getCroppedCanvas().toBlob((blob) => {
+                  if (blob) {
+                    formData.append(`images`, blob, `image${i}.png`);
+                    resolve();
+                  } else {
+                    reject('Error cropping image');
+                  }
+                });
+              });
+              imageUploadPromises.push(promise);
+            }
+          });
+
+          Promise.all(imageUploadPromises).then(() => {
+            fetch('/admin/products/add', {
+              method: 'POST',
+              body: formData,
+            })
+              .then(data => {
+                console.log(data);
+                alert('Product added successfully!');
+              })
+              .catch(error => {
+                console.error(error);
+                alert('An error occurred while uploading the product.');
+              });
+          }).catch(error => {
+            console.error(error);
+            alert('Error processing images');
+          });
+        });
+
+
+      </script>
+      <!-- endinject -->
+      <!-- Custom js for this page -->
+      <!-- End custom js for this page -->
+</body>
+
+</html>
