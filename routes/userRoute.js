@@ -34,13 +34,13 @@ userRoute.post('/signup',  isNotAuthenticated,noCache,insertUser);
 userRoute.get('/otpverification', isNotAuthenticated,noCache,otpverification);
 userRoute.post('/otpverification',isNotAuthenticated,noCache, verifyOtp);
 userRoute.post('/resendotp',isNotAuthenticated,noCache, resendOtp);
-userRoute.get('/product',product)
+userRoute.get('/product',isAuthenticated,product)
 
-userRoute.get('/product/:id',productDetails)
-userRoute.get('/productdetails',productDet)
+userRoute.get('/product/:id',isAuthenticated,productDetails)
+userRoute.get('/productdetails',isAuthenticated,productDet)
 // Route to display product details by ID
-userRoute.get('/product-detail/:id', productDetId);
-userRoute.get('/about',about)
+userRoute.get('/product-detail/:id', isAuthenticated,productDetId);
+userRoute.get('/about',isAuthenticated,about)
 userRoute.get('/shoping-cart', isAuthenticated,noCache, shopingcart);
 userRoute.post('/logout',logout)
 // userRoute.get('/categories', category)

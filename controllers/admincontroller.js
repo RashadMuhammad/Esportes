@@ -73,11 +73,23 @@ exports.renderUser = async (req, res) => {
   res.render("admin/users");
 };
 
-// Fetch all users and render to the view
+// Fetch users with pagination and render to the view
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find(); // Fetch all users
-    res.render("admin/users", { users }); // Pass users to the view
+    const page = parseInt(req.query.page) || 1; // Current page, defaults to 1
+    const limit = 10; // Number of users per page
+    const skip = (page - 1) * limit;
+
+    const totalUsers = await User.countDocuments(); // Get total number of users
+    const totalPages = Math.ceil(totalUsers / limit); // Calculate total number of pages
+
+    const users = await User.find().skip(skip).limit(limit); // Fetch users with pagination
+
+    res.render("admin/users", {
+      users,
+      currentPage: page,
+      totalPages,
+    });
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).send("Internal Server Error");
@@ -135,20 +147,37 @@ exports.toggleBlock = async (req, res) => {
 // Get all products with category populated
 exports.getAllProducts = async (req, res) => {
   try {
-    const product = await Product.find().populate("category").exec();
-
+    // Set up pagination variables
+    const page = parseInt(req.query.page) || 1; // Current page (default to 1)
+    const limit = 10; // Products per page
+    const skip = (page - 1) * limit; // How many products to skip
+    
+    // Find total count of products for pagination
+    const totalProducts = await Product.countDocuments();
+    
+    // Fetch products with pagination and populate category
+    const product = await Product.find()
+    .populate("category")
+    .skip(skip)
+    .limit(limit)
+    .exec();
+    
     const categories = await Category.find();
-    // console.log(product);
-    // console.log(product[0]);
-    // console.log(products,categories);
-    // console.log(product[3])
-
-    res.render("admin/products", { product, categories });
+    const totalPages = Math.ceil(totalProducts / limit);
+    
+    res.render("admin/products", {
+      product, // Pass the products for the current page
+      currentPage: page,
+      totalPages: totalPages,
+      totalProducts: totalProducts,
+      categories
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server Error");
   }
 };
+
 
 exports.addProduct = async (req, res) => {
   try {
@@ -187,27 +216,30 @@ exports.addProduct = async (req, res) => {
 // };
 
 exports.editProduct = async (req, res) => {
-
-  console.log(req.body);
-
+  const productId = req.params.id;
+  
   try {
-    const { productNo, name, description, category, stock, price } = req.body;
-    const imageNames = req.files.map((file) => file.filename);
+    const productData = {
+      productNo: req.body.productNo,
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      stock: req.body.stock,
+      category: req.body.category
+    };
 
-    const newProduct = new Product({
-      productNo,
-      name,
-      description,
-      category,
-      stock,
-      price,
-      images: imageNames,
-    });
+    // If new images were uploaded, update the image fields
+    if (req.files && req.files.length > 0) {
+      productData.images = req.files.map(file => file.filename); // Assuming file names are stored
+    }
 
-    // await Product.findByIdAndUpdate(req.params.id, req.body);
-    res.status(201).redirect("/admin/products");
+    // Update the product with the new data
+    await Product.findByIdAndUpdate(productId, productData);
+    
+    res.status(200).redirect("/admin/products");
   } catch (error) {
-    res.status(400).send("Error adding product.");
+    console.log("Error updating product:", error);
+    res.status(400).send("Error editing product.");
   }
 };
 
@@ -252,17 +284,38 @@ exports.renderAddCategoryForm = (req, res) => {
   res.render("admin/category");
 };
 
-// Get all categories
+// Fetch categories with pagination and render to the view
 exports.renderallcategories = async (req, res) => {
   try {
-    const categories = await Category.find({});
-    // console.log(categories);
+    const page = parseInt(req.query.page) || 1; // Current page, defaults to 1 if not provided
+    const limit = 10; // Number of categories per page
+    const skip = (page - 1) * limit; // Calculate how many categories to skip
 
-    res.render("admin/category", { categories }); // Pass categories to the EJS view
+    // Get total number of categories to calculate pagination
+    const totalCategories = await Category.countDocuments();
+    const totalPages = Math.ceil(totalCategories / limit); // Calculate the total number of pages
+
+    // Fetch categories based on pagination
+    const categories = await Category.find().skip(skip).limit(limit);
+    let error =''
+    if(req.session.error){
+       error = req.session.error
+       delete req.session.error
+    }
+
+    // Render the view, passing in categories, current page, and total pages for pagination controls
+    res.render("admin/category", {
+      categories,
+      currentPage: page,
+      totalPages,
+      message:error
+    });
   } catch (err) {
+    console.error("Error fetching categories:", err);
     res.status(500).send("Error fetching categories");
   }
 };
+
 
 // Edit category
 exports.editcategories = async (req, res) => {
@@ -273,10 +326,10 @@ exports.editcategories = async (req, res) => {
   if (image) updateData.image = image; // Include image if it was uploaded
 
   try {
-    await Category.findByIdAndUpdate(req.params.id, updateData);
-    res.redirect("/admin/Categories"); // Redirect to categories page after update
+      await Category.findByIdAndUpdate(req.params.id, updateData);
+      res.redirect("/admin/Categories"); // Redirect to categories page after update
   } catch (err) {
-    res.status(500).send("Error editing category");
+      res.status(500).send("Error editing category");
   }
 };
 
@@ -340,10 +393,18 @@ exports.deletecategories = async (req, res) => {
   }
 };
 
-// Add new category with a single image
+// Existing function to add a new category
 exports.addNewCategory = async (req, res) => {
   try {
     const { name, description } = req.body;
+
+    // Check if the category name already exists
+    const existingCategory = await Category.findOne({ name });
+    if (existingCategory) {
+      // Re-fetch categories to display them again
+      req.session.error = "Category already exists";
+      return res.redirect('/admin/Categories');
+    }
 
     // Get image path from the uploaded file
     const image = req.file ? req.file.filename : null;
@@ -361,6 +422,15 @@ exports.addNewCategory = async (req, res) => {
     res.status(500).send("An error occurred while adding the category.");
   }
 };
+
+// Check if category name exists
+exports.checkname = async (req, res) => {
+  const { name } = req.query;
+  const exists = await Category.findOne({ name });
+  res.json({ exists: !!exists });
+};
+
+
 
 // Render coupons page
 exports.renderCoupons = async (req, res) => {

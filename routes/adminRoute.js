@@ -10,17 +10,17 @@ const multer = require('multer');
 const path = require('path')
 
 // Admin login routes
-router.get('/adminlogin', auth.islogout, adminController.adminlogin);
+router.get('/adminlogin',auth.islogout, adminController.adminlogin);
 router.post('/adminlogin', adminController.verifylogin);
 
 // Dashboard route
-router.get('/Dashboard', adminController.renderDashboard);
+router.get('/Dashboard',auth.islogin, adminController.renderDashboard);
 
 // User management route
 // router.get('/Users', adminController.renderUser);
 
 // Route to display user list
-router.get('/users', adminController.getAllUsers);
+router.get('/users', auth.islogin,adminController.getAllUsers);
 
 // Route to block/unblock user
 router.post('/users/:id/toggle-block', adminController.toggleBlock);
@@ -28,13 +28,13 @@ router.post('/users/:id/toggle-block', adminController.toggleBlock);
 // Route to display user list with search functionality
 // router.get('/userlist', adminController.searchAllUsers);
 
-router.get('/products', adminController.getAllProducts);
+router.get('/products', auth.islogin, adminController.getAllProducts);
 
 // In your routes file (e.g., adminRoutes.js)
 router.post('/products/add', upload.array('images', 3), adminController.addProduct);
 
 // Route to handle editing a product
-router.post('/products/edit', adminController.editProduct);
+router.post('/products/edit/:id', upload.array('images', 3), adminController.editProduct);
 
 // Route to unlist a product
 router.post('/products/toggle-listing/:id', adminController.toggleProductListing);
@@ -43,7 +43,7 @@ router.post('/products/toggle-listing/:id', adminController.toggleProductListing
 router.post('/products/delete/:id', adminController.deleteProduct);
 
 // Categories routes
-router.get('/Categories',adminController.renderallcategories)
+router.get('/Categories',auth.islogin,adminController.renderallcategories)
 
 router.post('/Categories/toggle-listing/:id', adminController.toggleCategoryListing);
 
@@ -59,20 +59,22 @@ router.post('/Categories/delete/:id', adminController.deletecategories);
 
 router.post('/Categories/add', upload.single('image'), adminController.addNewCategory);
 
+router.get('/checkName',adminController.checkname)
+
 // Orders route
-router.get('/Orders', adminController.renderOrders);
+router.get('/Orders',auth.islogin, adminController.renderOrders);
 
 // Coupons route
-router.get('/Coupons', adminController.renderCoupons);
+router.get('/Coupons',auth.islogin, adminController.renderCoupons);
 
 // Offers route
-router.get('/Offers', adminController.renderOffers);
+router.get('/Offers', auth.islogin,adminController.renderOffers);
 
 // Deals route
-router.get('/Deals', adminController.renderDeals);
+router.get('/Deals',auth.islogin, adminController.renderDeals);
 
 // Settings route
-router.get('/Settings', adminController.renderSettings);
+router.get('/Settings', auth.islogin,adminController.renderSettings);
 
 // Logout route
 router.post('/logout', auth.islogin, adminController.logout);

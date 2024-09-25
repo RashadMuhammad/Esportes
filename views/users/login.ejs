@@ -60,33 +60,47 @@
                     <div class="card shadow-sm">
                         <div class="card-body p-5">
                             <h1 class="text-center mb-4 fw-bold">Login</h1>
+                            
+                            <!-- Flash Messages for Google Sign-In -->
+
+
+                            <!-- Error/Success Messages for Regular Login -->
+                            
+                            <% if (message.length > 0) { %>
+                                <div class="alert alert-danger mt-3">
+                                    <%= message %>
+                                </div>
+                            <% } %>
+
                             <form id="loginForm" method="post">
                                 <div class="mb-3">
                                     <label for="email" class="form-label fw-bold">Email</label>
                                     <input type="email" name="email" class="form-control" id="email"
-                                        placeholder="Enter your Email" required>
+                                        placeholder="Enter your Email" >
                                     <div class="invalid-feedback">Please enter a valid email address.</div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="password" class="form-label fw-bold">Password</label>
                                     <input type="password" name="password" class="form-control" id="password"
-                                        placeholder="Enter your Password" minlength="8" required>
+                                        placeholder="Enter your Password" minlength="8" >
                                     <div class="invalid-feedback">Password must be at least 8 characters long.</div>
                                 </div>
                                 <div class="d-grid">
                                     <button type="submit" class="btn btn-dark">Login</button>
                                 </div>
-                                <% if(typeof message != 'undefined'){ %>
-                                    <div class="alert alert-danger mt-3">
-                                      <%= message %>
-                                    </div>
-                                  <% } %>
+
                                 <p class="text-center mt-3">
                                     <a href="#" class="text-danger">Forgot Password?</a>
                                 </p>
-                                <p class="text-center mt-3">
-                                    Don't have an account? <a href="/signup" class="text-primary">Sign up</a>
-                                </p>
+                                <div class="text-center mt-3">
+                                    <button class="btn btn-outline-dark btn-block"
+                                        onclick="window.location.href='/auth/google'">
+                                        <i class="fa-brands fa-google" style="color: orange;"></i>
+                                    </button>
+                                    <p class="text-center mt-3">
+                                        Don't have an account? <a href="/signup" class="text-primary">Sign up</a>
+                                    </p>
+                                </div>
                             </form>
                         </div>
                     </div>

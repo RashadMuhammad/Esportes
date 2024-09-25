@@ -21,6 +21,25 @@
   <link rel="stylesheet" href="../../assets/css/style.css">
   <!-- End layout styles -->
   <link rel="shortcut icon" href="/favicon.png" />
+  <style>
+    /* Decrease the gap between pagination buttons */
+    .pagination .page-item {
+      margin: 0 5px;
+      /* Adjust this value to set the spacing */
+    }
+
+    /* Optional: Reduce the padding of the page-link to make buttons smaller */
+    .pagination .page-link {
+      padding: 5px 10px;
+      /* Adjust the padding to reduce size */
+    }
+
+    /* Smaller font-size for the pagination numbers */
+    .pagination .page-link {
+      font-size: 10px;
+    }
+  </style>
+
 </head>
 
 <body>
@@ -192,9 +211,12 @@
           </ul>
           <ul class="navbar-nav navbar-nav-right">
             <li class="nav-item dropdown d-none d-lg-block">
+              <!-- Button to Open the Modal -->
               <button type="button" class="btn btn-success m-3" data-toggle="modal" data-target="#addCategoryModal">
                 Add
               </button>
+
+
               <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog"
                 aria-labelledby="addCategoryModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -207,30 +229,38 @@
                     </div>
                     <div class="modal-body">
                       <!-- Add New Category Form -->
-                      <form action="/admin/Categories/add" method="POST" enctype="multipart/form-data">
-                        <div class="form-group">
-                          <label for="name">Category Name</label>
-                          <input type="text" class="form-control" id="name" name="name"
-                            placeholder="Enter category name" required>
-                        </div>
+                      <div class="modal-body">
+                        <!-- Add New Category Form -->
+                        <form id="addCategoryForm" action="/admin/Categories/add" method="POST"
+                          enctype="multipart/form-data">
+                          <div class="form-group">
+                            <label for="name">Category Name</label>
+                            <input type="text" class="form-control" id="name" name="name"
+                              placeholder="Enter category name">
+                            <small id="nameError" class="form-text text-danger"></small> <!-- Error message for name -->
+                          </div>
 
-                        <div class="form-group">
-                          <label for="description">Category Description</label>
-                          <input type="text" class="form-control" id="description" name="description"
-                            placeholder="Enter category description" required>
-                        </div>
+                          <div class="form-group">
+                            <label for="description">Category Description</label>
+                            <input type="text" class="form-control" id="description" name="description"
+                              placeholder="Enter category description">
+                            <small id="descriptionError" class="form-text text-danger"></small>
+                            <!-- Error message for description -->
+                          </div>
 
-                        <div class="form-group">
-                          <label for="image">Category Image (optional)</label>
-                          <input type="file" class="form-control" id="image" name="image">
-                        </div>
+                          <div class="form-group">
+                            <label for="image">Category Image</label>
+                            <input type="file" class="form-control" id="image" name="image">
+                            <small id="imageError" class="form-text text-danger"></small>
+                            <!-- Error message for image -->
+                          </div>
 
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                          <button type="submit" class="btn btn-primary">Add Category</button>
-                        </div>
-                      </form>
-
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Add Category</button>
+                          </div>
+                        </form>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -376,7 +406,23 @@
         <div class="content-wrapper">
           <div class="page-header">
             <h3 class="page-title"> Category Management </h3>
-            <!-- <nav aria-label="breadcrumb">
+            <% if (message && message.length> 0) { %>
+              <div class="alert alert-danger" role="alert" id="alertMessage">
+                <%= message %>
+              </div>
+
+              <script>
+                // Hide the alert after 5 seconds (5000 milliseconds)
+                setTimeout(function () {
+                  var alertElement = document.getElementById('alertMessage');
+                  if (alertElement) {
+                    alertElement.style.display = 'none'; // Hide the alert
+                  }
+                }, 5000);
+              </script>
+              <% } %>
+
+                <!-- <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                   <li class="breadcrumb-item"><a href="#">Tables</a></li>
                   <li class="breadcrumb-item active" aria-current="page">Basic tables</li>
@@ -405,7 +451,7 @@
                         <% categories.forEach((category, index)=> { %>
                           <tr>
                             <td>
-                              <%= index + 1 %>
+                              <%= index + 1 + ((currentPage - 1) * 10) %> <!-- Adjust index for pagination -->
                             </td>
                             <td>
                               <%= category.name %>
@@ -466,49 +512,78 @@
                                 <% }) %>
 
 
-                                <!-- =============================== -->
+                                  <!-- =============================== -->
 
-                                 <!-- Button to trigger the delete modal -->
-<button type="button" class="badge badge-danger" data-toggle="modal"
-data-target="#deleteModal-<%= category._id %>">Delete</button>
+                                  <!-- Button to trigger the delete modal -->
+                                  <button type="button" class="badge badge-danger" data-toggle="modal"
+                                    data-target="#deleteModal-<%= category._id %>">Delete</button>
 
 
 
-                            <!-- Delete Confirmation Modal for Categories -->
-                            <% categories.forEach((category)=> { %>
-                              <div class="modal fade" id="deleteModal-<%= category._id %>" tabindex="-1" role="dialog"
-                                aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                  <div class="modal-content">
-                                    <div class="modal-header">
-                                      <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
-                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                      </button>
+                                  <!-- Delete Confirmation Modal for Categories -->
+                                  <% categories.forEach((category)=> { %>
+                                    <div class="modal fade" id="deleteModal-<%= category._id %>" tabindex="-1"
+                                      role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                      <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                          <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                              <span aria-hidden="true">&times;</span>
+                                            </button>
+                                          </div>
+                                          <form action="/admin/Categories/delete/<%= category._id %>" method="POST">
+                                            <div class="modal-body">
+                                              Are you sure you want to delete the category "<%= category.name %>"?
+                                            </div>
+                                            <div class="modal-footer">
+                                              <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Cancel</button>
+                                              <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                                            </div>
+                                          </form>
+                                        </div>
+                                      </div>
                                     </div>
-                                    <form action="/admin/Categories/delete/<%= category._id %>" method="POST">
-                                      <div class="modal-body">
-                                        Are you sure you want to delete the category "<%= category.name %>"? 
-                                      </div>
-                                      <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                          data-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-danger">Yes, Delete</button>
-                                      </div>
-                                    </form>
-                                  </div>
-                                </div>
-                              </div>
-                              <% }) %>
+                                    <% }) %>
 
 
-                                <!-- Delete category form -->
-                                <!-- <form action="/admin/Categories/delete/<%= category._id %>" method="POST"
+                                      <!-- Delete category form -->
+                                      <!-- <form action="/admin/Categories/delete/<%= category._id %>" method="POST"
                                   class="d-inline">
                                   <button type="submit" class="badge badge-danger">Delete</button>
                                 </form> -->
-                                </td>
+                            </td>
                           </tr>
+                          <!-- Unlist Confirmation Modal -->
+                          <div class="modal fade" id="unlistModal<%= category._id %>" tabindex="-1"
+                            role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="exampleModalLabel">Change Category Status</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  Are you sure you want to <%= category.isListed ? 'unlist' : 'list' %> this
+                                    category?
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary"
+                                    data-dismiss="modal">Cancel</button>
+                                  <button type="button" class="btn btn-primary"
+                                    onclick="unlistCategory('<%= category._id %>')">
+                                    Confirm
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+<!-- ================================================================================================================== -->
+
                           <div class="modal fade" id="editModal<%= category._id %>" tabindex="-1" role="dialog"
                             aria-labelledby="editModalLabel<%= category._id %>" aria-hidden="true">
                             <div class="modal-dialog" role="document">
@@ -521,49 +596,30 @@ data-target="#deleteModal-<%= category._id %>">Delete</button>
                                 </div>
                                 <div class="modal-body">
 
-                                  <!-- Unlist Confirmation Modal -->
-                                  <div class="modal fade" id="unlistModal<%= category._id %>" tabindex="-1"
-                                    role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                      <div class="modal-content">
-                                        <div class="modal-header">
-                                          <h5 class="modal-title" id="exampleModalLabel">Change Category Status</h5>
-                                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                          </button>
-                                        </div>
-                                        <div class="modal-body">
-                                          Are you sure you want to <%= category.isListed ? 'unlist' : 'list' %> this
-                                            category?
-                                        </div>
-                                        <div class="modal-footer">
-                                          <button type="button" class="btn btn-secondary"
-                                            data-dismiss="modal">Cancel</button>
-                                          <button type="button" class="btn btn-primary"
-                                            onclick="unlistCategory('<%= category._id %>')">
-                                            Confirm
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
 
                                   <!-- Edit form within modal -->
-                                  <form action="/admin/Categories/edit/<%= category._id %>" method="POST"
-                                    enctype="multipart/form-data">
+                                  <form id="editCategoryForm" action="/admin/Categories/edit/<%= category._id %>"
+                                    method="POST" enctype="multipart/form-data">
+                                    <input type="hidden" name="categoryId" value="<%= category._id %>" id="editCategoryId">
                                     <div class="form-group">
-                                      <label for="name">Category Name</label>
-                                      <input type="text" class="form-control" id="name" name="name"
-                                        value="<%= category.name %>" required>
+                                      <label for="categoryName">Category Name</label>
+                                      <input type="text" class="form-control" id="categoryName" name="name"
+                                        value="<%= category.name %>">
+                                      <small id="categoryNameError" class="form-text text-danger"></small>
+                                      <!-- Error message for name -->
                                     </div>
                                     <div class="form-group">
-                                      <label for="description">Category Description</label>
-                                      <input type="text" class="form-control" id="description" name="description"
-                                        value="<%= category.description %>" required>
+                                      <label for="categoryDescription">Category Description</label>
+                                      <input type="text" class="form-control" id="categoryDescription"
+                                        name="description" value="<%= category.description %>">
+                                      <small id="categoryDescriptionError" class="form-text text-danger"></small>
+                                      <!-- Error message for description -->
                                     </div>
                                     <div class="form-group">
-                                      <label for="image">Category Image (optional)</label>
-                                      <input type="file" class="form-control" id="image" name="image">
+                                      <label for="categoryImage">Category Image (optional)</label>
+                                      <input type="file" class="form-control" id="categoryImage" name="image">
+                                      <small id="categoryImageError" class="form-text text-danger"></small>
+                                      <!-- Error message for image -->
                                       <% if (category.image) { %>
                                         <img src="/uploads/<%= category.image %>" alt="Current Image" width="100"
                                           class="mt-2" />
@@ -572,9 +628,12 @@ data-target="#deleteModal-<%= category._id %>">Delete</button>
                                     <div class="modal-footer">
                                       <button type="button" class="btn btn-secondary"
                                         data-dismiss="modal">Close</button>
-                                      <button type="submit" class="btn btn-primary">Save changes</button>
+                                      <button type="submit" class="btn btn-primary" id="saveChangesButton">Save
+                                        changes</button>
                                     </div>
                                   </form>
+
+
                                 </div>
                               </div>
                             </div>
@@ -583,6 +642,50 @@ data-target="#deleteModal-<%= category._id %>">Delete</button>
                       </tbody>
                     </table>
                   </div>
+
+                  <!-- Pagination Controls -->
+                  <nav aria-label="Page navigation" style="margin-top: 20px;">
+                    <ul class="pagination pagination-sm justify-content-center">
+                      <!-- Previous Button -->
+                      <% if (currentPage> 1) { %>
+                        <li class="page-item">
+                          <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                          </a>
+                        </li>
+                        <% } else { %>
+                          <li class="page-item disabled">
+                            <span class="page-link" aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                          </li>
+                          <% } %>
+
+                            <!-- Page Numbers -->
+                            <% for (let i=1; i <=totalPages; i++) { %>
+                              <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>">
+                                  <%= i %>
+                                </a>
+                              </li>
+                              <% } %>
+
+                                <!-- Next Button -->
+                                <% if (currentPage < totalPages) { %>
+                                  <li class="page-item">
+                                    <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
+                                      <span aria-hidden="true">&raquo;</span>
+                                      <span class="sr-only">Next</span>
+                                    </a>
+                                  </li>
+                                  <% } else { %>
+                                    <li class="page-item disabled">
+                                      <span class="page-link" aria-hidden="true">&raquo;</span>
+                                      <span class="sr-only">Next</span>
+                                    </li>
+                                    <% } %>
+                    </ul>
+                  </nav>
                 </div>
               </div>
             </div>
@@ -648,10 +751,217 @@ data-target="#deleteModal-<%= category._id %>">Delete</button>
       }
     </script>
 
+    <!-- <script>
+      const form = document.querySelector('form');
 
-    <!-- endinject -->
-    <!-- Custom js for this page -->
-    <!-- End custom js for this page -->
+      form.addEventListener('submit', (event) => {
+        const name = document.getElementById('name').value.trim();
+        const description = document.getElementById('description').value.trim();
+
+        if (!name) {
+          event.preventDefault();
+          alert('Category name is .');
+          return;
+        }
+
+        if (!description) {
+          event.preventDefault();
+          alert('Category description is .');
+          return;
+        }
+      });
+    </script> -->
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const addCategoryForm = document.getElementById('addCategoryForm');
+
+        // Real-time validation for category name
+        const nameInput = document.getElementById('name');
+        const descriptionInput = document.getElementById('description');
+        const imageInput = document.getElementById('image');
+
+        nameInput.addEventListener('input', async () => {
+          const name = nameInput.value;
+          const response = await fetch(`/admin/Categories/checkName?name=${encodeURIComponent(name)}`);
+          const result = await response.json();
+          const nameError = document.getElementById('nameError');
+
+          if (result.exists) {
+            nameError.textContent = 'Category name already exists. Please choose a different name.';
+          } else {
+            nameError.textContent = '';
+          }
+        });
+
+        descriptionInput.addEventListener('input', () => {
+          const descriptionError = document.getElementById('descriptionError');
+          if (descriptionInput.value.length < 5) {
+            descriptionError.textContent = 'Description must be at least 5 characters long.';
+          } else {
+            descriptionError.textContent = '';
+          }
+        });
+
+        imageInput.addEventListener('change', () => {
+          const imageError = document.getElementById('imageError');
+          const file = imageInput.files[0];
+
+          if (file && !file.type.startsWith('image/')) {
+            imageError.textContent = 'Please upload a valid image file.';
+          } else {
+            imageError.textContent = '';
+          }
+        });
+
+        // Handle form submission
+        addCategoryForm.addEventListener('submit', async (event) => {
+          event.preventDefault(); // Prevent default form submission
+
+          const formData = new FormData(addCategoryForm); // Create a FormData object
+          const response = await fetch(addCategoryForm.action, {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (response.ok) {
+            // If the response is okay, close the modal and refresh the categories list
+            $('#addCategoryModal').modal('hide'); // Use jQuery to hide the modal
+            location.reload(); // Optionally refresh the page to show the new category
+          } else {
+            const error = await response.text(); // Handle error response
+            console.error("Error adding category:", error);
+          }
+        });
+      });
+    </script>
+
+    <script>
+      // Get references to the input fields and error messages
+      const nameInput = document.getElementById('name');
+      const descriptionInput = document.getElementById('description');
+      const imageInput = document.getElementById('image');
+      const nameError = document.getElementById('nameError');
+      const descriptionError = document.getElementById('descriptionError');
+      const imageError = document.getElementById('imageError');
+      const form = document.getElementById('addCategoryForm');
+
+      // Function to validate fields
+      function validateFields() {
+        let isValid = true; // Track if the form is valid
+
+        // Clear all error messages initially
+        nameError.textContent = '';
+        descriptionError.textContent = '';
+        imageError.textContent = '';
+
+        // Validate Category Name
+        if (nameInput.value.trim() === '') {
+          nameError.textContent = 'Category name is required.';
+          isValid = false;
+        } else if (nameInput.value.length < 3) {
+          nameError.textContent = 'Category name must be at least 3 characters long.';
+          isValid = false;
+        }
+
+        // Validate Category Description
+        if (descriptionInput.value.trim() === '') {
+          descriptionError.textContent = 'Category description is required.';
+          isValid = false;
+        } else if (descriptionInput.value.length < 5) {
+          descriptionError.textContent = 'Description must be at least 5 characters long.';
+          isValid = false;
+        }
+
+        // Validate Image
+        if (imageInput.files.length === 0) {
+          imageError.textContent = 'Category image is required.';
+          isValid = false;
+        }
+
+        return isValid; // Return whether the form is valid
+      }
+
+      // Add event listener for real-time validation
+      nameInput.addEventListener('input', validateFields);
+      descriptionInput.addEventListener('input', validateFields);
+      imageInput.addEventListener('change', validateFields); // Validate image on change
+
+      // Add event listener for form submission
+      form.addEventListener('submit', function (event) {
+        if (!validateFields()) { // Validate fields on submit
+          event.preventDefault(); // Prevent form submission if invalid
+          // Optionally scroll to the first error
+          const firstError = document.querySelector('.text-danger');
+          if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      });
+    </script>
+
+    <!-- //=========================================================================== -->
+
+
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const editCategoryForm = document.getElementById('editCategoryForm');
+          const categoryNameInput = document.getElementById('categoryName');
+          const categoryDescriptionInput = document.getElementById('categoryDescription');
+          const categoryImageInput = document.getElementById('categoryImage');
+          const categoryId = document.getElementById('editCategoryId').value;
+  
+          // Real-time validation for category name
+          categoryNameInput.addEventListener('input', () => {
+              const categoryNameError = document.getElementById(`categoryNameError-${categoryId}`);
+              if (categoryNameInput.value.trim() === '') {
+                  categoryNameError.textContent = 'Category name is required.';
+              } else if (categoryNameInput.value.length < 3) {
+                  categoryNameError.textContent = 'Category name must be at least 3 characters long.';
+              } else {
+                  categoryNameError.textContent = ''; // Clear error message
+              }
+          });
+  
+          // Real-time validation for category description
+          categoryDescriptionInput.addEventListener('input', () => {
+              const categoryDescriptionError = document.getElementById('categoryDescriptionError');
+              if (categoryDescriptionInput.value.trim() === '') {
+                  categoryDescriptionError.textContent = 'Description is required.';
+              } else if (categoryDescriptionInput.value.length < 5) {
+                  categoryDescriptionError.textContent = 'Description must be at least 5 characters long.';
+              } else {
+                  categoryDescriptionError.textContent = ''; // Clear error message
+              }
+          });
+  
+          // Validate image upload
+          categoryImageInput.addEventListener('change', () => {
+              const categoryImageError = document.getElementById('categoryImageError');
+              const file = categoryImageInput.files[0];
+  
+              if (file && !file.type.startsWith('image/')) {
+                  categoryImageError.textContent = 'Please upload a valid image file.';
+              } else {
+                  categoryImageError.textContent = ''; // Clear error message
+              }
+          });
+  
+          // Handle form submission
+          editCategoryForm.addEventListener('submit', (event) => {
+              // Perform final validation checks before submitting
+              const categoryNameError = document.getElementById('categoryNameError').textContent;
+              const categoryDescriptionError = document.getElementById('categoryDescriptionError').textContent;
+  
+              if (categoryNameError || categoryDescriptionError) {
+                  event.preventDefault(); // Prevent form submission
+                  alert("Please fix the errors before submitting."); // Optional alert to notify user
+              }
+          });
+      });
+  </script>
+
 </body>
 
 </html>

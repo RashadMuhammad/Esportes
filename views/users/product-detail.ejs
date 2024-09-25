@@ -900,13 +900,13 @@ document.querySelectorAll('.zoom-img').forEach(image => {
         zoomedView.style.backgroundSize = `${imgRect.width * zoomLevel}px ${imgRect.height * zoomLevel}px`; // 200% size
 
         // Adjust background position to focus on the exact mouse point
-        const zoomedBgPosX = ((offsetX / imgRect.width) * 100) * zoomLevel + 100;
-        const zoomedBgPosY = ((offsetY / imgRect.height) * 100) * zoomLevel + 100;
+        const zoomedBgPosX = ((offsetX / imgRect.width) * 100) * zoomLevel + 300;
+        const zoomedBgPosY = ((offsetY / imgRect.height) * 100) * zoomLevel + 300;
 
         zoomedView.style.backgroundPosition = `${zoomedBgPosX}% ${zoomedBgPosY}%`;
 
         // Position the zoomed view near the mouse pointer
-        zoomedView.style.left = `${e.pageX - 200}px`; // Offset to the right of the mouse pointer
+        zoomedView.style.left = `${e.pageX - 300}px`; // Offset to the right of the mouse pointer
         zoomedView.style.top = `${e.pageY - 300}px`; // Slightly above/below the pointer
     });
 
