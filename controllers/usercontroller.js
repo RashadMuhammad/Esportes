@@ -94,7 +94,6 @@ exports.otpverification = async (req, res) => {
   }
 };
 
-// Verify OTP and save user
 exports.verifyOtp = async (req, res) => {
   const otp = req.body.otp1 + req.body.otp2 + req.body.otp3 + req.body.otp4 + req.body.otp5 + req.body.otp6;
   const currentTime = Date.now();
@@ -111,6 +110,8 @@ exports.verifyOtp = async (req, res) => {
               email: req.session.email,
               password: req.session.password,
           });
+
+          console.log(req.session.emai);
 
           const result = await newUser.save();
           if (result) {
@@ -140,13 +141,24 @@ exports.verifyOtp = async (req, res) => {
 };
 
 // Resend OTP
+// Resend OTP
 exports.resendOtp = async (req, res) => {
+  if (!req.session.email) {
+        console.log(req.session.email);
+
+    return res.render("users/login", { message: "Session expired. Please log in again." });
+  }
+
   try {
+    console.log(req.session.email);
+
     const otp = crypto.randomInt(100000, 999999);
     const otpExpiration = Date.now() + 120000; // 2 minutes from now
 
+    // Store OTP and expiration in the session
     req.session.otp = otp;
     req.session.otpExpiration = otpExpiration;
+    req.session.save(); // Ensure session is saved after modification
 
     const transporter = nodemailer.createTransport({
       service: "Gmail",
@@ -156,16 +168,19 @@ exports.resendOtp = async (req, res) => {
       },
     });
 
+    console.log(req.session.email);
+    
+
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: req.session.email, // Use the stored email in the session
+      to: req.session.email,
       subject: "Resend OTP Code",
       text: `Your new OTP code is ${otp}`,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        console.log(error);
+        console.error("Error sending OTP email:", error);
         return res.render("users/otpsign", {
           message: "Failed to resend OTP. Please try again.",
         });
@@ -176,7 +191,7 @@ exports.resendOtp = async (req, res) => {
       }
     });
   } catch (error) {
-    console.log(error);
+    console.error("Error during OTP resend:", error);
     return res.render("users/otpsign", { message: "Error resending OTP." });
   }
 };

@@ -393,7 +393,6 @@ exports.deletecategories = async (req, res) => {
   }
 };
 
-// Existing function to add a new category
 exports.addNewCategory = async (req, res) => {
   try {
     const { name, description } = req.body;
@@ -401,7 +400,7 @@ exports.addNewCategory = async (req, res) => {
     // Check if the category name already exists
     const existingCategory = await Category.findOne({ name });
     if (existingCategory) {
-      // Re-fetch categories to display them again
+      // Store error in session
       req.session.error = "Category already exists";
       return res.redirect('/admin/Categories');
     }
@@ -416,6 +415,7 @@ exports.addNewCategory = async (req, res) => {
       image,
     });
     await newCategory.save();
+    req.session.success = "Category added successfully";
     res.redirect("/admin/Categories"); // Redirect to categories list after adding
   } catch (error) {
     console.error("Error adding category:", error);

@@ -7,6 +7,7 @@ const flash = require('connect-flash')
 const dotenv = require("dotenv");
 const User = require("./models/user"); // Assuming User is exported from a models directory
 const authRoutes = require("./routes/auth");
+const MongoStore = require('connect-mongo');
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 // Load environment variables
@@ -37,6 +38,11 @@ app.use(
     secret: process.env.SESSION_SECRET_CODE,
     saveUninitialized: false,
     resave: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      collectionName: 'sessions', // Optional: specify collection name for sessions
+      ttl: 1 * 60 * 60, // Session expiration time in seconds (1 hour)
+    }),
     cookie: {
       httpOnly: true,
       secure: false, // Set to true when using HTTPS
