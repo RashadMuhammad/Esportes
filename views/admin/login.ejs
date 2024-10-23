@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Esportes</title>
+    <title>Esportes Admin</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" crossorigin="anonymous">
@@ -47,12 +47,12 @@
                             <form id="adminLoginForm" method="post" action="/admin/adminlogin">
                                 <div class="mb-3">
                                     <label for="email" class="form-label fw-bold">Email</label>
-                                    <input type="email" name="email" class="form-control" id="email" placeholder="Enter your Email" required>
+                                    <input type="email" name="email" class="form-control" id="email" placeholder="Enter your Email">
                                     <div class="invalid-feedback">Please enter a valid email address.</div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="password" class="form-label fw-bold">Password</label>
-                                    <input type="password" name="password" class="form-control" id="password" placeholder="Enter your Password" minlength="8" required>
+                                    <input type="password" name="password" class="form-control" id="password" placeholder="Enter your Password" minlength="8">
                                     <div class="invalid-feedback">Password must be at least 8 characters long.</div>
                                 </div>
                                 <div class="d-grid">
@@ -74,45 +74,6 @@
         </div>
     </section>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const adminLoginForm = document.getElementById('adminLoginForm');
-        const adminEmailInput = document.getElementById('email');
-        const adminPasswordInput = document.getElementById('password');
-
-        adminEmailInput.addEventListener('input', function () {
-            if (emailPattern.test(adminEmailInput.value.trim())) {
-                adminEmailInput.classList.remove('is-invalid');
-                adminEmailInput.classList.add('is-valid');
-            } else {
-                adminEmailInput.classList.remove('is-valid');
-                adminEmailInput.classList.add('is-invalid');
-            }
-        });
-
-        adminPasswordInput.addEventListener('input', function () {
-            if (adminPasswordInput.value.length >= 8) {
-                adminPasswordInput.classList.remove('is-invalid');
-                adminPasswordInput.classList.add('is-valid');
-            } else {
-                adminPasswordInput.classList.remove('is-valid');
-                adminPasswordInput.classList.add('is-invalid');
-            }
-        });
-
-        adminLoginForm.addEventListener('submit', function (event) {
-            let isValid = true;
-            if (!emailPattern.test(adminEmailInput.value.trim())) {
-                adminEmailInput.classList.add('is-invalid');
-                isValid = false;
-            }
-            if (adminPasswordInput.value.length < 8) {
-                adminPasswordInput.classList.add('is-invalid');
-                isValid = false;
-            }
-            if (!isValid) {
-                event.preventDefault();
-            }
-        });
-    </script>
+    <script src="/adminjs/adminlogin.js"></script>
 </body>
 </html>

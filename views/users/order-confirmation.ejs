@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Esportes</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--===============================================================================================-->
+    <!-- <link rel="icon" type="image/png" href="images/icons/favicon.png" /> -->
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/vendor/bootstrap/css/bootstrap.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/fonts/iconic/css/material-design-iconic-font.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/fonts/linearicons-v1.0.0/icon-font.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/vendor/animate/animate.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/vendor/css-hamburgers/hamburgers.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/vendor/animsition/css/animsition.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/vendor/select2/select2.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/vendor/perfect-scrollbar/perfect-scrollbar.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/css/util.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMaG8v6X4/cx4OWT0xMj8F5l6Q1AT1Klf5K5P" crossorigin="anonymous">
+
+    <!--===============================================================================================-->
+    <style>
+        .main_heading {
+            font-weight: 1000;
+        }
+
+        .center-container {
+            display: flex;
+            /* Use flexbox */
+            justify-content: center;
+            /* Center horizontally */
+            align-items: center;
+            /* Center vertically */
+            height: 20vh;
+            /* Full viewport height */
+        }
+
+        .confirm {
+            font-size: 3rem;
+            /* Adjust the size as needed */
+        }
+
+        .center-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+            /* Adjust as necessary */
+        }
+
+        .confirm {
+            font-size: 3rem;
+            /* Adjust the size as needed */
+            margin-bottom: 20px;
+            /* Space below the thumbs-up icon */
+        }
+
+        .card {
+            background-color: #f8f9fa;
+            /* Light gray background */
+            border: 1px solid #ced4da;
+            /* Border color */
+            border-radius: 0.5rem;
+            /* Rounded corners */
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+            /* Slight shadow */
+        }
+
+        .subheading{
+            color: black;
+            font-weight: 700;
+        }
+
+        .sub{
+            color: black;
+            font-weight: 400;
+        }
+
+        .result{
+            font-weight: 400 ;
+        }
+    </style>
+
+</head>
+
+<body class="animsition">
+
+    <!-- Header -->
+    <%- include('../partials/_header') %>
+    
+
+
+    <div class="container mt-5 mb-5 pt-5">
+        <h1 class="main_heading text-center text-dark">Order Confirmation</h1>
+        <div class="center-container">
+            <h1 class="confirm fa-solid fa-thumbs-up fa-bounce" style="color: #80ff00;"></h1>
+        </div>
+
+        <div class="row mt-4">
+            <!-- Left Side: Customer Information and Delivery Address -->
+            <div class="col-md-6">
+                <h4 class="subheading mt-4">Customer Information</h4><br>
+                <p class="sub"><strong>Name:</strong>
+                   <span class="result"> <%= user.username %> </span>
+                </p><br>
+                <p class="sub"><strong>Email:</strong>
+                    <span class="result"><%= user.email %> </span>
+                </p><br>
+
+                <h4 class="subheading mt-4">Delivery Address</h4><br>
+                <p class="sub"><strong>Name:</strong>
+                    <span class="result"> <%= order.address.name %> </span>
+                </p><br>
+                <p class="sub"><strong>Housename:</strong>
+                    <span class="result"> <%= order.address.housename %> </span>
+                </p><br>
+                <p class="sub"><strong>Location:</strong>
+                    <span class="result"> <%= order.address.location %> </span>
+                </p><br>
+                <p class="sub"><strong>City:</strong>
+                    <span class="result"> <%= order.address.city %> </span>
+                </p><br>
+                <p class="sub"><strong>State:</strong>
+                    <span class="result"> <%= order.address.state %> </span>
+                </p><br>
+                <p class="sub"><strong>ZIP Code:</strong>
+                    <span class="result"> <%= order.address.zip %> </span>
+                </p>
+            </div>
+
+            <!-- Right Side: Order Details -->
+            <div class="col-md-6">
+                <div class="card p-4">
+                    <h3 class="subheading ">Order ID: <%= order._id %>
+                    </h3><br>
+                    <p class="sub"><strong>Status:</strong>
+                        <span class="text-danger"><%= order.status %></span>
+                    </p>
+
+                    <h4 class="subheading mt-4">Order Items</h4><br>
+                    <ul class="list-group">
+                        <% order.items.forEach(item=> { %>
+                            <li class="sub list-group-item">
+                                <strong >Product:</strong>
+                                <span class="result"> <%= item.productId.name %> </span> <br><br>
+                                    <strong>Quantity:</strong>
+                                    <span class="result"> <%= item.quantity %> </span>
+                            </li>
+                            <% }) %>
+                    </ul>
+
+                    <h4 class="subheading mt-4">Total Price: <span class="text-danger">₹<%= order.subtotal.toFixed(2) %></span>
+                    </h4><br>
+                    <p class="sub"><strong>Payment Method:</strong>
+                        <span class="result"> <%= order.paymentMethod %> </span>
+                    </p><br>
+                    <p class="sub"><strong>Estimated Delivery:</strong> <span class="result"> 3-5 business days </span></p>
+                </div>
+            </div>
+        </div>
+ 
+        <div class="center-container mt-3">
+            <a href="/" class="text-decoration-none">
+                <h1 class="fas fa-home fa-2x" style="color:black;"></h1>
+            </a>
+        </div>
+        
+    </div>
+
+
+
+    <%- include('../partials/_footer') %>
+
+        <!-- Back to top -->
+        <div class="btn-back-to-top" id="myBtn">
+            <span class="symbol-btn-back-to-top">
+                <i class="zmdi zmdi-chevron-up"></i>
+            </span>
+        </div>
+
+        <!--===============================================================================================-->
+        <script src="/vendor/jquery/jquery-3.2.1.min.js"></script>
+        <!--===============================================================================================-->
+        <script src="/vendor/animsition/js/animsition.min.js"></script>
+        <!--===============================================================================================-->
+        <script src="/vendor/bootstrap/js/popper.js"></script>
+        <script src="/vendor/bootstrap/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <!--===============================================================================================-->
+        <script src="/vendor/select2/select2.min.js"></script>
+        <script>
+            $(".js-select2").each(function () {
+                $(this).select2({
+                    minimumResultsForSearch: 20,
+                    dropdownParent: $(this).next('.dropDownSelect2')
+                });
+            })
+        </script>
+        <!--===============================================================================================-->
+        <script src="/vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+        <!--===============================================================================================-->
+        <script src="/vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script>
+            $('.js-pscroll').each(function () {
+                $(this).css('position', 'relative');
+                $(this).css('overflow', 'hidden');
+                var ps = new PerfectScrollbar(this, {
+                    wheelSpeed: 1,
+                    scrollingThreshold: 1000,
+                    wheelPropagation: false,
+                });
+
+                $(window).on('resize', function () {
+                    ps.update();
+                })
+            });
+        </script>
+
+        <!--===============================================================================================-->
+        <script src="/js/main.js"></script>
+        <!--===============================================================================================-->
+
+</body>
+
+</html>

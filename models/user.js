@@ -12,13 +12,22 @@ const users = mongoose.Schema({
   },
   password: {
     type: String,
-    required: false,
+    required: false
+  },
+  phone :  {
+    type: String
   },
   status: {
     type: String,
     enum: ["active", "blocked"],
     default: "active",
   },
+  wishlist: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+    }
+  ],
   googleId: String,
 });
 

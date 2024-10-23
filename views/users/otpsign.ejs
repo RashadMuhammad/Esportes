@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OTP Verification - Esportes</title>
+    <title>Esportes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         html,
@@ -52,6 +52,7 @@
             text-align: center;
             margin: 0 5px;
             -moz-appearance: textfield;
+            appearance: unset;
             /* Remove spinner for Firefox */
         }
 
@@ -62,6 +63,7 @@
             margin: 0;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
 </head>
 
 <body style="background: white">
@@ -83,33 +85,40 @@
                             <h1 class="text-center mb-4 fw-bold">OTP Verification</h1>
 
                             <!-- Check if there is a message to show (for errors or success) -->
-                            <% if (message.length > 0) { %>
-                                <div class="alert alert-danger " role="alert">
-                                    <%= message %>
-                                </div>
-                            <% } %>
+                            <div class="alert alert-danger d-none" id="errormessage" role="alert">
 
-                            <form id="otpForm" action="/otpverification" method="post" onsubmit="return validateForm()">
+                            </div>
+
+
+                            <form id="otpForm">
                                 <div class="mb-3 d-flex justify-content-center">
-                                    <input type="tel" class="form-control otp-input" maxlength="1" id="otp1" name="otp1">
-                                    <input type="tel" class="form-control otp-input" maxlength="1" id="otp2" name="otp2">
-                                    <input type="tel" class="form-control otp-input" maxlength="1" id="otp3" name="otp3">
-                                    <input type="tel" class="form-control otp-input" maxlength="1" id="otp4" name="otp4">
-                                    <input type="tel" class="form-control otp-input" maxlength="1" id="otp5" name="otp5">
-                                    <input type="tel" class="form-control otp-input" maxlength="1" id="otp6" name="otp6">
+                                    <input type="tel" class="form-control otp-input" maxlength="1" id="otp1"
+                                        name="otp1">
+                                    <input type="tel" class="form-control otp-input" maxlength="1" id="otp2"
+                                        name="otp2">
+                                    <input type="tel" class="form-control otp-input" maxlength="1" id="otp3"
+                                        name="otp3">
+                                    <input type="tel" class="form-control otp-input" maxlength="1" id="otp4"
+                                        name="otp4">
+                                    <input type="tel" class="form-control otp-input" maxlength="1" id="otp5"
+                                        name="otp5">
+                                    <input type="tel" class="form-control otp-input" maxlength="1" id="otp6"
+                                        name="otp6">
                                 </div>
                                 <p id="validationMessage" style="display:none;">Please enter all OTP digits.</p>
                                 <p id="timer">Time remaining: <span id="countdown">01:00</span></p>
                                 <div class="d-grid">
                                     <button type="submit" class="btn btn-dark">Verify</button>
                                 </div>
-                                <p class="text-center mt-3" id="resendMessage" style="display:none;">
-                                    Didn't receive the OTP?
-                                    <form action="/resendotp" method="post" id="resendOtpForm">
-                                        <button type="submit" class="btn btn-link p-0" id="resendOtpButton">Resend OTP</button>
-                                    </form>
-                                </p>
+
                             </form>
+                            <p class="text-center mt-3" id="resendMessage" style="display:none;">
+                                Didn't receive the OTP?
+                            <form action="/resendotp" method="post" id="resendOtpForm" class="d-flex justify-content-center">
+                                <button type="submit" class="btn btn-link " id="resendOtpButton">Resend
+                                    OTP</button>
+                            </form>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -117,65 +126,7 @@
         </div>
     </section>
 
-    <script>
-        // Countdown Timer
-        let timeLeft = 60; // 60 seconds
-        const countdownElement = document.getElementById('countdown');
-        const validationMessage = document.getElementById('validationMessage');
-        const resendMessage = document.getElementById('resendMessage');
-        const timer = document.getElementById('timer');
-
-        const countdownInterval = setInterval(() => {
-            if (timeLeft <= 0) {
-                clearInterval(countdownInterval);
-                timer.style.display = 'none';
-                resendMessage.style.display = 'block'; // Show resend message
-            } else {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                countdownElement.innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                timeLeft--;
-            }
-        }, 200); // Set interval to 1 second
-
-        // Auto-focus on the next input field after entering a digit
-        const otpInputs = document.querySelectorAll('.otp-input');
-        otpInputs.forEach((input, index) => {
-            input.addEventListener('input', () => {
-                input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-digit characters
-                if (input.value.length === 1 && index < otpInputs.length - 1) {
-                    otpInputs[index + 1].focus();
-                }
-            });
-
-            input.addEventListener('keydown', (event) => {
-                if (event.key === 'Backspace' && index > 0 && input.value.length === 0) {
-                    otpInputs[index - 1].focus();
-                }
-            });
-        });
-
-        // Validate OTP form
-        // function validateForm() {
-        //     const otpInputs = document.querySelectorAll('.otp-input');
-        //     let allFilled = true;
-
-        //     // Check if all inputs are filled
-        //     otpInputs.forEach(input => {
-        //         if (!input.value) {
-        //             allFilled = false;
-        //         }
-        //     });
-
-        //     if (!allFilled) {
-        //         validationMessage.style.display = 'block'; // Show validation message
-        //         return false; // Prevent form submission
-        //     }
-
-        //     validationMessage.style.display = 'none'; // Hide validation message
-        //     return true; // Allow form submission
-        // }
-    </script>
+    <script src="userjs/otpsign.js"></script>
 
 </body>
 

@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Esportes</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--===============================================================================================-->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+    <!-- <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet"> -->
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="fonts/iconic/css/material-design-iconic-font.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="fonts/linearicons-v1.0.0/icon-font.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/slick/slick.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/MagnificPopup/magnific-popup.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/perfect-scrollbar/perfect-scrollbar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="css/util.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+
+    <!--===============================================================================================-->
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+
+        .modal-content {
+            border-radius: 10px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            padding: 20px;
+        }
+
+        .modal-header h5 {
+            font-weight: 600;
+        }
+
+        .modal-body img {
+            max-width: 100%;
+            border-radius: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .modal-body img:hover {
+            transform: scale(1.05);
+        }
+
+        .modal-body p {
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #e9ecef;
+            padding: 15px;
+            justify-content: space-between;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        #sizeSelect,
+        #quantitySelect {
+            border-radius: 5px;
+        }
+
+        .thumbnail-images img {
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .modal.fade .modal-dialog {
+            opacity: 0;
+            transition: opacity 0.15s linear;
+        }
+
+        .modal-body {
+            max-height: 170vh;
+            /* Limits the height of the modal body */
+            overflow-y: auto;
+            /* Adds scroll if content overflows */
+        }
+
+        .custom-modal {
+            margin-top: 50px;
+            /* Adjust this value as needed */
+        }
+
+        .modal.show .modal-dialog {
+            opacity: 1;
+        }
+
+        .modal {
+            z-index: 1050;
+            /* Higher than the default navbar z-index */
+        }
+
+        .wrap-menu-desktop {
+            z-index: 1000;
+            /* Lower than modal */
+        }
+
+        .modal-backdrop {
+            z-index: 1040;
+            /* Below the modal but above the navbar */
+            opacity: 0.5;
+            /* Adjust for more/less opacity */
+        }
+
+        /* Sidebar Custom Styles */
+        .custom-sidebar {
+            border: 0;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+            /* Light background for the sidebar */
+            border-right: 1px solid #e9ecef;
+            /* Subtle right border */
+            padding: 20px;
+            /* Padding around the sidebar */
+            height: 100%;
+            /* Full height for sidebar */
+        }
+
+        .custom-sidebar-menu {
+            list-style: none;
+            /* Remove default list styling */
+            padding: 0;
+            /* Remove default padding */
+            margin: 0;
+            /* Remove default margin */
+        }
+
+        .custom-sidebar-item {
+            /* border-radius: 10px; */
+            border: 0;
+            margin-bottom: 15px;
+            /* Space between items */
+        }
+
+        .custom-sidebar-link {
+            color: black;
+            /* Link color */
+            text-decoration: none;
+            /* Remove underline */
+            font-weight: lighter;
+            /* Make links bold */
+            transition: color 0.5s;
+            /* Smooth color transition on hover */
+        }
+
+        .custom-sidebar-link:hover {
+            color: #007bff;
+            /* Darker color on hover */
+            transition: color 0.3s ease;
+        }
+
+        .heading {
+            font-size: 35px;
+            font-weight: bold;
+            color: black;
+        }
+
+
+
+        .label {
+            font-weight: lighter;
+            /* Make labels bold */
+            color: black;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            /* height: 30px; */
+            /* Custom blue color */
+            border: none;
+            /* Remove default border */
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            /* Darker blue on hover */
+        }
+
+        .modal-content {
+            border-radius: 10px;
+            /* Rounded corners for the modal */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            /* Subtle shadow */
+        }
+
+        .btn-close {
+            filter: invert(1);
+            /* Change close button color for better contrast */
+        }
+
+        .modal-body {
+            background-color: #f8f9fa;
+            /* Light background for the body */
+        }
+
+        .modal-title {
+            color: black;
+            font-weight: bolder;
+        }
+
+        #phone::placeholder {
+            color: red;
+            opacity: 1;
+        }
+
+        .logout {
+            color: red;
+        }
+
+        .coupon-card {
+            font-weight: 500;
+            border: 5px solid black;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+            transition: transform 0.2s;
+        }
+
+        .coupon-card:hover {
+            transform: scale(1.02);
+        }
+
+        .coupon-card h5 {
+            font-weight: bold;
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+        }
+
+        .coupon-card p {
+            margin: 5px 0;
+        }
+
+        .coupon-card .badge {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+
+<body class="animsition">
+
+    <%- include('../partials/_header') %>
+
+        <div class="mt-lg-5 pt-5">
+            <div class="row">
+                <!-- Sidebar Section -->
+
+                <%- include('../partials/_sidebaruser') %>
+
+
+                    <!-- Content Section -->
+                    <div class="col-md-9 mt-2 px-5">
+                        <div class="content-section" style="display:block;">
+                            <!-- Default content or Profile Content -->
+                            <div id="profile-content" class="content">
+                                <h1 class="heading text-center mb-4">Profile</h1>
+
+                                <!-- Form for updating user profile -->
+                                <form action="/updateProfile" method="POST">
+                                    <!-- Username Field -->
+                                    <div class="form-group">
+                                        <label class="label" for="username">Username:</label>
+                                        <input type="text" class="form-control" id="username" name="username"
+                                            placeholder="Enter your username" value="<%= user.username %>" readonly>
+                                    </div>
+
+                                    <!-- Email Field -->
+                                    <div class="form-group">
+                                        <label class="label" for="email">Email:</label>
+                                        <input type="email" class="form-control" id="email" name="email"
+                                            placeholder="Enter your email" value="<%= user.email %>" readonly>
+                                    </div>
+
+                                    <!-- Phone Number Field -->
+                                    <div class="form-group">
+                                        <label class="label" for="phone">Phone Number:</label>
+                                        <input type="text" class="form-control" id="phone" name="phone"
+                                            placeholder="Add your phone number" value="<%= user.phone %>" readonly>
+                                    </div>
+
+                                    <!-- Change Password Button and Edit Profile Button -->
+                                    <div class="form-group d-flex justify-content-center">
+                                        <button type="button" class="btn btn-success me-3" id="availableCouponsButton"
+                                            data-bs-toggle="modal" data-bs-target="#availableCouponsModal">
+                                            Available Coupon
+                                        </button>
+
+                                        <button type="button" class="btn btn-primary me-3" id="openChangePasswordModal"
+                                            data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                            Change Password
+                                        </button>
+                                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                            data-bs-target="#editProfileModal">
+                                            Edit Profile
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Available Coupons Modal -->
+                            <div class="modal fade" id="availableCouponsModal" tabindex="-1"
+                                aria-labelledby="availableCouponsModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-dark">
+                                            <h5 class="modal-title text-white " id="availableCouponsModalLabel">Available Coupons
+                                            </h5>
+                                            
+                                        </div>
+                                        <div class="modal-body">
+                                            <div id="couponContainer" class="row">
+                                                <!-- Coupons will be populated here dynamically -->
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-danger"
+                                                data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <script>
+                                document.getElementById("availableCouponsButton").addEventListener("click", async () => {
+                                    try {
+                                        const response = await fetch('/availablecoupons');
+                                        const coupons = await response.json();
+
+                                        const couponContainer = document.getElementById("couponContainer");
+                                        couponContainer.innerHTML = '';
+
+                                        coupons.forEach(coupon => {
+                                            const couponCard = document.createElement('div');
+                                            couponCard.classList.add('col-md-4','mb-4');
+                                            couponCard.innerHTML = `
+                                             <div class="coupon-card">
+                                             <h5>${coupon.code} <span class="badge bg-success">${coupon.discountType}</span></h5>
+                                             <p>Discount Value : ${coupon.discountValue}${coupon.discountType === 'percentage' ? '%' : ''}</p>
+                                             <p>Validity From : ${new Date(coupon.validFrom).toLocaleDateString()}</p>
+                                             <p>Validity To : ${new Date(coupon.validUntil).toLocaleDateString()}</p>
+                                             </div>`;
+                                            couponContainer.appendChild(couponCard);
+                                        });
+                                    } catch (error) {
+                                        console.error('Error fetching coupons:', error);
+                                    }
+                                });
+
+
+                            </script>
+
+
+
+
+
+                            <!-- ========================================================================================================================== -->
+
+                            <!-- Modal Structure -->
+                            <div class="modal fade" id="editProfileModal" tabindex="-1"
+                                aria-labelledby="editProfileModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <form id="editProfileForm" action="/updateProfile" method="POST">
+                                            <div class="modal-body">
+                                                <!-- Username Field -->
+                                                <div class="form-group">
+                                                    <label for="username">Username:</label>
+                                                    <input type="text" class="form-control" id="username1"
+                                                        name="username" value="<%= user.username %>" required>
+                                                    <small id="usernameError" class="text-danger"></small>
+                                                </div>
+
+                                                <!-- Email Field (read-only) -->
+                                                <div class="form-group">
+                                                    <label for="email">Email: <span class="text-danger">(Email cannot be
+                                                            changed)</span></label>
+                                                    <input type="email" class="form-control" id="email1" name="email"
+                                                        value="<%= user.email %>" readonly>
+                                                </div>
+
+                                                <!-- Phone Number Field (Optional) -->
+                                                <div class="form-group">
+                                                    <label for="phone">Phone Number (Optional):</label>
+                                                    <input type="tel" class="form-control" id="phone1" name="phone"
+                                                        value="<%= user.phone ? user.phone : '' %>">
+                                                    <small id="phoneError" class="text-danger"></small>
+                                                </div>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-success"
+                                                    id="saveChangesButton">Save
+                                                    Changes</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <script>
+                                // Real-time validation
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    const usernameInput = document.getElementById("username1");
+                                    const usernameError = document.getElementById("usernameError");
+                                    const phoneInput = document.getElementById("phone1");
+                                    const phoneError = document.getElementById("phoneError");
+
+                                    // Username validation
+                                    usernameInput.addEventListener("input", function () {
+                                        const username = usernameInput.value.trim();
+                                        const usernamePattern = /^[A-Za-z0-9]+$/;
+
+                                        if (username.length < 5 || !usernamePattern.test(username)) {
+                                            usernameError.textContent = "Username must be at least 5 characters long and contain no spaces or special characters.";
+                                        } else {
+                                            usernameError.textContent = ""; // Clear error message when valid
+                                        }
+                                    });
+
+                                    // Phone number validation (optional)
+                                    phoneInput.addEventListener("input", function () {
+                                        const phone = phoneInput.value.trim();
+                                        const phonePattern = /^[0-9]{10}$/; // 10-digit phone number
+
+                                        if (phone && !phonePattern.test(phone)) {
+                                            phoneError.textContent = "Please enter a valid 10-digit phone number.";
+                                        } else {
+                                            phoneError.textContent = ""; // Clear error message when valid
+                                        }
+                                    });
+
+                                    // Form submission validation
+                                    document.getElementById("editProfileForm").addEventListener("submit", function (event) {
+                                        const username = usernameInput.value.trim();
+                                        const phone = phoneInput.value.trim();
+                                        let isValid = true;
+
+                                        // Validate username on form submit
+                                        if (username.length < 5 || !/^[A-Za-z0-9]+$/.test(username)) {
+                                            usernameError.textContent = "Username must be at least 5 characters long and contain no spaces or special characters.";
+                                            isValid = false;
+                                        }
+
+                                        // Validate phone on form submit
+                                        if (phone && !/^[0-9]{10}$/.test(phone)) {
+                                            phoneError.textContent = "Please enter a valid 10-digit phone number.";
+                                            isValid = false;
+                                        }
+
+                                        // Prevent form submission if not valid
+                                        if (!isValid) {
+                                            event.preventDefault();
+                                        }
+                                    });
+                                });
+                            </script>
+
+
+
+                            <!--============================================================================================= -->
+
+                            <!-- Change Password Modal -->
+                            <div class="modal fade" id="changePasswordModal" tabindex="-1"
+                                aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-dark text-white">
+                                            <h5 class="modal-title text-white fw-bold" id="changePasswordModalLabel">
+                                                Change
+                                                Your Password</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="changePasswordForm" action="/changePassword" method="POST">
+                                                <div class="mb-3">
+                                                    <label for="currentPassword" class="form-label">Current
+                                                        Password:</label>
+                                                    <div class="input-group">
+                                                        <input type="password" class="form-control" id="currentPassword"
+                                                            name="currentPassword" placeholder="Enter current password">
+                                                        <span class="input-group-text">
+                                                            <i class="fa fa-eye" id="toggleCurrentPassword"
+                                                                style="cursor: pointer;"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div id="currentPasswordFeedback" class="invalid-feedback"
+                                                        style="display: none;">Current password is required.</div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="newPassword" class="form-label">New Password:</label>
+                                                    <div class="input-group">
+                                                        <input type="password" class="form-control" id="newPassword"
+                                                            name="newPassword" placeholder="Enter new password">
+                                                        <span class="input-group-text">
+                                                            <i class="fa fa-eye" id="toggleNewPassword"
+                                                                style="cursor: pointer;"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div id="newPasswordFeedback" class="invalid-feedback"
+                                                        style="display: none;">New password is required.</div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="confirmNewPassword" class="form-label">Confirm New
+                                                        Password:</label>
+                                                    <div class="input-group">
+                                                        <input type="password" class="form-control"
+                                                            id="confirmNewPassword" name="confirmNewPassword"
+                                                            placeholder="Confirm new password">
+                                                        <span class="input-group-text">
+                                                            <i class="fa fa-eye" id="toggleConfirmPassword"
+                                                                style="cursor: pointer;"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div id="passwordFeedback" class="invalid-feedback"
+                                                        style="display: none;">Passwords do not match.</div>
+                                                </div>
+                                                <div class="text-end">
+                                                    <button type="submit" class="btn btn-success"
+                                                        id="submitPasswordChange">Update Password</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            // Toggle current password visibility
+                            const toggleCurrentPassword = document.getElementById('toggleCurrentPassword');
+                            const currentPasswordInput = document.getElementById('currentPassword');
+
+                            toggleCurrentPassword.addEventListener('click', () => {
+                                togglePasswordVisibility(currentPasswordInput, toggleCurrentPassword);
+                            });
+
+                            // Toggle new password visibility
+                            const toggleNewPassword = document.getElementById('toggleNewPassword');
+                            const newPasswordInput = document.getElementById('newPassword');
+
+                            toggleNewPassword.addEventListener('click', () => {
+                                togglePasswordVisibility(newPasswordInput, toggleNewPassword);
+                            });
+
+                            // Toggle confirm new password visibility
+                            const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+                            const confirmNewPasswordInput = document.getElementById('confirmNewPassword');
+
+                            toggleConfirmPassword.addEventListener('click', () => {
+                                togglePasswordVisibility(confirmNewPasswordInput, toggleConfirmPassword);
+                            });
+
+                            // Function to toggle visibility and set a timeout
+                            function togglePasswordVisibility(inputField, toggleIcon) {
+                                const isPasswordVisible = inputField.type === 'text';
+
+                                if (isPasswordVisible) {
+                                    inputField.type = 'password';
+                                    toggleIcon.classList.remove('fa-eye-slash');
+                                    toggleIcon.classList.add('fa-eye');
+                                } else {
+                                    inputField.type = 'text';
+                                    toggleIcon.classList.remove('fa-eye');
+                                    toggleIcon.classList.add('fa-eye-slash');
+
+                                    // Set a timeout to revert the visibility back to hidden after 5 seconds
+                                    setTimeout(() => {
+                                        inputField.type = 'password';
+                                        toggleIcon.classList.remove('fa-eye-slash');
+                                        toggleIcon.classList.add('fa-eye');
+                                    }, 5000);
+                                }
+                            }
+                        });
+                    </script>
+
+
+
+                    <!-- Include SweetAlert -->
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+            </div>
+
+        </div>
+
+        <!-- Load more -->
+        <div class="flex-c-m flex-w w-full p-t-45 pb-5">
+            <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
+                Load More
+            </a>
+        </div>
+
+        <%- include('../partials/_footer') %>
+
+            <!-- Back to top -->
+            <div class="btn-back-to-top" id="myBtn">
+                <span class="symbol-btn-back-to-top">
+                    <i class="zmdi zmdi-chevron-up"></i>
+                </span>
+            </div>
+
+            <!--===============================================================================================-->
+            <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+            <!--===============================================================================================-->
+            <script src="vendor/animsition/js/animsition.min.js"></script>
+            <!--===============================================================================================-->
+            <script src="vendor/bootstrap/js/popper.js"></script>
+            <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+            <!--===============================================================================================-->
+            <script src="vendor/select2/select2.min.js"></script>
+            <!--===============================================================================================-->
+            <script src="vendor/daterangepicker/moment.min.js"></script>
+            <script src="vendor/daterangepicker/daterangepicker.js"></script>
+            <!--===============================================================================================-->
+            <script src="vendor/slick/slick.min.js"></script>
+            <script src="js/slick-custom.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+
+            <!--===============================================================================================-->
+            <script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
+            <!--===============================================================================================-->
+            <script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+            <script src="js/main.js"></script>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <!-- Bootstrap JS -->
+
+
+            <script>
+                const changePasswordForm = document.getElementById('changePasswordForm');
+                const currentPassword = document.getElementById('currentPassword');
+                const newPassword = document.getElementById('newPassword');
+                const confirmNewPassword = document.getElementById('confirmNewPassword');
+                const currentPasswordFeedback = document.getElementById('currentPasswordFeedback');
+                const newPasswordFeedback = document.getElementById('newPasswordFeedback');
+                const passwordFeedback = document.getElementById('passwordFeedback');
+                const submitButton = document.getElementById('submitPasswordChange');
+
+                // Flag to track if form was submitted
+                let formSubmitted = false;
+
+                // Function to validate all password fields
+                function validatePasswords() {
+                    let isValid = true;
+
+                    // Only show validation feedback if form has been submitted at least once
+                    if (formSubmitted) {
+                        // Validate current password
+                        if (!currentPassword.value) {
+                            currentPassword.classList.add('is-invalid');
+                            currentPasswordFeedback.style.display = 'block';
+                            isValid = false;
+                        } else {
+                            currentPassword.classList.remove('is-invalid');
+                            currentPasswordFeedback.style.display = 'none';
+                        }
+
+                        // Validate new password
+                        const newPasswordValue = newPassword.value.trim();
+                        const passwordLengthValid = newPasswordValue.length >= 8; // Minimum length of 8 characters
+                        const noSpaces = !/\s/.test(newPasswordValue); // No spaces allowed
+                        const notOnlySpecialChars = /[a-zA-Z0-9]/.test(newPasswordValue); // At least one alphanumeric character
+
+                        if (!newPasswordValue) {
+                            newPassword.classList.add('is-invalid');
+                            newPasswordFeedback.textContent = "New password cannot be empty.";
+                            newPasswordFeedback.style.display = 'block';
+                            isValid = false;
+                        } else if (!passwordLengthValid) {
+                            newPassword.classList.add('is-invalid');
+                            newPasswordFeedback.textContent = "New password must be at least 8 characters long.";
+                            newPasswordFeedback.style.display = 'block';
+                            isValid = false;
+                        } else if (!noSpaces) {
+                            newPassword.classList.add('is-invalid');
+                            newPasswordFeedback.textContent = "New password cannot contain spaces.";
+                            newPasswordFeedback.style.display = 'block';
+                            isValid = false;
+                        } else if (!notOnlySpecialChars) {
+                            newPassword.classList.add('is-invalid');
+                            newPasswordFeedback.textContent = "New password must contain at least one letter or number.";
+                            newPasswordFeedback.style.display = 'block';
+                            isValid = false;
+                        } else if (currentPassword.value === newPasswordValue) {
+                            // Check if current password and new password are the same
+                            newPassword.classList.add('is-invalid');
+                            newPasswordFeedback.textContent = "New password cannot be the same as the current password.";
+                            newPasswordFeedback.style.display = 'block';
+                            isValid = false;
+                        } else {
+                            newPassword.classList.remove('is-invalid');
+                            newPasswordFeedback.style.display = 'none';
+                        }
+
+                        // Validate confirm password
+                        if (newPasswordValue !== confirmNewPassword.value) {
+                            confirmNewPassword.classList.add('is-invalid');
+                            passwordFeedback.style.display = 'block';
+                            isValid = false;
+                        } else {
+                            confirmNewPassword.classList.remove('is-invalid');
+                            passwordFeedback.style.display = 'none';
+                        }
+                    }
+
+                    // Enable/disable submit button based on validity
+                    submitButton.disabled = !isValid;
+                }
+
+                // Event listeners for real-time validation, only after the form has been submitted once
+                currentPassword.addEventListener('input', validatePasswords);
+                newPassword.addEventListener('input', validatePasswords);
+                confirmNewPassword.addEventListener('input', validatePasswords);
+
+                // Handle form submission
+                changePasswordForm.addEventListener('submit', async (event) => {
+                    event.preventDefault(); // Prevent the default form submission
+
+                    // Mark form as submitted
+                    formSubmitted = true;
+
+                    // Validate passwords again after form submission
+                    validatePasswords();
+
+                    // If validation fails, stop here
+                    if (submitButton.disabled) return;
+
+                    const currentPassword = document.getElementById('currentPassword').value;
+                    const newPassword = document.getElementById('newPassword').value;
+                    const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+                    try {
+                        const response = await fetch('/changePassword', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                currentPassword,
+                                newPassword,
+                                confirmNewPassword
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            // Show success alert
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: result.message,
+                                confirmButtonText: 'Okay'
+                            }).then(() => {
+                                location.reload(); // Reload the page
+                            });
+                        } else {
+                            // Show error alert
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: result.message,
+                                confirmButtonText: 'Try Again'
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error during fetch:', error);
+                    }
+                });
+            </script>
+
+
+
+</body>
+
+</html>

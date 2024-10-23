@@ -11,14 +11,14 @@ const categorySchema = new mongoose.Schema({
     required: true
   },
   image: {
-    type: String,  // Image file path or name
+    type: String,  
     required: false
   },
   isListed: {
     type: Boolean,
-    default: true  // By default, the category is listed (visible to users)
+    default: true  
   }
 },
-{ timestamps: true });  // Automatically adds createdAt and updatedAt fields
+{ timestamps: true });  
 
 module.exports = mongoose.model('Category', categorySchema);

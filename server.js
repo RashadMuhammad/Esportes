@@ -5,10 +5,13 @@ const passport = require("passport");
 const path = require("path");
 const flash = require('connect-flash')
 const dotenv = require("dotenv");
-const User = require("./models/user"); // Assuming User is exported from a models directory
+const User = require("./models/user"); 
 const authRoutes = require("./routes/auth");
 const MongoStore = require('connect-mongo');
+const bcrypt = require('bcrypt');
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const Razorpay = require('razorpay');
+const crypto = require('crypto');
 
 // Load environment variables
 dotenv.config();
@@ -21,6 +24,7 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log("An error occurred:", err));
 
+
 // Middleware to parse request body
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static("public"));
@@ -29,7 +33,7 @@ app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-// Setting view engine to EJS
+// Setting view engine 
 app.set("view engine", "ejs");
 
 // Session handling
@@ -37,21 +41,26 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET_CODE,
     saveUninitialized: false,
-    resave: false,
+    resave: true,
     store: MongoStore.create({
       mongoUrl: process.env.MONGODB_URI,
-      collectionName: 'sessions', // Optional: specify collection name for sessions
-      ttl: 1 * 60 * 60, // Session expiration time in seconds (1 hour)
+      collectionName: 'sessions', 
+      ttl: 1 * 60 * 60, 
     }),
     cookie: {
       httpOnly: true,
-      secure: false, // Set to true when using HTTPS
-      maxAge: 1000 * 60 * 60 * 1, // 1 hour session expiration
+      secure: false, 
+      maxAge: 1000 * 60 * 60 * 1,
     },
   })
 );
 
-// Cache and cookie handling to prevent users from navigating back after logging out
+// app.use((req,res,next)=>{
+//   console.log(req.method,' : ',req.url);
+//   next();
+// })
+
+
 app.use((req, res, next) => {
   res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
   next();
@@ -63,10 +72,10 @@ app.use(flash())
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Middleware to pass success or error messages using render instead of flash
+// Middleware to pass success or error messages 
 app.use((req, res, next) => {
   res.locals.message = req.flash("message");
-  res.locals.success = req.session.message;
+  res.locals.errorMessage = req.flash("errorMessage");
   next();
 });
 
@@ -86,10 +95,14 @@ passport.use(
 
         if (!user) {
           // Create a new user if not found
+
+          const hashedPassword = await bcrypt.hash("noPassword",10)
+
           user = new User({
             googleId: profile.id,
             name: profile.displayName,
             email: profile.emails[0].value,
+            password: hashedPassword,
             profileImageUrl: profile.photos[0].value,
           });
           await user.save();
@@ -103,6 +116,12 @@ passport.use(
     }
   )
 );
+
+// Razorpay instance
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_SECRET
+});
 
 // Serialize and deserialize user to/from session
 passport.serializeUser((user, done) => {
@@ -122,16 +141,23 @@ passport.deserializeUser(async (id, done) => {
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", {
-    failureRedirect: "/login",
+    failureRedirect: "/login"
   }),
   (req, res) => {
-    // Check if the user is blocked
-    if (req.user.status === "blocked") {
-      req.flash("message","User have been Blocked by Admin")
-      return res.redirect("/login");
+    // Ensure the session is established before checking user status
+    if (req.user && req.user.status === "blocked") {
+      req.logout(err => {
+        if (err) {
+          console.log("Error logging out:", err);
+        }
+        // Store error message in session and redirect to login
+        req.flash("message", "You have been blocked by the admin.");
+        return res.redirect("/login");
+      });
+    } else {
+      // Successful login; redirect to home
+      res.redirect("/");
     }
-    // Authentication successful, redirect to home
-    res.render("home", { error: null, success: "Successfully signed in with Google!" });
   }
 );
 

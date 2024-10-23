@@ -1,198 +1,383 @@
 const User = require("../models/user");
 const Category = require("../models/Category");
+const Address = require("../models/Address");
 const Product = require("../models/Product");
+const Cart = require("../models/Cart");
+const Order = require("../models/Order");
+const Coupon = require("../models/Coupon");
+const Offer = require("../models/Offer");
+const Wallet = require("../models/Wallet");
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 const { log } = require("console");
+require("dotenv").config(); // Ensure dotenv is loaded at the start
+
+const Razorpay = require("razorpay");
+
+// Initialize Razorpay instance
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_SECRET,
+});
 
 // Render signup page
 exports.signup = async (req, res) => {
   try {
     res.render("users/signup");
   } catch (error) {
-    console.log(error);
+    console.error("Error rendering signup page:", error);
+    res.status(500).send("Internal Server Error");
   }
 };
 
 // Hash password
 exports.securePassword = async (password) => {
   try {
-    const passwordHash = await bcrypt.hash(password, 10);
-    return passwordHash;
+    return await bcrypt.hash(password, 10);
+  } catch (error) {
+    console.error("Error hashing password:", error.message);
+    throw new Error("Password hashing failed");
+  }
+};
+
+// Insert user and send OTP
+exports.insertUser = async (req, res) => {
+  const { username, password, email } = req.body;
+
+  // Check for spaces in username and password
+  if (/\s/.test(username) || /\s/.test(password)) {
+    return res.render("users/signup", {
+      message: "Username and Password cannot contain spaces",
+    });
+  }
+  console.log(password);
+
+  try {
+    // Check if email is already registered
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.render("users/signup", {
+        message: "Email already registered. Use a different email.",
+      });
+    }
+
+    // Secure the password
+    const hashedPassword = await exports.securePassword(password);
+
+    // Generate OTP
+    const otp = crypto.randomInt(100000, 999999);
+    const otpExpiration = Date.now() + 60000; // OTP valid for 1 minute
+
+    // Store user info and OTP in session
+    req.session.otp = otp;
+    req.session.username = username;
+    req.session.email = email;
+    req.session.password = hashedPassword;
+    req.session.otpExpiration = otpExpiration;
+
+    // Send OTP via email
+    await sendOtpEmail(email, otp);
+
+    res.redirect("/otpverification");
+  } catch (err) {
+    console.error("Error during signup:", err.message);
+    res.render("users/signup", {
+      message: "An error occurred during signup. Please try again.",
+    });
+  }
+};
+
+// Function to send OTP via email
+const sendOtpEmail = async (email, otp) => {
+  const transporter = nodemailer.createTransport({
+    service: "Gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Your OTP Code",
+    text: `Your OTP code is ${otp}`,
+  };
+
+  try {
+    let info = await transporter.sendMail(mailOptions);
+    console.log("OTP email sent:", info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error("Error sending OTP email:", error.message);
+    throw new Error("Failed to send OTP email");
+  }
+};
+
+// Render OTP verification page
+exports.otpverification = (req, res) => {
+  res.render("users/otpsign");
+};
+
+// Verify OTP
+exports.verifyOtp = async (req, res) => {
+  const { otp } = req.body;
+  const currentTime = Date.now();
+
+  try {
+    // Check if OTP has expired
+    if (currentTime > req.session.otpExpiration) {
+      return res
+        .status(400)
+        .json({ message: "OTP expired. Please request a new OTP." });
+    }
+
+    // Verify OTP
+    if (otp == req.session.otp) {
+      // Create new user
+      const newUser = new User({
+        username: req.session.username,
+        email: req.session.email,
+        password: req.session.password,
+      });
+
+      const result = await newUser.save();
+      if (result) {
+        // Clear session and login user
+        req.session.userId = result._id;
+        clearSessionData(req);
+
+        // Create a new cart for the user
+        const cart = new Cart({
+          userId: newUser._id,
+          items: [],
+          totalPrice: 0,
+        });
+        await cart.save();
+
+        // Send success response
+        return res.status(200).json({ message: "Success! User created." });
+      } else {
+        return res
+          .status(400)
+          .json({ message: "Failed to save user. Please try again." });
+      }
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Invalid OTP. Please try again." });
+    }
+  } catch (error) {
+    console.error("Error during OTP verification:", error.message);
+    res.status(500).json({
+      message: "An error occurred during OTP verification. Please try again.",
+    });
+  }
+};
+
+// Clear session data after successful signup
+const clearSessionData = (req) => {
+  delete req.session.otp;
+  delete req.session.username;
+  delete req.session.email;
+  delete req.session.password;
+  delete req.session.otpExpiration;
+};
+
+// Resend OTP
+exports.resendOtp = async (req, res) => {
+  const { email } = req.session;
+  if (!email) {
+    return res.render("users/login", {
+      message: "Session expired. Please log in again.",
+    });
+  }
+
+  try {
+    const otp = crypto.randomInt(100000, 999999); // Generate a new 6-digit OTP
+    const otpExpiration = Date.now() + 60000; // OTP valid for 1 minute
+
+    // Update OTP in session
+    req.session.otp = otp;
+    req.session.otpExpiration = otpExpiration;
+
+    await sendOtpEmail(email, otp); // Resend OTP email
+    res.redirect("/otpverification");
+
+    // res.render("users/otpsign", { message: "A new OTP has been sent to your email." });
+  } catch (error) {
+    console.error("Error resending OTP:", error.message);
+    res.render("users/otpsign", {
+      message: "Failed to resend OTP. Please try again.",
+    });
+  }
+};
+
+// Render ForgetPassword Page
+exports.forgetPassword = async (req, res) => {
+  try {
+    res.render("users/forgetpassword");
   } catch (error) {
     console.log(error.message);
   }
 };
 
-exports.insertUser = async (req, res) => {
-  // Check for spaces in username and password
-  if (/\s/.test(req.body.username) || /\s/.test(req.body.password)) {
-    return res.render("users/signup", {
-      message: "Your Username and Password cannot contain spaces",
-    });
+// Function to handle OTP request
+exports.forgetPasswordOtp = async (req, res) => {
+  // const otp = crypto.randomInt(100000, 999999).toString();
+  const { email } = req.body;
+  console.log(email);
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
   }
 
   try {
-    // Check if the email already exists
-    const existingUser = await User.findOne({ email: req.body.email });
-    if (existingUser) {
-      return res.render("users/signup", {
-        message: "Email is already registered. Please use a different email.",
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      return res.status(404).json({ message: "Email not found" });
+    }
+
+    //=================================================================================
+    // Generate a random 4-digit OTP
+    const genotp = Math.floor(100000 + Math.random() * 900000);
+    console.log(genotp); // Log the OTP for debugging
+
+    // Configure the email transporter using nodemailer
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER, // Your email
+        pass: process.env.EMAIL_PASSWORD, // Your email password
+      },
+    });
+
+    // Email options
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Your OTP for Signup",
+      text: ` Your OTP for signup is ${genotp}. It will expire in 10 minutes.`,
+    };
+
+    // Send the OTP via email
+    await transporter.sendMail(mailOptions);
+
+    // Store OTP and expiration time in session
+    req.session.otp = genotp;
+    req.session.email = req.body;
+    req.session.otpExpires = Date.now() + 1 * 60 * 1000; // Set expiration time to 1 minute (60000 ms)
+
+    console.log(req.session.otp); // Log the session OTP for debugging
+
+    res.redirect("/forgetotppage");
+    console.log("hiigyitt765578584654666tfyutf7");
+
+    //======================================================================================
+
+    // req.session.otp = otp;
+    // req.session.email = email;
+  } catch (error) {
+    console.error("Error during dfffdfd OTP sending:", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to send OTP email rdgfhtrfghtrhftrfg" });
+  }
+};
+
+//Render OTP Verify Page for Forget Password
+exports.forgetOtpPage = async (req, res) => {
+  try {
+    const message = req.query.message;
+    res.render("users/forgototp"), { msg: message };
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+exports.newPassword = async (req, res) => {
+  try {
+    console.log("Heyyy");
+    res.render("users/newpassword");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+// Assuming you're using express-session for session management
+exports.forgetVerifyOtp = async (req, res) => {
+  const { otp1, otp2, otp3, otp4, otp5, otp6 } = req.body;
+  const enteredOtp = otp1 + otp2 + otp3 + otp4 + otp5 + otp6;
+
+  // Check if OTP exists in session
+  if (!req.session.otp) {
+    return res.status(400).json({
+      success: false,
+      message: "Session expired. Please request a new OTP.",
+    });
+  }
+
+  // Check if OTP has expired
+  if (Date.now() > req.session.otpExpires) {
+    return res.status(400).json({
+      success: false,
+      message: "OTP expired. Please request a new one.",
+    });
+  }
+
+  console.log("OTP Verification attempt");
+  console.log(enteredOtp);
+
+  // Verify entered OTP
+  if (parseInt(enteredOtp) === req.session.otp) {
+    console.log("OTP verified successfully");
+
+    // Clear OTP session variables
+    req.session.otp = null;
+    req.session.otpExpires = null;
+    req.session.otpCountdown = null;
+    return res.status(200).json({ success: true }); // Send success response
+  } else {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid OTP. Please try again." });
+  }
+};
+
+exports.newpassVerify = async (req, res) => {
+  try {
+    console.log("Function newpassVerify invoked");
+
+    const { password } = req.body;
+    const email = req.session.email.email; // Make sure this is just the email string
+    console.log(email);
+
+    console.log(`Email: ${email.email}, Password: ${password}`);
+
+    // Find the user by email
+    const existingUser = await User.findOne({ email });
+
+    if (!existingUser) {
+      return res.render("users/newpassword", {
+        message: "Email does not exist",
       });
     }
 
-    // Securely hash the password before sending OTP
-    const spassword = await exports.securePassword(req.body.password);
-    const otp = crypto.randomInt(100000, 999999);
-    const otpExpiration = Date.now() + 120000; // 2 minutes from now
+    // Hash the new password
+    const hashPassword = await bcrypt.hash(password, 10);
 
-    // Store the user's information and OTP in the session
-    req.session.otp = otp;
-    req.session.username = req.body.username; // Store username temporarily
-    req.session.email = req.body.email; // Store email temporarily
-    req.session.password = spassword; // Store the hashed password temporarily
-    req.session.otpExpiration = otpExpiration;
+    // Update the existing user's password
+    await User.updateOne(
+      { email: email },
+      { $set: { password: hashPassword } }
+    );
 
-    // Send OTP via email
-    const transporter = nodemailer.createTransport({
-      service: "Gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
-
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: req.body.email,
-      subject: "Your OTP Code",
-      text: `Your OTP code is ${otp}`,
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log(error);
-        return res.render("users/signup", {
-          message: "Failed to send OTP. Please try again.",
-        });
-      } else {
-        return res.redirect("/otpverification");
-      }
-    });
-  } catch (err) {
-    return res.send(err.message);
-  }
-};
-
-// Render OTP verification page
-exports.otpverification = async (req, res) => {
-  try {
-      res.render("users/otpsign");
-  } catch (err) {
-      return res.send("An error occurred while rendering the OTP verification page.");
-  }
-};
-
-exports.verifyOtp = async (req, res) => {
-  const otp = req.body.otp1 + req.body.otp2 + req.body.otp3 + req.body.otp4 + req.body.otp5 + req.body.otp6;
-  const currentTime = Date.now();
-
-  try {
-      if (currentTime > req.session.otpExpiration) {
-          return res.render("users/otpsign", {
-              message: "OTP expired. Please request a new OTP.",
-              expired: true,
-          });
-      } else if (otp == req.session.otp) {
-          const newUser = new User({
-              username: req.session.username,
-              email: req.session.email,
-              password: req.session.password,
-          });
-
-          console.log(req.session.emai);
-
-          const result = await newUser.save();
-          if (result) {
-              // Clear session data
-              delete req.session.otp;
-              delete req.session.username;
-              delete req.session.email;
-              delete req.session.password;
-              delete req.session.otpExpiration;
-
-              req.session.userId = result._id; 
-              return res.redirect("/"); 
-          } else {
-              return res.render("users/otpsign", {
-                  message: "Failed to save user. Please try again.",
-              });
-          }
-      } else {
-          return res.render("users/otpsign", {
-              message: "Invalid OTP. Please try again.",
-          });
-      }
+    console.log("Password updated successfully");
+    res.redirect("/login");
   } catch (error) {
-      console.log(error);
-      return res.send("An error occurred during OTP verification.");
-  }
-};
-
-// Resend OTP
-// Resend OTP
-exports.resendOtp = async (req, res) => {
-  if (!req.session.email) {
-        console.log(req.session.email);
-
-    return res.render("users/login", { message: "Session expired. Please log in again." });
-  }
-
-  try {
-    console.log(req.session.email);
-
-    const otp = crypto.randomInt(100000, 999999);
-    const otpExpiration = Date.now() + 120000; // 2 minutes from now
-
-    // Store OTP and expiration in the session
-    req.session.otp = otp;
-    req.session.otpExpiration = otpExpiration;
-    req.session.save(); // Ensure session is saved after modification
-
-    const transporter = nodemailer.createTransport({
-      service: "Gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
-
-    console.log(req.session.email);
-    
-
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: req.session.email,
-      subject: "Resend OTP Code",
-      text: `Your new OTP code is ${otp}`,
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error("Error sending OTP email:", error);
-        return res.render("users/otpsign", {
-          message: "Failed to resend OTP. Please try again.",
-        });
-      } else {
-        return res.render("users/otpsign", {
-          message: "A new OTP has been sent to your email.",
-        });
-      }
-    });
-  } catch (error) {
-    console.error("Error during OTP resend:", error);
-    return res.render("users/otpsign", { message: "Error resending OTP." });
+    console.error("Error updating password:", error.message);
+    res.send("Something went wrong. Please try again.");
   }
 };
 
@@ -202,6 +387,7 @@ exports.login = async (req, res) => {
     res.render("users/login");
   } catch (error) {
     console.log(error);
+    res.status(500).send("Server error");
   }
 };
 
@@ -209,12 +395,14 @@ exports.login = async (req, res) => {
 exports.verifylogin = async (req, res) => {
   const { email, password } = req.body;
 
+  console.log("normal login ", req.session);
+
   try {
     // Find the user by email
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.render("users/login", { message: "User not found" });
+      return res.render("users/login");
     }
 
     // Check if the user is blocked
@@ -227,13 +415,12 @@ exports.verifylogin = async (req, res) => {
     // Check if the password matches
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.render("users/login", { message: "Incorrect password" });
+      return res.render("users/login", {
+        message: "Incorrect Email or Password",
+      });
     }
-
-    // If all checks pass, allow the user to log in
     req.session.userId = user._id;
-    // console.log(email,"=email");
-    return res.redirect("/"); // Redirect to the homepage or dashboard after login
+    return res.redirect("/");
   } catch (error) {
     console.error("Error during login:", error);
     return res.status(500).send("Internal Server Error");
@@ -247,44 +434,440 @@ exports.home = async (req, res) => {
     const products = await Product.find({ listed: true })
       .populate("category")
       .exec();
-    // console.log(products)
 
-    res.render("users/index", { categories, products });
+    // Fetch active offers
+    const currentDate = new Date();
+    const activeOffers = await Offer.find({
+      status: "active",
+      validFrom: { $lte: currentDate },
+      validUntil: { $gte: currentDate },
+    });
+
+    // Apply offers to products
+    for (const product of products) {
+      const applicableOffers = activeOffers.filter((offer) => {
+        if (
+          offer.type === "product" &&
+          offer.product.toString() === product._id.toString()
+        ) {
+          return true;
+        }
+        if (
+          offer.type === "category" &&
+          offer.category.toString() === product.category._id.toString()
+        ) {
+          return true;
+        }
+        return false;
+      });
+
+      // Calculate the best applicable offer
+      if (applicableOffers.length > 0) {
+        const bestOffer = applicableOffers[0]; // Assume the first applicable offer is the best
+        let discount = 0;
+
+        if (bestOffer.discountType === "percentage") {
+          discount = (product.price * bestOffer.discountValue) / 100;
+        } else if (bestOffer.discountType === "fixed") {
+          discount = bestOffer.discountValue;
+        }
+
+        // Apply max discount limit
+        if (bestOffer.maxDiscountAmount) {
+          discount = Math.min(discount, bestOffer.maxDiscountAmount);
+        }
+
+        // Calculate discounted price
+        const discountedPrice = (product.price - discount).toFixed(2);
+        product.discountedPrice = discountedPrice;
+
+        // Save discounted price in the database
+        await Product.updateOne(
+          { _id: product._id },
+          { discountedPrice: discountedPrice }
+        );
+      } else {
+        // If no applicable offer, reset discountedPrice to null or remove it
+        product.discountedPrice = null; // or set it to product.price if preferred
+        await Product.updateOne(
+          { _id: product._id },
+          { discountedPrice: null } // or product.price
+        );
+      }
+    }
+
+    const isAuthenticated = req.session.userId ? true : false;
+
+    // Fetch cart for the logged-in user and count unique products
+    let cartProductCount = 0;
+    if (isAuthenticated) {
+      const cart = await Cart.findOne({ userId: req.session.userId });
+      if (cart) {
+        cartProductCount = cart.items.length;
+      }
+    }
+
+    let wishlistCount = 0;
+
+    const user = await User.findById(req.session.userId);
+    if (user && user.wishlist) {
+      wishlistCount = user.wishlist.length; // Calculate the wishlist count
+    }
+
+    res.render("users/index", {
+      categories,
+      products,
+      isAuthenticated,
+      cartProductCount,
+      wishlistCount,
+    });
   } catch (error) {
     console.log(error);
+    res.status(500).send("Server Error"); // Optional: handle the error response
   }
 };
 
-// Render shopping cart page
+// Search products route
+exports.searchProducts = async (req, res) => {
+  try {
+    const query = req.query.q || "";
+    const regex = new RegExp(query, "i");
+    const products = await Product.find({
+      $or: [
+        { name: regex },
+        { description: regex },
+        { "category.name": regex },
+      ],
+    }).populate("category");
+
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: "Error searching products" });
+  }
+};
+
+exports.advancedHomeSearch = async (req, res) => {
+  try {
+    let { sortBy } = req.query;
+
+    let sortCondition = {};
+
+    switch (sortBy) {
+      case "popularity":
+        sortCondition = { popularity: -1 };
+        break;
+      case "priceLowToHigh":
+        sortCondition = { price: 1 };
+        break;
+      case "priceHighToLow":
+        sortCondition = { price: -1 };
+        break;
+      case "averageRating":
+        sortCondition = { rating: -1 };
+        break;
+      case "newArrivals":
+        sortCondition = { createdAt: -1 };
+        break;
+      case "featured":
+        sortCondition = { isFeatured: -1 };
+        break;
+      case "aToZ":
+        sortCondition = { name: 1 };
+        break;
+      case "zToA":
+        sortCondition = { name: -1 };
+        break;
+      default:
+        sortCondition = {};
+    }
+
+    const products = await Product.find({}).sort(sortCondition);
+    const categories = await Category.find({ isListed: true });
+    const isAuthenticated = req.session.userId ? true : false;
+
+    res.render("users/index", { products, categories, isAuthenticated });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+};
+
+// exports.shopingcart = async (req, res) => {
+//   try {
+//     const userId = req.session.userId;
+//     const cart = await Cart.findOne({ userId }).populate("items.productId");
+
+//     if (!cart || !cart.items.length) {
+//       return res.render("users/shoping-cart", {
+//         cart,
+//         subtotal: 0,
+//         discountAmount: 0,
+//         totalAfterDiscount: 0,
+//       });
+//     }
+
+
+
+    
+//     let subtotal = 0;
+//     cart.items.forEach((item) => {
+//       // Check if discountedPrice exists
+//       const productPrice = item.productId.discountedPrice
+//         ? parseFloat(item.productId.discountedPrice)
+//         : parseFloat(item.productId.price);
+
+//       // Debugging output
+//       console.log(
+//         `Item: ${item.productId.name}, Discounted Price: ${item.productId.discountedPrice}, Original Price: ${item.productId.price}, Quantity: ${item.quantity}`
+//       );
+
+//       subtotal += productPrice * item.quantity; // Calculate subtotal based on the chosen price
+//     });
+
+//     const discountRate = 0.03; // Adjust as necessary
+//     const discountAmount = subtotal * discountRate;
+//     const totalAfterDiscount = subtotal - discountAmount;
+
+//     // Debugging output for totals
+//     console.log(
+//       `Subtotal: ${subtotal.toFixed(
+//         2
+//       )}, Discount Amount: ${discountAmount.toFixed(
+//         2
+//       )}, Total After Discount: ${totalAfterDiscount.toFixed(2)}`
+//     );
+
+//     res.render("users/shoping-cart", {
+//       cart,
+//       subtotal: subtotal.toFixed(2), // Show calculated subtotal
+//       discountAmount: discountAmount.toFixed(2),
+//       totalAfterDiscount: totalAfterDiscount.toFixed(2),
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// };
+
 exports.shopingcart = async (req, res) => {
   try {
-    res.render("users/shoping-cart");
+    const userId = req.session.userId;
+
+    // Check if the user is authenticated
+    const isAuthenticated = !!userId;
+
+    // Initialize cart and counts
+    let cart = null;
+    let cartProductCount = 0;
+    let wishlistCount = 0;
+
+    if (isAuthenticated) {
+      cart = await Cart.findOne({ userId }).populate("items.productId");
+
+      if (cart) {
+        cartProductCount = cart.items.length;
+        wishlistCount = (await User.findById(userId)).wishlist.length; // Fetch wishlist count
+      }
+    }
+
+    // If the cart is empty, render the shopping cart page with zeros
+    if (!cart || !cart.items.length) {
+      return res.render("users/shoping-cart", {
+        cart,
+        subtotal: 0,
+        discountAmount: 0,
+        totalAfterDiscount: 0,
+        isAuthenticated,
+        cartProductCount,
+        wishlistCount,
+      });
+    }
+
+    let subtotal = 0;
+    cart.items.forEach((item) => {
+      
+      const productPrice = item.productId.discountedPrice
+        ? parseFloat(item.productId.discountedPrice)
+        : parseFloat(item.productId.price);
+
+      // Debugging output
+      console.log(
+        `Item: ${item.productId.name}, Discounted Price: ${item.productId.discountedPrice}, Original Price: ${item.productId.price}, Quantity: ${item.quantity}`
+      );
+
+      subtotal += productPrice * item.quantity; 
+    });
+
+    const discountRate = 0.03; 
+    const discountAmount = subtotal * discountRate;
+    const totalAfterDiscount = subtotal - discountAmount;
+
+    // Debugging output for totals
+    console.log(
+      `Subtotal: ${subtotal.toFixed(
+        2
+      )}, Discount Amount: ${discountAmount.toFixed(
+        2
+      )}, Total After Discount: ${totalAfterDiscount.toFixed(2)}`
+    );
+
+    res.render("users/shoping-cart", {
+      cart,
+      subtotal: subtotal.toFixed(2), 
+      discountAmount: discountAmount.toFixed(2),
+      totalAfterDiscount: totalAfterDiscount.toFixed(2),
+      isAuthenticated,
+      cartProductCount,  
+      wishlistCount       
+    });
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
 };
 
-//logout
-exports.logout = async (req, res) => {
+
+exports.addToCart = async (req, res) => {
   try {
-    req.session.destroy();
-    res.clearCookie("connect.sid");
-    res.redirect("/");
+    const { productId } = req.body;
+    const userId = req.session.userId;
+
+    let cart = await Cart.findOne({ userId });
+
+    if (!cart) {
+      cart = new Cart({
+        userId: userId,
+        items: [],
+        totalPrice: 0,
+      });
+    }
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).send("Product not found");
+    }
+    const existingItem = cart.items.find(
+      (item) => item.productId.toString() === productId
+    );
+
+    if (existingItem) {
+      if (
+        existingItem.quantity + 1 > 5 ||
+        existingItem.quantity + 1 > product.stock
+      ) {
+        return res.status(400).json({
+          limitedStock: true,
+          message: "Cannot add more than 5 items or not enough stock available",
+        });
+      }
+      existingItem.quantity += 1;
+    } else {
+      console.log(6);
+      if (1 > product.stock) {
+        return res.status(400).send("Not enough stock available");
+      }
+      cart.items.push({ productId, quantity: 1 });
+    }
+
+    cart.totalPrice = await calculateTotalPrice(cart.items);
+    // Save the updated cart
+    await cart.save();
+    res.json({ success: true, message: "item added successfully" }); // Redirect to the shopping cart page
   } catch (error) {
-    console.log(error.message);
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
 };
 
-//Shoping cart
-exports.shopingcart = async (req, res) => {
+exports.updateCart = async (req, res) => {
   try {
-    res.render("users/shoping-cart");
+    const { productId, quantity } = req.body;
+    const userId = req.session.userId;
+
+    if (!quantity || isNaN(quantity) || quantity < 1 || quantity > 5) {
+      return res.status(400).json({ error: "Invalid quantity" });
+    }
+
+    let cart = await Cart.findOne({ userId });
+    if (!cart) {
+      return res.status(404).json({ error: "Cart not found" });
+    }
+
+    const item = cart.items.find(
+      (item) => item.productId.toString() === productId
+    );
+    if (!item) {
+      return res.status(404).json({ error: "Item not found in cart" });
+    }
+
+    item.quantity = parseInt(quantity, 10);
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    const totalPriceForItem = product.price * item.quantity;
+    cart.totalPrice = await calculateTotalPrice(cart.items);
+
+    // Calculate subtotal, discount, and total after discount
+    let subtotal = cart.items.reduce(
+      (acc, item) => acc + item.productId.price * item.quantity,
+      0
+    );
+    const discountRate = 0.03;
+    const discountAmount = subtotal * discountRate;
+    const totalAfterDiscount = subtotal - discountAmount;
+
+    await cart.save();
+
+    // Send back updated prices to update UI
+    res.json({
+      totalPrice: totalPriceForItem,
+      subtotal,
+      discountAmount,
+      totalAfterDiscount,
+    });
   } catch (error) {
-    console.log(error.message);
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-// Fetch only listed categories for users
+// Helper function to calculate total price
+async function calculateTotalPrice(items) {
+  let total = 0;
+  for (const item of items) {
+    const product = await Product.findById(item.productId);
+    total += product.price * item.quantity;
+  }
+  return total;
+}
+
+// Route to remove product from cart
+exports.removeFromCart = async (req, res) => {
+  try {
+    const { productId } = req.body;
+    const userId = req.session.userId;
+
+    const cart = await Cart.findOne({ userId });
+
+    if (cart) {
+      cart.items = cart.items.filter(
+        (item) => item.productId.toString() !== productId
+      );
+
+      cart.totalPrice = await calculateTotalPrice(cart.items);
+
+      await cart.save();
+    }
+
+    res.redirect("/shoping-cart");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 exports.getCategories = async (req, res) => {
   try {
     const categories = await Category.find({ isListed: true }); // Only fetch categories that are listed
@@ -295,78 +878,1287 @@ exports.getCategories = async (req, res) => {
   }
 };
 
-//Product Page
+// Product Page
 exports.product = async (req, res) => {
   try {
-    const categories = await Category.find(); // Fetch all categories from MongoDB
+    const categories = await Category.find();
     const products = await Product.find({ listed: true })
       .populate("category")
       .exec();
+    console.log(1);
 
-    res.render("users/product", { categories, products });
+    // Fetch active offers
+    const currentDate = new Date();
+    const activeOffers = await Offer.find({
+      status: "active",
+      // validFrom : { $gte: currentDate },
+      // validUntil : { $lte: currentDate },
+    });
+
+    const isAuthenticated = req.session.userId ? true : false;
+    console.log(2);
+
+    for (const product of products) {
+      const applicableOffers = activeOffers.filter((offer) => {
+        return (
+          (offer.type === "product" &&
+            offer?.product?.toString() === product?._id?.toString()) ||
+          (offer.type === "category" &&
+            offer?.category?.toString() === product?.category?._id?.toString())
+        );
+      });
+
+      let discountedPrice = product.price; // Default to the original price
+      let bestOffer = null; // Initialize bestOffer
+
+      if (applicableOffers.length > 0) {
+        bestOffer = applicableOffers.reduce((prevOffer, currentOffer) => {
+          const prevDiscount = calculateDiscount(prevOffer, product.price);
+          const currentDiscount = calculateDiscount(
+            currentOffer,
+            product.price
+          );
+          return currentDiscount > prevDiscount ? currentOffer : prevOffer;
+        });
+
+        discountedPrice = applyBestOfferDiscount(bestOffer, product.price);
+      }
+
+      product.discountedPrice = discountedPrice;
+      product.bestOffer = bestOffer; // Pass bestOffer to the frontend
+
+      await Product.updateOne(
+        { _id: product._id },
+        { discountedPrice: discountedPrice }
+      );
+    }
+
+    let cartProductCount = 0;
+    let wishlistCount = 0;
+
+    if (isAuthenticated) {
+      const user = await User.findById(req.session.userId);
+      const cart = await Cart.findOne({ userId: req.session.userId });
+      wishlistCount = user.wishlist.length;
+
+      if (cart) {
+        cartProductCount = cart.items.length;
+      }
+    }
+
+    res.render("users/product", { categories, products, isAuthenticated , cartProductCount , wishlistCount });
   } catch (error) {
     console.log(error.message);
+    res.status(500).send("Server Error");
   }
 };
 
+// Helper function to calculate discount
+function calculateDiscount(offer, price) {
+  if (offer.type === "product" || offer.type === "category") {
+    if (offer.discountType === "fixed") {
+      return offer.discountValue;
+    } else if (offer.discountType === "percentage") {
+      return (price * offer.discountValue) / 100;
+    }
+  }
+  return 0;
+}
+
+// Helper function to apply the best offer discount
+function applyBestOfferDiscount(offer, price) {
+  let discountedPrice = price;
+  if (offer.type === "product" || offer.type === "category") {
+    if (offer.discountType === "fixed") {
+      discountedPrice = price - offer.discountValue;
+    } else if (offer.discountType === "percentage") {
+      let discount = (price * offer.discountValue) / 100;
+      if (offer.maxDiscountValue) {
+        discount = Math.min(discount, offer.maxDiscountValue);
+      }
+      discountedPrice = price - discount;
+    }
+  }
+  return discountedPrice.toFixed(2);
+}
+
+// Route to add product to wishlist
+exports.addToWishlist = async (req, res) => {
+  try {
+    const productId = req.body.productId;
+
+    // Check if the product exists
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
+    // Find the logged-in user
+    const user = await User.findById(req.session.userId);
+
+    // Check if the product is already in the wishlist
+    if (user.wishlist.includes(productId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Product already in wishlist" });
+    }
+
+    // Add the product to the user's wishlist
+    user.wishlist.push(productId);
+    await user.save();
+
+    res.json({ success: true, message: "Product added to wishlist" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+exports.getWishlist = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+
+    // Check if user is authenticated
+    const isAuthenticated = userId ? true : false;
+
+    // Find the user and populate their wishlist
+    const user = await User.findById(userId).populate("wishlist").exec();
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    // Fetch categories
+    const categories = await Category.find();
+
+    // Fetch cart product count
+    let cartProductCount = 0;
+    if (isAuthenticated) {
+      const cart = await Cart.findOne({ userId });
+      if (cart) {
+        cartProductCount = cart.items.length;
+      }
+    }
+
+    // Fetch wishlist count
+    const wishlistCount = user.wishlist.length;
+
+    // Render the wishlist page
+    res.render("users/wishlist", {
+      wishlist: user.wishlist,
+      isAuthenticated,
+      categories,
+      cartProductCount, // Passing cart product count to view
+      wishlistCount, // Passing wishlist count to view
+    });
+  } catch (error) {
+    console.error("Error fetching wishlist:", error);
+    res.status(500).send("Error fetching wishlist");
+  }
+};
+
+// DELETE route to remove product from wishlist
+exports.removeFromWishlist = async (req, res) => {
+  const productId = req.params.productId;
+  const userId = req.session.userId;
+
+  try {
+    const user = await User.findByIdAndUpdate(userId, {
+      $pull: { wishlist: productId },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "Product removed from wishlist" });
+  } catch (error) {
+    console.error("Error removing product from wishlist:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+//Product Details Page
 exports.productDetails = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id).populate("category");
-    // console.log(product);
 
     if (!product) {
       return res.status(404).send("Product not found");
     }
-    res.json(product);
+
+    const isAuthenticated = req.session.userId ? true : false;
+
+    res.json(product, isAuthenticated);
   } catch (error) {
     res.status(500).send("Server error");
   }
 };
 
-// exports.how = async (req,res) => {
+// exports.productDet = async (req, res) => {
 //   try {
-//     const productId = req.params.id;
-//       console.log(productId);
-//       const product = await Product.findById(productId).populate('category'); // Populate category
-//       console.log(product);
-//     res.render('users/product-detail',{product})
+//     const categories = await Category.find(); // Fetch all categories from MongoDB
+//     const products = await Product.find({ listed: true })
+//       .populate("category")
+//       .exec();
+//     // console.log(products);
+
+//     res.render("users/product-detail", { categories, products });
 //   } catch (error) {
-//   console.log(error.message);
+//     console.log(error.message);
 //   }
-// }
-
-exports.productDet = async (req, res) => {
-  try {
-    const categories = await Category.find(); // Fetch all categories from MongoDB
-    const products = await Product.find({ listed: true })
-      .populate("category")
-      .exec();
-    // console.log(products);
-
-    res.render("users/product-detail", { categories, products });
-  } catch (error) {
-    console.log(error.message);
-  }
-};
+// };
 
 // Controller to get product details by ID
+
 exports.productDetId = async (req, res) => {
   try {
     const productId = req.params.id;
-    // console.log(productId);
-    const categories = await Category.find(); // Fetch all categories from MongoDB
-    const product = await Product.findById(productId).populate("category"); // Populate category
-    // console.log(product);
+    const categories = await Category.find();
+
+    // Fetch the product including discountedPrice
+    const product = await Product.findById(productId).populate("category");
 
     if (!product) {
       return res.status(404).send("Product not found");
     }
 
+    const isAuthenticated = req.session.userId ? true : false;
+
+    let cartProductCount = 0;
+    if (isAuthenticated) {
+      const cart = await Cart.findOne({ userId: req.session.userId });
+      if (cart) {
+        cartProductCount = cart.items.length;
+      }
+    }
+
+    const user = await User.findById(req.session.userId);
+    const wishlistCount = user ? user.wishlist.length : 0;
+
     // Render the 'product-detail' view and pass the product data
-    res.render("users/product-detail", { product, categories });
+    res.render("users/product-detail", {
+      product,
+      categories,
+      isAuthenticated,
+      cartProductCount,  
+      wishlistCount,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send("Server Error");
+  }
+};
+
+// Advanced search with filters and sorting
+exports.advancedSearch = async (req, res) => {
+  try {
+    const searchQuery = req.query.search || "";
+    const sortBy = req.query.sortBy || "default";
+
+    let sortOptions = {};
+    if (sortBy === "popularity") {
+      sortOptions.popularity = -1;
+    } else if (sortBy === "priceLowToHigh") {
+      sortOptions.price = 1;
+    } else if (sortBy === "priceHighToLow") {
+      sortOptions.price = -1;
+    } else if (sortBy === "averageRating") {
+      sortOptions.rating = -1;
+    } else if (sortBy === "newArrivals") {
+      sortOptions.createdAt = -1;
+    }
+
+    const products = await Product.find({
+      name: { $regex: searchQuery, $options: "i" },
+    }).sort(sortOptions);
+
+    // Send JSON response to the client
+    res.json({ products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
+};
+// Route to search and filter products
+
+// Controller to render the logged-in user's profile
+exports.getUserProfile = async (req, res) => {
+  try {
+    const userId = req.session.userId; // This contains the logged-in user's info
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    const isAuthenticated = req.session.userId ? true : false;
+
+    // Fetch cart product count
+    let cartProductCount = 0;
+    if (isAuthenticated) {
+      const cart = await Cart.findOne({ userId: req.session.userId });
+      if (cart) {
+        cartProductCount = cart.items.length;
+      }
+    }
+
+    // Fetch wishlist count
+    let wishlistCount = 0;
+    if (user && user.wishlist) {
+      wishlistCount = user.wishlist.length; // Count the items in the wishlist
+    }
+
+    // Render the profile page and pass the user data, cart count, and wishlist count to the EJS template
+    res.render("users/userprofile", {
+      user,
+      isAuthenticated,
+      cartProductCount,
+      wishlistCount, // Add the wishlist count here
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("An error occurred");
+  }
+};
+
+exports.getAvailableCoupons = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+
+    const coupons = await Coupon.find({
+      isActive: true,
+      validFrom: { $lte: new Date() },
+      validUntil: { $gte: new Date() },
+      $nor: [{ appliedUsers: userId }],
+    });
+
+    const couponData = coupons.map(coupon => ({
+      code: coupon.code,
+      discountType: coupon.discountType,
+      discountValue: coupon.discountValue,
+      validFrom: coupon.validFrom,
+      validUntil: coupon.validUntil,
+      description: coupon.description || "No description available",
+    }));
+
+    res.json(couponData);
+  } catch (error) {
+    console.error('Error fetching coupons:', error);
+    res.status(500).send('Server Error');
+  }
+};
+
+// Get all addresses of the logged-in user
+exports.getaddresses = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    // Fetch user's addresses
+    const addresses = await Address.find({ user: userId });
+    console.log(addresses);
+
+    const isAuthenticated = req.session.userId ? true : false;
+
+    // Fetch cart product count
+    let cartProductCount = 0;
+    if (isAuthenticated) {
+      const cart = await Cart.findOne({ userId: req.session.userId });
+      if (cart) {
+        cartProductCount = cart.items.length;
+      }
+    }
+
+    // Fetch wishlist count
+    let wishlistCount = 0;
+    if (user && user.wishlist) {
+      wishlistCount = user.wishlist.length;
+    }
+
+    // Render the user addresses page with all the required data
+    res.render("users/useraddresses", {
+      user,
+      addresses,
+      isAuthenticated,
+      cartProductCount,
+      wishlistCount, // Add the wishlist count here
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Server error");
+  }
+};
+
+exports.addaddresses = async (req, res) => {
+  try {
+    const {
+      name,
+      housename,
+      location,
+      city,
+      state,
+      zip,
+      landmark,
+      addressType,
+      customName,
+    } = req.body;
+    const userId = req.session.userId;
+
+    const newAddress = new Address({
+      user: userId,
+      name,
+      housename,
+      location,
+      city,
+      state,
+      zip,
+      landmark,
+      addressType,
+      customName,
+    });
+
+    await newAddress.save();
+
+    res.redirect("/addresses");
+  } catch (error) {
+    console.error("Error adding address:", error);
+    res.status(500).send("Server error");
+  }
+};
+
+exports.editAddresses = async (req, res) => {
+  try {
+    const {
+      id,
+      name,
+      housename,
+      location,
+      city,
+      state,
+      zip,
+      landmark,
+      addressType,
+      customName,
+    } = req.body;
+    await Address.findByIdAndUpdate(id, {
+      name,
+      housename,
+      location,
+      city,
+      state,
+      zip,
+      landmark,
+      addressType,
+      customName: addressType === "custom" ? customName : null,
+    });
+    res.redirect("/addresses");
+  } catch (error) {
+    console.log("Error updating address:", error);
+    res.status(500).send("Server error");
+  }
+};
+
+exports.deleteAddress = async (req, res) => {
+  try {
+    const addressId = req.params.id;
+    const deletedAddress = await Address.findByIdAndDelete(addressId);
+
+    if (!deletedAddress) {
+      return res.status(404).json({ message: "Address not found" });
+    }
+
+    res.json({ message: "Address deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting address:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  const { currentPassword, newPassword, confirmNewPassword } = req.body;
+
+  try {
+    const userId = req.session.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current password is incorrect" });
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({ message: "New passwords do not match" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.json({ message: "Password changed successfully!" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+// exports.getOrder = async (req, res) => {
+//   console.log("sdfgsfdv");
+
+//   try {
+//     const userId = req.session.userId;
+//     console.log(userId)
+
+//     const orders = await Order.find({ userId }).populate("items.productId");
+
+//     console.log("Fetched orders:", orders);
+
+//     res.render("users/userorders", { user: req.user, orders });
+//   } catch (error) {
+//     console.error("Error fetching orders:", error);
+//     res.status(500).send("Server Error");
+//   }
+// };
+
+// POST route to handle profile update
+
+exports.editProfile = async (req, res) => {
+  const { username, email, phone } = req.body;
+
+  try {
+    const user = await User.findOne({ email: email });
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    user.username = username;
+    user.phone = phone;
+
+    await user.save();
+
+    res.redirect("/profile");
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).send("An error occurred while updating the profile");
+  }
+};
+
+// POST route to cancel an order
+
+// exports.cancelOrder = async (req, res) => {
+//   try {
+//     const orderId = req.params.id;
+//     const userId = req.session.userId; // Get the authenticated user's ID
+
+//     console.log("Canceling order with ID:", orderId); // Log order ID
+
+//     // Find the order
+//     const order = await Order.findOne({ _id: orderId, userId });
+
+//     if (!order) {
+//       return res.status(404).json({ message: 'Order not found' });
+//     }
+
+//     // Check if the order is pending
+//     if (order.status !== 'Pending') {
+//       return res.status(400).json({ message: 'Only pending orders can be canceled' });
+//     }
+
+//     // Update the order status to Canceled
+//     order.status = 'Canceled';
+//     await order.save();
+
+//     res.json({ message: 'Order canceled successfully' });
+//   } catch (error) {
+//     console.error('Error canceling order:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
+exports.checkoutPage = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const cart = await Cart.findOne({ userId }).populate("items.productId");
+    const user = await User.findById(userId);
+    const userAddresses = user.addresses || [];
+    let subtotal = 0;
+
+    const isAuthenticated = userId ? true : false;
+
+    if (!cart || !cart.items.length) {
+      req.flash("error", "Your cart is empty. Please add items to proceed.");
+      return res.redirect("/shoping-cart");
+    }
+
+    for (const item of cart.items) {
+      const product = item.productId;
+      if (product.stock < item.quantity) {
+        req.flash(
+          "error",
+          `Sorry, ${product.name} has only ${product.stock} items left in stock. Please adjust your quantity.`
+        );
+        return res.redirect("/shoping-cart");
+      }
+    }
+
+    cart.items.forEach((item) => {
+      subtotal += item.productId.discountedPrice
+        ? item.productId.discountedPrice * item.quantity
+        : item.productId.price * item.quantity;
+    });
+
+    subtotal = isNaN(subtotal) ? 0 : subtotal;
+
+    const discountRate = 0.03;
+    const discountAmount = subtotal * discountRate;
+    const totalAfterDiscount = subtotal - discountAmount;
+
+    const addresses = await Address.find({ user: userId });
+
+    // Fetch cart product count
+    let cartProductCount = 0;
+    if (isAuthenticated) {
+      const cartData = await Cart.findOne({ userId });
+      if (cartData) {
+        cartProductCount = cartData.items.length;
+      }
+    }
+
+    // Fetch wishlist count
+    const wishlistCount = user.wishlist.length;
+
+    req.session.totalAmount = subtotal;
+
+    res.render("users/checkout", {
+      cart,
+      userAddresses,
+      addresses,
+      subtotal,
+      discountAmount: discountAmount.toFixed(2),
+      totalAfterDiscount: totalAfterDiscount.toFixed(2),
+      isAuthenticated,
+      cartProductCount,
+      wishlistCount,
+    });
+  } catch (error) {
+    console.error("Error loading checkout page:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+
+async function calculateTotalAfterOffers(cartItems) {
+  try {
+    // Fetch products from the database based on productIds
+    const productIds = cartItems.map(item => item.productId); // Extract productIds from cartItems
+    const products = await Product.find({ _id: { $in: productIds } }); // Fetch products from DB
+
+    // Fetch applicable offers for the products
+    const offers = await Offer.find({
+      $or: [
+        { type: 'product', product: { $in: productIds }, status: 'active', validUntil: { $gt: new Date() } },
+        { type: 'category', category: { $in: products.map(product => product.category) }, status: 'active', validUntil: { $gt: new Date() } }
+      ]
+    });
+
+    // Create a map of offers for easy access
+    const offerMap = {};
+    offers.forEach(offer => {
+      if (offer.type === 'product') {
+        offerMap[offer.product] = offer; // Store product offers by product ID
+      } else if (offer.type === 'category') {
+        offerMap[offer.category] = offer; // Store category offers by category ID
+      }
+    });
+
+    // Calculate the total price with discounts applied
+    const totalAmountAfterOffers = cartItems.reduce((acc, item) => {
+      const product = products.find(p => p._id.toString() === item.productId); // Find product in fetched products
+      if (product) {
+        const offer = offerMap[item.productId] || offerMap[product.category]; // Check for product or category offer
+        let applicablePrice = product.price; // Start with the regular price
+
+        if (offer) {
+          if (offer.discountType === 'percentage') {
+            const discount = (applicablePrice * offer.discountValue) / 100;
+            applicablePrice -= discount; // Apply percentage discount
+          } else if (offer.discountType === 'fixed') {
+            applicablePrice -= offer.discountValue; // Apply fixed discount
+          }
+        }
+
+        return acc + (applicablePrice * item.quantity); // Multiply the applicable price by quantity and accumulate
+      }
+      return acc; // If product not found, return accumulated total
+    }, 0);
+
+    console.log('Total Amount After Offers:', totalAmountAfterOffers);
+    return totalAmountAfterOffers; // Return or use totalAmountAfterOffers as needed
+
+  } catch (error) {
+    console.error('Error calculating total amount after offers:', error);
+    throw error; // Handle error as needed
+  }
+}
+
+
+exports.orderPlaced = async (req, res) => {
+  try {
+      const userId = req.session.userId;
+      const {
+          items,
+          paymentMethod,
+          address,
+          total,
+          subtotal,
+          discountAmount,
+          couponCode,
+          razorpay_payment_id,
+          razorpay_order_id,
+          razorpay_signature,
+      } = req.body;
+
+      console.log(total);
+
+      
+// console.log(items,
+//   paymentMethod,
+//   address,
+//   subtotal,
+//   discountAmount,
+//   couponCode,
+//   razorpay_payment_id,
+//   razorpay_order_id,
+//   razorpay_signature);
+
+  const TotalAfterOffers = await calculateTotalAfterOffers(items)
+  // console.log("TotalAfterOffers",TotalAfterOffers);
+  
+
+      if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_SECRET) {
+          throw new Error("RAZORPAY_KEY_ID or RAZORPAY_SECRET is not defined");
+      }
+
+      if (!userId || !items || !paymentMethod || !address) {
+          return res.status(400).json({ message: "Missing required order details" });
+      }
+
+      let totalDiscountAmount = TotalAfterOffers + discountAmount ;
+      let couponDiscount = discountAmount; 
+      const itemsWithOffers = [];
+
+      // Calculate product-specific offers
+      for (const item of items) {
+          const product = await Product.findById(item.productId);
+          if (!product) {
+              return res.status(404).json({ message: "Product not found" });
+          }
+
+          if (product.stock < item.quantity) {
+              return res.status(400).json({ message: `Insufficient stock for product: ${product.name}` });
+          }
+
+          // Assuming each product has a `discountPercentage` or `discountAmount`
+          const productOffer = product.discountPercentage
+              ? (product.price * product.discountPercentage) / 100
+              : product.discountAmount || 0;
+
+          totalDiscountAmount += productOffer * item.quantity;
+
+          // Push item details including product offer into itemsWithOffers array
+          itemsWithOffers.push({
+              productId: item.productId,
+              quantity: item.quantity,
+              productOffer: productOffer,
+              offerApplied: productOffer ? true : false
+          });
+
+          // Reduce stock after calculating offers
+          product.stock -= item.quantity;
+          await product.save();
+      }
+
+      // Coupon logic
+      if (couponCode) {
+          const coupon = await Coupon.findOne({ code: couponCode });
+
+          if (!coupon || !coupon.isActive || coupon.validUntil < new Date()) {
+              return res.status(400).json({ message: "Invalid or expired coupon" });
+          }
+
+          if (coupon.appliedUsers.includes(userId)) {
+              return res.status(400).json({ message: "Coupon already used by the user" });
+          }
+
+          if (coupon.usageLimit <= 0) {
+              return res.status(400).json({ message: "Coupon usage limit reached" });
+          }
+
+          couponDiscount = coupon.discountType === 'percentage'
+              ? (subtotal * coupon.discountValue) / 100
+              : coupon.discountValue;
+
+
+          coupon.usageLimit -= 1;
+          coupon.appliedUsers.push(userId);
+          await coupon.save();
+        }
+
+
+        const afteroffer = total - subtotal;
+
+
+      const totalAfterDiscount = (afteroffer + subtotal) - couponDiscount;
+
+      const newOrder = new Order({
+          userId,
+          items: itemsWithOffers,
+          paymentMethod,
+          address,
+          total,
+          subtotal,
+          discountAmount:discountAmount, // coupon deducted amount by user
+          couponDiscount:couponDiscount,
+          totalAfterDiscount: totalAfterDiscount,
+          razorpayPaymentId: razorpay_payment_id,
+          razorpayOrderId: razorpay_order_id,
+          razorpaySignature: razorpay_signature,
+      });
+      
+
+
+      console.log('subtotal (total of original product price)',subtotal);
+      console.log("totalDiscountAmount = ",totalDiscountAmount);
+      console.log("Coupon = ",discountAmount);
+      console.log("couponDiscount",couponDiscount);
+      console.log("TotalAfterOffers",TotalAfterOffers);
+
+
+      const savedOrder = await newOrder.save();
+
+      res.json({
+          message: "Order placed successfully",
+          orderId: savedOrder._id,
+      });
+
+      // Clear cart after order placement
+      await Cart.findOneAndUpdate(
+          { userId },
+          { $set: { items: [] } },
+          { new: true }
+      );
+      req.session.cart = null;
+  } catch (error) {
+      console.log("Error placing order:", error);
+      res.status(500).json({ message: "Error placing order", error: error.message });
+  }
+};
+
+exports.fetchProducts = async (req, res) => {
+  const { productIds } = req.body;
+
+  try {
+    const products = await Product.find({ _id: { $in: productIds } }).select(
+      "_id price"
+    ); // Fetch only required fields
+    res.json(products);
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.status(500).json({ message: "Error fetching products" });
+  }
+};
+
+exports.applyCoupon = async (req, res) => {
+  const { couponCode } = req.body;
+  const userId = req.session.userId;
+
+  try {
+    // Check for the coupon in the database
+    const coupon = await Coupon.findOne({ code: couponCode });
+
+    // Check if the coupon exists and is active
+    if (
+      !coupon ||
+      !coupon.isActive ||
+      coupon.validUntil < new Date() ||
+      coupon.validFrom > new Date()
+    ) {
+      return res.json({
+        isValid: false,
+        message: "Invalid or expired coupon.",
+      });
+    }
+
+    // Check if the user has already applied this coupon
+    if (coupon.appliedUsers.includes(userId)) {
+      return res.json({
+        isValid: false,
+        message: "Coupon has already been used by this user.",
+      });
+    }
+
+    // Check usage limit
+    if (
+      coupon.usageLimit === 0 &&
+      coupon.appliedUsers.length >= coupon.usageLimit
+    ) {
+      return res.json({
+        isValid: false,
+        message: "Coupon usage limit reached.",
+      });
+    }
+
+    console.log({
+      isValid: true,
+      discountType: coupon.discountType,
+      discountValue: coupon.discountValue,
+      maxDiscountValue: coupon.maxDiscountValue || null,
+      minCartValue: coupon.minCartValue,
+    });
+
+    // Return coupon data to frontend if all checks pass
+    res.json({
+      isValid: true,
+      discountType: coupon.discountType,
+      discountValue: coupon.discountValue,
+      maxDiscountValue: coupon.maxDiscountValue || null,
+      minCartValue: coupon.minCartValue,
+    });
+    
+    await coupon.save();
+  } catch (error) {
+    console.error("Error applying coupon:", error);
+    res.status(500).json({ isValid: false, message: "Server error" });
+  }
+};
+
+exports.removeCoupon = async (req, res) => {
+  const { couponCode } = req.body;
+  const userId = req.session.userId;
+
+  try {
+      const coupon = await Coupon.findOne({ code: couponCode });
+
+      if (!coupon) {
+          return res.status(400).json({ message: "Coupon not found." });
+      }
+
+      await Coupon.updateOne({ code: couponCode }, { $pull: { appliedUsers: userId } });
+
+      const user = await User.findById(userId);
+      if (user && user.appliedCoupons) {
+          user.appliedCoupons = user.appliedCoupons.filter(code => code !== couponCode);
+          await user.save();
+      }
+
+      res.json({
+          success: true,
+          message: "Coupon removed successfully."
+      });
+  } catch (error) {
+      console.error("Error removing coupon:", error);
+      res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Create Razorpay Order Route
+exports.createRazorpayOrder = async (req, res) => {
+  try {
+    const { amount, currency } = req.body;
+
+    const options = {
+      // key: process.env.RAZORPAY_KEY_ID,
+      amount: amount * 100, // Amount should be in paise
+      currency: currency, // Ensure this is a valid currency code
+      receipt: `order_rcptid_${new Date().getTime()}`,
+    };
+
+    // Create order
+    const order = await razorpay.orders.create(options);
+
+    // Send order details back to the client
+    res.json({
+      razorpayOrderId: order.id, // Razorpay order ID
+      razorpayKeyId: process.env.RAZORPAY_KEY_ID, // Correctly return the key ID
+      amount: order.amount, // Amount in paise
+    });
+  } catch (error) {
+    console.error("Error creating Razorpay order:", error);
+    res.status(500).json({ message: "Error creating Razorpay order" });
+  }
+};
+
+// Fetch user orders controller
+exports.getUserOrders = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+
+    // Find orders for the logged-in user
+    const orders = await Order.find({ userId })
+      .populate("items.productId")
+      .sort({ placedAt: -1 });
+
+    // Check if user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    const isAuthenticated = req.session.userId ? true : false;
+
+    // Fetch cart product count
+    let cartProductCount = 0;
+    if (isAuthenticated) {
+      const cart = await Cart.findOne({ userId });
+      if (cart) {
+        cartProductCount = cart.items.length;
+      }
+    }
+
+    // Fetch wishlist count
+    let wishlistCount = 0;
+    if (user && user.wishlist) {
+      wishlistCount = user.wishlist.length;
+    }
+
+    // If no orders found, pass an empty array and message
+    if (!orders || orders.length === 0) {
+      return res.render("users/userorders", {
+        orders: [],
+        message: "No orders found",
+        isAuthenticated,
+        cartProductCount,
+        wishlistCount, // Pass wishlist count to the view
+      });
+    }
+
+    // Render the user orders page with orders and additional data
+    res.render("users/userorders", {
+      orders,
+      isAuthenticated,
+      cartProductCount,
+      wishlistCount, // Pass wishlist count to the view
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
+};
+
+// Cancel order controller
+exports.cancelOrder = async (req, res) => {
+  const orderId = req.params.id;
+
+  try {
+    const order = await Order.findById(orderId).populate("items.productId");
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    // Mark order as canceled
+    order.status = "canceled";
+    await order.save();
+
+    // Get the user's wallet
+    const wallet = await Wallet.findOne({ userId: order.userId });
+    if (!wallet) {
+      return res.status(404).json({ error: "Wallet not found for the user" });
+    }
+
+    // Refund the order amount to the wallet
+    const refundAmount = order.totalAfterDiscount;
+    wallet.balance += refundAmount;
+
+    // Add a new transaction to the wallet
+    wallet.transactions.push({
+      amount: refundAmount,
+      type: "credit",
+      description: `Refund for Order Canceled`,
+      date: new Date(),
+    });
+
+    // Update the stock for each product in the order
+    for (let item of order.items) {
+      const product = item.productId;
+      product.stock += item.quantity;
+      await product.save();
+    }
+
+    // Save wallet changes
+    await wallet.save();
+
+    res.redirect("/profile/orders");
+  } catch (error) {
+    console.error("Error canceling order:", error);
+    res.status(500).json({ error: "Error canceling order" });
+  }
+};
+
+// Handle Return Request Submission
+exports.returnOrder = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const { returnReason } = req.body;
+
+    const order = await Order.findById(orderId);
+
+    if (!order || order.status !== "Completed") {
+      return res.status(400).send("Order not eligible for return.");
+    }
+
+    order.returnRequested = true;
+    order.returnReason = returnReason; // Save the return reason
+    await order.save();
+
+    res.redirect("/profile/orders");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
+};
+
+//Order Confirmation Page
+exports.orderConfrimation = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const userId = req.session.userId;
+
+    const isAuthenticated = userId ? true : false;
+
+    const order = await Order.findById(orderId).populate("items.productId");
+
+    if (!order || order.userId.toString() !== userId) {
+      return res.status(404).send("Order not found");
+    }
+
+    let cartProductCount = 0;
+    if (isAuthenticated) {
+      const cart = await Cart.findOne({ userId });
+      if (cart) {
+        cartProductCount = cart.items.length;
+      }
+    }
+
+    const user = await User.findById(userId);
+    const wishlistCount = user.wishlist.length;
+
+    res.render("users/order-confirmation", {
+      order,
+      subtotal: order.subtotal,
+      totalAfterDiscount: order.totalAfterDiscount,
+      discountAmount: order.discountAmount,
+      items: order.items,
+      address: order.address,
+      isAuthenticated,
+      cartProductCount,
+      wishlistCount,
+      user
+    });
+  } catch (error) {
+    console.error("Error fetching order confirmation:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+//View Order Details
+exports.viewOrderDetails = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const order = await Order.findById(orderId)
+      .populate("items.productId")
+      .populate("userId");
+
+    if (!order) {
+      return res.status(404).send("Order not found");
+    }
+
+    const isAuthenticated = req.session.userId ? true : false;
+
+    let cartProductCount = 0;
+    if (isAuthenticated) {
+      const cart = await Cart.findOne({ userId: req.session.userId });
+      if (cart) {
+        cartProductCount = cart.items.length;
+      }
+    }
+
+    const user = await User.findById(req.session.userId);
+    const wishlistCount = user ? user.wishlist.length : 0;
+
+    res.render("users/order-details", {
+      order,
+      isAuthenticated, 
+      cartProductCount, 
+      wishlistCount
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
+};
+
+exports.getWallet = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+
+    // Check if user is authenticated
+    const isAuthenticated = userId ? true : false;
+
+    // Find the user's wallet
+    const wallet = await Wallet.findOne({ userId });
+
+    // If the wallet is not found, return an appropriate message
+    if (!wallet) {
+      return res.render("users/userwallet", {
+        walletBalance: 0,
+        transactions: [],
+        isAuthenticated,
+        cartProductCount: 0,
+        wishlistCount: 0,
+        message: "No wallet found for the user",
+      });
+    }
+
+    // Fetch cart product count
+    let cartProductCount = 0;
+    if (isAuthenticated) {
+      const cart = await Cart.findOne({ userId });
+      if (cart) {
+        cartProductCount = cart.items.length;
+      }
+    }
+
+    // Fetch wishlist count
+    const user = await User.findById(userId);
+    let wishlistCount = 0;
+    if (user && user.wishlist) {
+      wishlistCount = user.wishlist.length;
+    }
+
+    // Render the user's wallet page with wallet balance, transactions, and other data
+    res.render("users/userwallet", {
+      user,
+      walletBalance: wallet.balance,
+      transactions: wallet.transactions,
+      isAuthenticated,
+      cartProductCount,
+      wishlistCount,
+    });
+  } catch (error) {
+    console.error("Error fetching wallet:", error);
+    res.status(500).send("Server error");
   }
 };
 
@@ -381,24 +2173,13 @@ exports.about = async (req, res) => {
   }
 };
 
+//logout
 exports.logout = async (req, res) => {
   try {
     req.session.destroy();
     res.clearCookie("connect.sid");
-    res.redirect("/login");
+    res.redirect("/");
   } catch (error) {
     console.log(error.message);
   }
 };
-
-// Controller to render the index page with products
-// exports.getIndexPage = async (req, res) => {
-//     try {
-//       // Fetch all products from the database
-//       const products = await Product.find().populate('category').exec();
-//       res.render('index', { products });
-//     } catch (err) {
-//       console.error(err);
-//       res.status(500).send('Server Error');
-//     }
-//   };

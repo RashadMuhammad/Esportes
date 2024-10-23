@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique:true
+    unique: true
   },
   description: {
     type: String,
@@ -27,14 +27,30 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  discountedPrice: {
+    type: Number,  // New field to store the discounted price
+    required: false // This can be optional; set to true if you want it to be mandatory
+  },
   images: {
-    type: [String],  // Array of image paths
+    type: [String],  
     required: false
   },
   listed: {
     type: Boolean,
     default: true
+  },
+  popularity: {
+    type: Number,
+    default: 0  // Can be used to sort by popularity
+  },
+  rating: {
+    type: Number,
+    default: 0  // Can be used to sort by average rating
+  },
+  isFeatured: {
+    type: Boolean,
+    default: false  // Used to identify featured products
   }
-},{timestamps:true});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Product', productSchema);

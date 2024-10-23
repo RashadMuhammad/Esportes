@@ -4,21 +4,19 @@ const noCache = (req, res, next) => {
     next();
 };
 
-// Middleware to check if the user is authenticated
 const isAuthenticated = (req, res, next) => {
-    if (req.session.userId) {
-        next(); // User is authenticated, proceed to the next middleware or route
+    if (req.session.userId || req.session.passport?.user) {
+        next(); 
     } else {
-        res.redirect('/login'); // If not authenticated, redirect to login
+        res.redirect('/login'); 
     }
 };
 
-// Middleware to check if the user is not authenticated (for login and signup)
 const isNotAuthenticated = (req, res, next) => {
-    if (req.session.userId) {
-        res.redirect('/'); // If logged in, redirect to the home page
+    if (req.session.userId || req.session.passport?.user) {
+        res.redirect('/'); 
     } else {
-        next(); // Proceed to the next middleware or route
+        next(); 
     }
 };
 

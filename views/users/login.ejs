@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Esportes</title>
+    <title>Esportes</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -46,7 +46,7 @@
 <body style="background: white">
 
     <nav class="navbar bg-white">
-        <img src="./images/Heading.png" class="img-fluid">
+        <img src="/images/Heading.png" class="img-fluid">
     </nav>
 
     <!-- Signup Form -->
@@ -54,54 +54,56 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-6">
-                    <img src="./images/set.jpg" class="img-fluid-main" style="width: 70%" alt="">
+                    <img src="/images/set.jpg" class="img-fluid-main" style="width: 70%" alt="">
                 </div>
                 <div class="col-md-6">
                     <div class="card shadow-sm">
                         <div class="card-body p-5">
                             <h1 class="text-center mb-4 fw-bold">Login</h1>
-                            
+
                             <!-- Flash Messages for Google Sign-In -->
 
 
                             <!-- Error/Success Messages for Regular Login -->
-                            
+
                             <% if (message.length > 0) { %>
                                 <div class="alert alert-danger mt-3">
                                     <%= message %>
                                 </div>
-                            <% } %>
+                                <% } %>
 
-                            <form id="loginForm" method="post">
-                                <div class="mb-3">
-                                    <label for="email" class="form-label fw-bold">Email</label>
-                                    <input type="email" name="email" class="form-control" id="email"
-                                        placeholder="Enter your Email" >
-                                    <div class="invalid-feedback">Please enter a valid email address.</div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="password" class="form-label fw-bold">Password</label>
-                                    <input type="password" name="password" class="form-control" id="password"
-                                        placeholder="Enter your Password" minlength="8" >
-                                    <div class="invalid-feedback">Password must be at least 8 characters long.</div>
-                                </div>
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-dark">Login</button>
-                                </div>
+                                    <form id="loginForm" method="post">
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label fw-bold">Email</label>
+                                            <input type="email" name="email" class="form-control" id="email"
+                                                placeholder="Enter your Email">
+                                            <div class="invalid-feedback">Please enter a valid email address.</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="password" class="form-label fw-bold">Password</label>
+                                            <input type="password" name="password" class="form-control" id="password"
+                                                placeholder="Enter your Password" minlength="8">
+                                            <div class="invalid-feedback">Password must be at least 8 characters long.
+                                            </div>
+                                        </div>
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-dark">Login</button>
+                                        </div>
 
-                                <p class="text-center mt-3">
-                                    <a href="#" class="text-danger">Forgot Password?</a>
-                                </p>
-                                <div class="text-center mt-3">
-                                    <button class="btn btn-outline-dark btn-block"
-                                        onclick="window.location.href='/auth/google'">
-                                        <i class="fa-brands fa-google" style="color: orange;"></i>
-                                    </button>
-                                    <p class="text-center mt-3">
-                                        Don't have an account? <a href="/signup" class="text-primary">Sign up</a>
-                                    </p>
-                                </div>
-                            </form>
+                                        <p class="text-center mt-3">
+                                            <a href="/forgetpassword" class="text-danger">Forgot Password?</a>
+                                        </p>
+                                        <div class="text-center mt-3">
+                                            <button class="btn btn-outline-dark btn-block"
+                                                onclick="window.location.href='/auth/google'">
+                                                <i class="fa-brands fa-google" style="color: orange;"></i>
+                                            </button>
+                                            <p class="text-center mt-3">
+                                                Don't have an account? <a href="/signup" class="text-primary">Sign
+                                                    up</a>
+                                            </p>
+                                        </div>
+                                    </form>
                         </div>
                     </div>
                 </div>
@@ -111,58 +113,8 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="userjs/login.js"></script>
 
-    <!-- JavaScript Validation -->
-    <script>
-        const loginForm = document.getElementById('loginForm');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-
-        // Regular expression for validating an email address
-        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-        // Real-time validation feedback
-        emailInput.addEventListener('input', function () {
-            if (emailPattern.test(emailInput.value.trim())) {
-                emailInput.classList.remove('is-invalid');
-                emailInput.classList.add('is-valid');
-            } else {
-                emailInput.classList.remove('is-valid');
-                emailInput.classList.add('is-invalid');
-            }
-        });
-
-        passwordInput.addEventListener('input', function () {
-            if (passwordInput.value.length >= 8) {
-                passwordInput.classList.remove('is-invalid');
-                passwordInput.classList.add('is-valid');
-            } else {
-                passwordInput.classList.remove('is-valid');
-                passwordInput.classList.add('is-invalid');
-            }
-        });
-
-        loginForm.addEventListener('submit', function (event) {
-            let isValid = true;
-
-            // Validate email
-            if (!emailPattern.test(emailInput.value.trim())) {
-                emailInput.classList.add('is-invalid');
-                isValid = false;
-            }
-
-            // Validate password (at least 8 characters)
-            if (passwordInput.value.length < 8) {
-                passwordInput.classList.add('is-invalid');
-                isValid = false;
-            }
-
-            // If form is not valid, prevent submission
-            if (!isValid) {
-                event.preventDefault();
-            }
-        });
-    </script>
 </body>
 
 </html>
