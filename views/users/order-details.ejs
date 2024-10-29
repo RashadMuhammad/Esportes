@@ -261,8 +261,15 @@
 
         <div class="container mt-lg-5 pt-5">
             <h1 class="main_heading text-center text-dark">Order Details</h1>
-
-            <div class="row mt-5">
+            <div class="d-flex justify-content-center mt-3">
+                <a href="/download-invoice/<%= order._id %>">
+                    <span class="badge badge-success" style="font-size: 0.9rem; padding: 0.8rem 1rem;">
+                        Invoice Download
+                    </span>
+                </a>                
+            </div>
+            
+            <div class="row ">
                 <div class="col-md-6 mt-3">
                     <div class="order-details mt-4 custom-border">
                         <h1 class="sub_heading text-center text-dark">Order Information</h1>

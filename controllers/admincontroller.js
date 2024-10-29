@@ -69,8 +69,144 @@ exports.verifylogin = async (req, res) => {
 // Render the dashboard
 exports.renderDashboard = async (req, res) => {
   try {
+    // Total Users
+    const totalUsers = await User.countDocuments();
+
+    // Total Orders
+    const totalOrders = await Order.countDocuments();
+
+    // Total Sales Amount
+    const totalSales = await Order.aggregate([
+      { $match: { status: "Completed" } }, // Include only "Completed" orders
+      { $group: { _id: null, total: { $sum: "$paymentTotal" } } },
+    ]);
+    
+    const totalSalesAmount = totalSales[0] ? totalSales[0].total : 0;
+    
+
+    // Pending Orders
+    const pendingOrders = await Order.countDocuments({ status: "Pending" });
+
+    // Best Selling Products
+    const bestSellingProducts = await Order.aggregate([
+      { $unwind: "$items" },
+      {
+        $group: {
+          _id: "$items.productId",
+          totalSold: { $sum: "$items.quantity" },
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "_id",
+          as: "productInfo",
+        },
+      },
+      {
+        $unwind: "$productInfo",
+      },
+      {
+        $project: {
+          _id: 0,
+          name: "$productInfo.name",
+          images: "$productInfo.images",
+          totalSold: 1,
+        },
+      },
+      { $sort: { totalSold: -1 } },
+      { $limit: 10 },
+    ]);
+
+
+    // Best Selling Categories
+    const bestSellingCategories = await Order.aggregate([
+      { $unwind: "$items" },
+      {
+        $lookup: {
+          from: "products",
+          localField: "items.productId",
+          foreignField: "_id",
+          as: "productInfo",
+        },
+      },
+      { $unwind: "$productInfo" },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "productInfo.category",
+          foreignField: "_id",
+          as: "categoryInfo",
+        },
+      },
+      { $unwind: "$categoryInfo" },
+      {
+        $group: {
+          _id: "$categoryInfo._id",
+          name: { $first: "$categoryInfo.name" },
+          image: { $first: "$categoryInfo.image" },
+          totalSold: { $sum: "$items.quantity" },
+        },
+      },
+      { $sort: { totalSold: -1 } },
+      { $limit: 10 },
+    ]);
+
+
+    // Render the dashboard
+    res.render("admin/index", {
+      totalUsers,
+      totalOrders,
+      totalSalesAmount,
+      pendingOrders,
+      bestSellingProducts,
+      bestSellingCategories,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
+};
+
+// routes/dashboard.js
+exports.chartDashboard = async (req, res) => {
+  const { filter } = req.query;
+  console.log("Filter received:", filter); // Logs the filter value
+
+  let groupFormat;
+  if (filter === 'weekly') {
+    groupFormat = { week: { $week: "$placedAt" }, year: { $year: "$placedAt" } };
+  } else if (filter === 'monthly') {
+    groupFormat = { month: { $month: "$placedAt" }, year: { $year: "$placedAt" } };
+  } else if (filter === 'yearly') {
+    groupFormat = { year: { $year: "$placedAt" } };
+  } else {
+    return res.status(400).send("Invalid filter");
+  }
+
+  try {
+    
+    const salesData = await Order.aggregate([
+      { $match: { status: "Completed" } },
+      { $group: { _id: groupFormat, totalSales: { $sum: "$paymentTotal" } } },
+      { $sort: { "_id": 1 } }
+    ]);
+
+    console.log(1);
+    
+    console.log("Sales data fetched:", salesData); 
+    res.json(salesData);
+  } catch (error) {
+    console.error("Error fetching sales data:", error);
+    res.status(500).send("Error fetching sales data");
+  }
+};
+
+exports.renderSalesReportPage = async (req, res) => {
+  try {
     const adminData = await admin.find();
-    res.render("admin/index", { admin: adminData });
+    res.render("admin/salesreport", { admin: adminData });
   } catch (error) {
     console.log(error.message);
   }
@@ -107,34 +243,46 @@ exports.getSalesReport = async (req, res) => {
     const orders = await Order.find(filter);
 
     const overallSalesCount = orders.length;
-    const overallOrderAmount = orders.reduce((acc, order) => acc + order.subtotal, 0);
-    const overallDiscount = orders.reduce((acc, order) => acc + order.discountAmount, 0);
-    const overallCouponDeductions = orders.reduce((acc, order) => acc + (order.couponDeduction || 0), 0);
+    const paymentTotal = orders.reduce(
+      (acc, order) => acc + order.paymentTotal,
+      0
+    );
+    const overallDiscount = orders.reduce(
+      (acc, order) => acc + order.totalAfterDiscount,
+      0
+    );
+    const overallCouponDeductions = orders.reduce(
+      (acc, order) => acc + (order.discountAmount || 0),
+      0
+    );
 
     res.json({
       orders,
       overallSalesCount,
-      overallOrderAmount,
+      paymentTotal,
       overallDiscount,
       overallCouponDeductions,
     });
   } catch (error) {
-    console.error('Error generating sales report:', error);
-    res.status(500).json({ message: 'Error generating sales report' });
+    console.error("Error generating sales report:", error);
+    res.status(500).json({ message: "Error generating sales report" });
   }
 };
 
-// Function to download CSV or Excel
 exports.downloadSalesReportCSV = async (req, res) => {
   try {
     const { orders } = req.body;
+    console.log(orders); 
+
     const fields = [
-      "_id",
-      "subtotal",
-      "discountAmount",
-      "totalAfterDiscount",
-      "status",
-    ]; 
+      { label: "Order ID", value: "_id" },
+      { label: "Offer Discount", value: "afteroffer" },
+      { label: "Coupon Discount", value: "discountAmount" },
+      { label: "Total Discount", value: "totalAfterDiscount" },
+      { label: "Total Amount", value: "paymentTotal" },
+      { label: "Status", value: "status" },
+    ];
+
     const parser = new Parser({ fields });
     const csv = parser.parse(orders);
 
@@ -153,6 +301,7 @@ exports.downloadSalesReportPDF = async (req, res) => {
   try {
     const { orders } = req.body;
 
+    // Check if the orders data is valid
     if (!Array.isArray(orders)) {
       console.error("Invalid orders data:", orders);
       return res.status(400).json({ message: "Invalid orders data." });
@@ -165,20 +314,93 @@ exports.downloadSalesReportPDF = async (req, res) => {
     );
     res.setHeader("Content-Type", "application/pdf");
 
-    doc.fontSize(25).text("Sales Report", { align: "center" });
-    doc.moveDown();
+    // Title for the PDF report
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(16)
+      .text("Sales Report", { align: "center" });
+    doc.moveDown(2);
 
+    // Define table structure with column headers
+    const tableTop = 180;
+    const cellHeight = 40;
+    const columnWidths = [100, 80, 100, 80, 80, 80]; // Adjust column widths as needed
+    const columns = [
+      "Order ID",
+      "Offer Discount",
+      "Coupon Discount",
+      "Total Discount",
+      "Total Amount",
+      "Status",
+    ];
+
+    // Function to draw a row in the table
+    const drawRow = (y, rowValues, isHeader = false) => {
+      doc.lineWidth(0.5);
+      let x = 30; // Starting x position for the first column
+
+      rowValues.forEach((text, i) => {
+        // Adjust font size for header and content
+        if (isHeader) {
+          doc.font("Helvetica-Bold").fontSize(10); // Larger text for headers
+        } else {
+          doc.font("Helvetica").fontSize(8); // Smaller text for content rows
+        }
+
+        doc.rect(x, y, columnWidths[i], cellHeight).stroke(); // Draw cell border
+        doc.text(text, x + 5, y + 7, {
+          width: columnWidths[i] - 5,
+          align: "left",
+        }); // Add text inside the cell
+        x += columnWidths[i]; // Move to the next column
+      });
+    };
+
+    // Draw the table header row
+    drawRow(tableTop, columns, true);
+
+    // Variable to keep track of the y position of rows
+    let yPos = tableTop + cellHeight;
+
+    // Iterate over each order to generate rows in the PDF
     orders.forEach((order) => {
-      doc.fontSize(12).text(`Order ID: ${order._id}`);
-      doc.text(`Subtotal: ${order.subtotal}`);
-      doc.text(`Discount: ${order.discountAmount}`);
-      doc.text(`Total: ${order.totalAfterDiscount}`);
-      doc.text(`Status: ${order.status}`);
-      doc.moveDown();
+      // Extracting relevant order details
+      const orderId = order._id || "N/A"; // Fallback to "N/A" if order ID is missing
+      const offerDiscount = order.afteroffer || 0; // Offer Discount
+      const couponDiscount = order.discountAmount || 0; // Coupon Discount
+      const totalDiscount = order.totalAfterDiscount || 0; // Total Discount
+      const totalAmount = parseFloat(order.paymentTotal).toFixed(2); // Total Amount
+      const status = order.status || "N/A"; // Status fallback
+
+      // Log order details to the console for debugging
+      console.log("Order Details:", {
+        ID: orderId,
+        OfferDiscount: offerDiscount,
+        CouponDiscount: couponDiscount,
+        TotalDiscount: totalDiscount,
+        TotalAmount: totalAmount,
+        Status: status,
+      });
+
+      // Create a row for this order's data
+      const row = [
+        `${orderId}`, // Order ID
+        `${offerDiscount}`, // Offer Discount
+        `${couponDiscount}`, // Coupon Discount
+        `${totalDiscount}`, // Total Discount
+        `${totalAmount}`, // Total Amount (calculated)
+        `${status}`, // Status
+      ];
+
+      // Draw this row in the PDF table
+      drawRow(yPos, row);
+      yPos += cellHeight; // Move to the next row position
     });
 
+    // Finalize the PDF document and send it as a response
     doc.pipe(res);
     doc.end();
+    console.log("PDF generated and sent successfully.");
   } catch (error) {
     console.error("Error generating PDF:", error.message);
     return res
@@ -232,7 +454,7 @@ exports.getAllUsers = async (req, res) => {
 exports.toggleBlock = async (req, res) => {
   try {
     const userId = req.params.id;
-    
+
     const user = await User.findById(userId);
 
     if (user) {
@@ -460,7 +682,7 @@ exports.cancelOrder = async (req, res) => {
     }
 
     // Mark order as canceled
-    order.status = "canceled";
+    order.status = "Canceled";
     await order.save();
 
     // Get the user's wallet
@@ -768,17 +990,25 @@ exports.addCoupon = async (req, res) => {
       validFrom,
       validUntil,
       usageLimit,
-      productPrice // Pass the product price from the frontend or calculate it
+      productPrice, // Pass the product price from the frontend or calculate it
     } = req.body;
 
     // Validate discountValue based on discountType
-    if (discountType === 'percentage') {
+    if (discountType === "percentage") {
       if (discountValue < 1 || discountValue > 80) {
-        return res.status(400).send("Discount value must be between 1% and 80% for percentage discount.");
+        return res
+          .status(400)
+          .send(
+            "Discount value must be between 1% and 80% for percentage discount."
+          );
       }
-    } else if (discountType === 'fixed') {
+    } else if (discountType === "fixed") {
       if (discountValue >= minCartValue) {
-        return res.status(400).send("Fixed discount value must be less than the minimum cart value.");
+        return res
+          .status(400)
+          .send(
+            "Fixed discount value must be less than the minimum cart value."
+          );
       }
     }
 
@@ -788,7 +1018,7 @@ exports.addCoupon = async (req, res) => {
       discountType,
       discountValue,
       minCartValue: minCartValue || 0,
-      maxDiscountValue: discountType === 'percentage' ? maxDiscountValue : null, // Only store maxDiscountValue for percentage discounts
+      maxDiscountValue: discountType === "percentage" ? maxDiscountValue : null, // Only store maxDiscountValue for percentage discounts
       validFrom,
       validUntil,
       usageLimit: usageLimit || 1,
@@ -942,22 +1172,23 @@ exports.addOffer = async (req, res) => {
 
     // Validate validFrom and validUntil dates
     const currentDate = new Date();
-currentDate.setHours(23, 59, 59, 999); // Set current date to the end of today
+    currentDate.setHours(23, 59, 59, 999); // Set current date to the end of today
 
-const validFromDate = new Date(validFrom);
-validFromDate.setHours(23, 59, 59, 999); // Set validFrom date to the end of the chosen date
+    const validFromDate = new Date(validFrom);
+    validFromDate.setHours(23, 59, 59, 999); // Set validFrom date to the end of the chosen date
 
-// Check if 'validFrom' is in the past or today
-if (validFromDate < currentDate) {
-  return res.status(400).send("Valid From date cannot be in the past.");
-}
+    // Check if 'validFrom' is in the past or today
+    if (validFromDate < currentDate) {
+      return res.status(400).send("Valid From date cannot be in the past.");
+    }
 
-// Check if 'validUntil' is after 'validFrom'
-const validUntilDate = new Date(validUntil);
-if (validUntilDate <= validFromDate) {
-  return res.status(400).send("Valid Until date must be after Valid From date.");
-}
-
+    // Check if 'validUntil' is after 'validFrom'
+    const validUntilDate = new Date(validUntil);
+    if (validUntilDate <= validFromDate) {
+      return res
+        .status(400)
+        .send("Valid Until date must be after Valid From date.");
+    }
 
     // Create a new offer object
     const newOffer = new Offer({
@@ -1025,11 +1256,6 @@ exports.deleteOffer = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Error deleting offer" });
   }
-};
-
-// Render deals page
-exports.renderDeals = async (req, res) => {
-  res.render("admin/deals");
 };
 
 // Render settings page

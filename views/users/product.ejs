@@ -37,6 +37,10 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 	<!--===============================================================================================-->
 	<style>
+		.product-container {
+			flex-direction: row !important;
+		}
+
 		.modal-content {
 			border-radius: 10px;
 			box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
@@ -171,418 +175,402 @@
 <body class="animsition">
 
 	<!-- Header -->
-    <%- include('../partials/_header') %>
-	
+	<%- include('../partials/_header') %>
 
-	<!-- Product -->
-	<section class="bg0 p-t-23"><br><br>	
-		<div class="container mt-5 px-5">
-			<div class="p-b-10">
-				<h3 class="ltext-103 cl5">
-					products
-				</h3>
-			</div>
 
-			<div class="flex-w flex-sb-m p-b-52">
-				<div class="flex-w flex-l-m filter-tope-group m-tb-10">
-					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
-						All Products
-					</button>
+		<!-- Product -->
+		<section class="bg0 p-t-23"><br><br>
+			<div class="container mt-5 px-5">
+				<div class="p-b-10">
+					<h3 class="ltext-103 cl5">
+						products
+					</h3>
+				</div>
 
-					<% categories.forEach(category=> { %>
-						<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 filter-button"
-							data-filter=".category-<%= category._id %>">
-							<%= category.name %>
+				<div class="flex-w flex-sb-m p-b-52">
+					<div class="flex-w flex-l-m filter-tope-group m-tb-10">
+						<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
+							All Products
 						</button>
+
+						<% categories.forEach(category=> { %>
+							<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 filter-button"
+								data-filter=".category-<%= category._id %>">
+								<%= category.name %>
+							</button>
+							<% }) %>
+					</div>
+
+
+
+					<div class="flex-w flex-c-m m-tb-10">
+						<div
+							class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4 js-show-filter">
+							<i class="icon-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-filter-list"></i>
+							<i class="icon-close-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
+							Filter
+						</div>
+
+						<div
+							class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
+							<i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
+							<i class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
+							Search
+						</div>
+					</div>
+
+
+					<!-- Search product -->
+					<div class="dis-none panel-search w-full p-t-10 p-b-15">
+						<div class="bor8 dis-flex p-l-15">
+							<button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
+								<i class="zmdi zmdi-search"></i>
+							</button>
+							<input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search-product"
+								placeholder="Search">
+						</div>
+					</div>
+
+					<div class="dis-none panel-filter w-full p-t-10">
+						<div class="wrap-filter flex-w bg-white w-full p-4 rounded shadow-lg text-center">
+							<div class="filter-col1 w-100 mb-3">
+								<div class="mtext-102 text-dark font-weight-bold mb-3">Sort By</div>
+								<div class="row">
+									<div class="col-md-4 mb-2">
+										<a class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
+											data-sort="default">Default</a>
+									</div>
+									<div class="col-md-4 mb-2">
+										<a class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
+											data-sort="popularity">Popularity</a>
+									</div>
+									<div class="col-md-4 mb-2">
+										<a class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
+											data-sort="averageRating">Avg. Rating</a>
+									</div>
+									<div class="col-md-4 mb-2">
+										<a class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
+											data-sort="newness">New arrivals</a>
+									</div>
+									<div class="col-md-4 mb-2">
+										<a class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
+											data-sort="priceLowToHigh">Price: Low to High</a>
+									</div>
+									<div class="col-md-4 mb-2">
+										<a class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
+											data-sort="priceHighToLow">Price: High to Low</a>
+									</div>
+									<div class="col-md-4 mb-2">
+										<a class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
+											data-sort="aToZ">A - Z</a>
+									</div>
+									<div class="col-md-4 mb-2">
+										<a class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
+											data-sort="zToA">Z - A</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="product-container row isotope-grid" id="product-container2">
+					<% products.forEach(product=> { %>
+						<div class="products col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item category-<%= product.category._id %>"
+							data-name="<%= product.name %>" data-rating="<%= product.averageRating %>"
+							data-created-at="<%= product.createdAt.toISOString() %>"
+							data-image="/uploads/<%= product.images[0]%>"
+							data-price="<%= product.discountedPrice ? product.discountedPrice : product.price %>">
+							<div class="block2">
+								<div class="block2-pic hov-img0 <%= product.stock <= 0 ? 'out-of-stock-shade' : '' %>">
+									<% if (product.images && product.images.length> 0) { %>
+										<img src="/uploads/<%= product.images[0] %>" alt="IMG-PRODUCT">
+										<% } else { %>
+											<img src="/path/to/default-image.jpg" alt="Default Image">
+											<% } %>
+												<a href="/product-detail/<%= product._id %>"
+													class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04"
+													data-id="<%= product._id %>"> View Details </a>
+								</div>
+
+								<div class="block2-txt flex-w flex-t p-t-14">
+									<% if (product.stock <=0) { %>
+										<span class="stext-105 cl3 out-of-stock">Out of Stock</span>
+										<% } %>
+											<div class="block2-txt-child1 flex-col-l">
+												<a href="/product-detail/<%= product._id %>"
+													class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6 card-title">
+													<%= product.name %>
+												</a>
+												<span class="stext-105 cl3">
+													<% if (product.discountedPrice===product.price) { %>
+														₹ <%= product.price %>
+															<% } else { %>
+																₹ <%= product.discountedPrice ? product.discountedPrice
+																	: product.price %>
+																	<span class="original-price"
+																		style="text-decoration: line-through; color: red;">
+																		₹ <%= product.price %>
+																	</span>
+																	<% } %>
+												</span>
+												<button
+													class="align-items-center wishlist-btn flex-c-m stext-103 cl2 py-2 bg0 bor2 trans-04"
+													data-product-id="<%= product._id %>"
+													onclick="addToWishlist('<%= product._id %>')">
+													<i class="fa fa-heart" aria-hidden="true"></i>
+												</button>
+											</div>
+								</div>
+							</div>
+						</div>
 						<% }) %>
 				</div>
 
-				<div class="flex-w flex-c-m m-tb-10">
-					<div
-						class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4 js-show-filter">
-						<i class="icon-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-filter-list"></i>
-						<i class="icon-close-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
-						Filter
-					</div>
+				<script>
+					async function addToWishlist(productId) {
+						try {
+							const response = await fetch('/wishlist/add', {
+								method: 'POST',
+								headers: {
+									'Content-Type': 'application/json',
+								},
+								body: JSON.stringify({ productId })
+							});
 
-					<div class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
-						<i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
-						<i class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
-						Search
-					</div>
-				</div>
-
-
-				<!-- Search product -->
-				<div class="dis-none panel-search w-full p-t-10 p-b-15">
-					<div class="bor8 dis-flex p-l-15">
-						<button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
-							<i class="zmdi zmdi-search"></i>
-						</button>
-						<input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search-product"
-							placeholder="Search">
-					</div>
-				</div>
-
-				<!-- Filter -->
-				<div class="dis-none panel-filter w-full p-t-10">
-					<div class="wrap-filter flex-w bg-white w-full p-4 rounded shadow-lg text-center">
-						<div class="filter-col1 w-100 mb-3">
-							<div class="mtext-102 text-dark font-weight-bold mb-3">
-								Sort By
-							</div>
-							<div class="row">
-								<div class="col-md-4 mb-2">
-									<a href="#" class="filter-link btn text-white btn-dark  btn-block rounded-pill px-3"
-										data-sort="default">
-										Default
-									</a>
-								</div>
-								<div class="col-md-4 mb-2">
-									<a href="#" class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
-										data-sort="popularity">
-										Popularity
-									</a>
-								</div>
-								<div class="col-md-4 mb-2">
-									<a href="#" class="filter-link text-white btn btn-dark btn-block rounded-pill px-3"
-										data-sort="averageRating">
-										Avg. Rating
-									</a>
-								</div>
-								<div class="col-md-4 mb-2">
-									<a href="#" class="filter-link text-white btn btn-dark btn-block rounded-pill px-3"
-										data-sort="newness">
-										New arrivals
-									</a>
-								</div>
-								<div class="col-md-4 mb-2">
-									<a href="#" class="filter-link text-white btn btn-dark btn-block rounded-pill px-3"
-										data-sort="priceLowToHigh">
-										Price: Low to High
-									</a>
-								</div>
-								<div class="col-md-4 mb-2">
-									<a href="#" class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
-										data-sort="priceHighToLow">
-										Price: High to Low
-									</a>
-								</div>
-								<div class="col-md-4 mb-2">
-									<a href="#" class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
-										data-sort="aToZ">
-										A - Z
-									</a>
-								</div>
-								<div class="col-md-4 mb-2">
-									<a href="#" class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
-										data-sort="zToA">
-										Z - A
-									</a>
-								</div>
-							</div>
-						</div>
-					</div>    
-				</div>
-			</div>
-
-
-
-
-			<div class="product-container row isotope-grid">
-				<% products.forEach(product=> { %>
-					<div
-						class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item <%= product.category ? product.category.name : 'uncategorized' %>">
-						<!-- Block2 -->
-						<div class="block2">
-							<div class="block2-pic hov-img0 <%= product.stock <= 0 ? 'out-of-stock-shade' : '' %>">
-								<% if (product.images && product.images.length> 0) { %>
-									<img src="/uploads/<%= product.images[0] %>" alt="IMG-PRODUCT">
-									<% } else { %>
-										<img src="/path/to/default-image.jpg" alt="Default Image">
-										<% } %>
-
-											<a href="/product-detail/<%= product._id %>"
-												class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04"
-												data-id="<%= product._id %>">
-												View Details
-											</a>
-							</div>
-
-							<div class="block2-txt flex-w flex-t p-t-14">
-								<% if (product.stock <=0) { %>
-									<span class="stext-105 cl3 out-of-stock">Out of Stock</span>
-									<% } %>
-
-										<div class="block2-txt-child1 flex-col-l">
-											<a href="/product-detail/<%= product._id %>"
-												class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6 card-title" >
-												<%= product.name %>
-											</a>
-
-											<!-- Original Price -->
-											<span class="stext-105 cl3">
-												<% if (product.discountedPrice===product.price) { %>
-													<%= '₹ ' + product.price %>
-														<% }else{ %>
-															<%= product.discountedPrice ? '₹ ' + product.discountedPrice
-																: '₹ ' + product.price %>
-																<span class="original-price"
-																	style="text-decoration: line-through; color: red;">
-																	₹ <%= product.price %>
-																</span>
-																<% } %>
-											</span>
-
-
-											<button
-												class="align-items-center wishlist-btn flex-c-m stext-103 cl2 py-2 bg0 bor2 trans-04"
-												data-product-id="<%= product._id %>"
-												onclick="addToWishlist('<%= product._id %>')">
-												<i class="fa fa-heart" aria-hidden="true"></i>
-											</button>
-										</div>
-							</div>
-						</div>
-					</div>
-					<% }) %>
-			</div>
-
-
-
-
-			<script>
-				async function addToWishlist(productId) {
-					try {
-						const response = await fetch('/wishlist/add', {
-							method: 'POST',
-							headers: {
-								'Content-Type': 'application/json',
-							},
-							body: JSON.stringify({ productId })
-						});
-
-						if (response.ok) {
-							const result = await response.json();
-							if (result.success) {
-								// SweetAlert for success
-								Swal.fire({
-									icon: 'success',
-									title: 'Added to Wishlist!',
-									text: 'The product has been added to your wishlist.',
-									//   showConfirmButton: false,
-									//   timer: 1500
-								});
+							if (response.ok) {
+								const result = await response.json();
+								if (result.success) {
+									Swal.fire({
+										icon: 'success',
+										title: 'Added to Wishlist!',
+										text: 'The product has been added to your wishlist.',
+									});
+								} else {
+									Swal.fire({
+										icon: 'error',
+										title: 'Oops...',
+										text: result.message || 'Something went wrong!',
+									});
+								}
 							} else {
-								// SweetAlert for error
 								Swal.fire({
 									icon: 'error',
-									title: 'Oops...',
-									text: result.message || 'Something went wrong!',
+									title: 'Failed to add',
+									text: 'Product is already in the wishlist.',
 								});
 							}
-						} else {
-							// SweetAlert for request failure
+						} catch (error) {
+							console.error('Error:', error);
 							Swal.fire({
 								icon: 'error',
-								title: 'Failed to add',
-								text: 'Product is already exists in wishlist.',
+								title: 'Error!',
+								text: 'An error occurred while adding the product to the wishlist.',
 							});
 						}
-					} catch (error) {
-						console.error('Error:', error);
-						// SweetAlert for catching unexpected errors
-						Swal.fire({
-							icon: 'error',
-							title: 'Error!',
-							text: 'An error occurred while adding the product to the wishlist.',
-						});
 					}
-				}
-			</script>
 
+					document.addEventListener('DOMContentLoaded', function () {
+						const productContainer = document.getElementById('product-container2');
+						const productContainerParent = document.getElementById('product-container2').parentElement;
 
+						function sortProducts(criteria) {
+							let products = Array.from(productContainer.children);
 
-			<script>
-				// for sort and filters
-				document.addEventListener('DOMContentLoaded', () => {
-					const productCards = Array.from(document.querySelectorAll('.col-sm-6.col-md-4.col-lg-3'));
-					const sortLinks = document.querySelectorAll('.filter-link[data-sort]');
+							// Sort products
+							products.sort((a, b) => {
+								let valueA, valueB;
 
+								switch (criteria) {
+									case 'popularity':
+									case 'averageRating':
+										valueA = parseFloat(a.getAttribute('data-rating'));
+										valueB = parseFloat(b.getAttribute('data-rating'));
+										return valueB - valueA;
+									case 'newness':
+										valueA = new Date(a.getAttribute('data-created-at'));
+										valueB = new Date(b.getAttribute('data-created-at'));
+										return valueB - valueA;
+									case 'priceLowToHigh':
+										valueA = parseFloat(a.getAttribute('data-price'));
+										valueB = parseFloat(b.getAttribute('data-price'));
+										return valueA - valueB;
+									case 'priceHighToLow':
+										valueA = parseFloat(a.getAttribute('data-price'));
+										valueB = parseFloat(b.getAttribute('data-price'));
+										return valueB - valueA;
+									case 'aToZ':
+										valueA = a.querySelector('.js-name-b2').textContent;
+										valueB = b.querySelector('.js-name-b2').textContent;
+										return valueA.localeCompare(valueB);
+									case 'zToA':
+										valueA = a.querySelector('.js-name-b2').textContent;
+										valueB = b.querySelector('.js-name-b2').textContent;
+										return valueB.localeCompare(valueA);
+									default:
+										return 0;
+								}
+							});
+							// Use replaceChildren to update the product container
+							// productContainer.replaceChildren(...products);
+							const newProductContainer = document.createElement('div')
+							// console.log(productContainer);
+							
+							productContainer.innerHTML=''
+							
+							
+							
+							products.forEach((product, index) => {
+								const newproduct = document.createElement('div')
+								let name=product.getAttribute('data-name')
+								let imgSrc=product.getAttribute('data-image')
+								let img=document.createElement('img')
+								img.src=imgSrc
+								img.style.height="30px"
+								img.style.width="30px"
+								let p=document.createElement('p')
+								p.textContent=name
+								newproduct.appendChild(p)
+								newproduct.appendChild(img)
+								productContainer.appendChild(newproduct)
+								
+								// if (index < 4) {
+								// 	const newProduct = product.cloneNode(true)
+								// 	newProduct.style.backgroundColor = "#ff0000"
+								// 	console.log(newProduct);
+								// 	newProductContainer.appendChild(newProduct)
+								// 	// newProductContainer.innerText = index
+								// }
+							})
 
-					sortLinks.forEach(link => {
-						link.addEventListener('click', (event) => {
-							event.preventDefault();
-							const sortBy = event.target.getAttribute('data-sort');
-							sortProducts(productCards, sortBy);
+							// productContainerParent.innerHTML = ''
+							// productContainer.replaceWith(newProductContainer);
+							// productContainerParent.innerHTML = null
+							// productContainerParent.appendChild(newProductContainer)
+							
+							// console.log(parentElement);
+							// productContainer.appendChild(parentElement)
+							
+							// Trigger layout update if using a library like Isotope or Masonry
+							// if (typeof Isotope !== 'undefined') {
+							// 	Isotope.data(productContainer).reloadItems();
+							// 	Isotope.data(productContainer).layout();
+							// } else {
+							// 	// If not using a layout library, a simple reflow might be enough
+							// 	const parent = productContainer.parentNode;
+							// 	const nextSibling = productContainer.nextSibling;
+							// 	parent.removeChild(productContainer);
+							// 	parent.insertBefore(productContainer, nextSibling);
+							// }
+
+							// console.log('Updated product container after sort:', productContainer);
+							productContainer.childNodes.forEach((product)=>{
+								console.log(product)
+							})
+						}
+
+						// Event listeners for filter links
+						document.querySelectorAll('.filter-link').forEach(link => {
+							link.addEventListener('click', (event) => {
+								event.preventDefault();
+								const sortCriteria = event.currentTarget.getAttribute('data-sort');
+								sortProducts(sortCriteria); // Call sort function
+							});
 						});
 					});
 
-					function sortProducts(products, sortBy) {
-						let sortedProducts;
-
-						switch (sortBy) {
-							case 'popularity':
-								sortedProducts = products.sort((a, b) => {
-									// Add your popularity sorting logic here
-								});
-								break;
-							case 'averageRating':
-								sortedProducts = products.sort((a, b) => {
-									const ratingA = parseFloat(a.getAttribute('data-rating')) || 0;
-									const ratingB = parseFloat(b.getAttribute('data-rating')) || 0;
-									return ratingB - ratingA; // Higher ratings come first
-								});
-								break;
-							case 'newness':
-								sortedProducts = products.sort((a, b) => {
-									const dateA = new Date(a.getAttribute('data-created-at'));
-									const dateB = new Date(b.getAttribute('data-created-at'));
-									return dateB - dateA;
-								});
-								break;
-							case 'priceLowToHigh':
-								console.log(1);
-								
-								sortedProducts = products.sort((a, b) => {
-									const priceA = a.querySelector('.card-text') ?
-										parseFloat(a.querySelector('.card-text').innerText.replace('₹', '').trim()) : 0;
-									const priceB = b.querySelector('.card-text') ?
-										parseFloat(b.querySelector('.card-text').innerText.replace('₹', '').trim()) : 0;
-									return priceA - priceB;
-								});
-								break;
-							case 'priceHighToLow':
-								sortedProducts = products.sort((a, b) => {
-									const priceA = a.querySelector('.card-text') ?
-										parseFloat(a.querySelector('.card-text').innerText.replace('₹', '').trim()) : 0;
-									const priceB = b.querySelector('.card-text') ?
-										parseFloat(b.querySelector('.card-text').innerText.replace('₹', '').trim()) : 0;
-									return priceB - priceA;
-								});
-								break;
-							case 'aToZ':
-								sortedProducts = products.sort((a, b) => {
-									const nameA = a.querySelector('.card-title') ?
-										a.querySelector('.card-title').innerText.toLowerCase() : '';
-									const nameB = b.querySelector('.card-title') ?
-										b.querySelector('.card-title').innerText.toLowerCase() : '';
-										console.log("nameA",nameA,"nameB",nameB);
-									return nameA.localeCompare(nameB);
-								});
-								console.log(sortedProducts);
-								break;
-							case 'zToA':
-								sortedProducts = products.sort((a, b) => {
-									const nameA = a.querySelector('.card-title strong') ?
-										a.querySelector('.card-title strong').innerText.toLowerCase() : '';
-									const nameB = b.querySelector('.card-title strong') ?
-										b.querySelector('.card-title strong').innerText.toLowerCase() : '';
-										
-									return nameB.localeCompare(nameA);
-								});
-								break;
-							case 'default':
-							default:
-								location.reload();
-								sortedProducts = products;
-								break;
-						}
-
-						const productContainer = document.querySelector('.product-container');
-						productContainer.innerHTML = '';
-
-						
-						sortedProducts.forEach(product => {
-							productContainer.appendChild(product);
-						});
-					}
-
-				});
-			</script>
+				</script>
 
 
 
 
-			<!-- Load more -->
-			<div class="flex-c-m flex-w w-full p-t-45 pb-5">
-				<a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
-					Load More
-				</a>
+
+
+
+
+
+				<!-- Load more -->
+				<div class="flex-c-m flex-w w-full p-t-45 pb-5">
+					<a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
+						Load More
+					</a>
+				</div>
 			</div>
-		</div>
-		</div>
-
-
-		<%- include('../partials/_footer') %>
-
-			<!-- Back to top -->
-			<div class="btn-back-to-top" id="myBtn">
-				<span class="symbol-btn-back-to-top">
-					<i class="zmdi zmdi-chevron-up"></i>
-				</span>
 			</div>
 
 
-			<!--===============================================================================================-->
-			<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
-			<!--===============================================================================================-->
-			<script src="vendor/animsition/js/animsition.min.js"></script>
-			<!--===============================================================================================-->
-			<script src="vendor/bootstrap/js/popper.js"></script>
-			<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-			<!--===============================================================================================-->
-			<script src="vendor/select2/select2.min.js"></script>
-			<!--===============================================================================================-->
-			<script src="vendor/daterangepicker/moment.min.js"></script>
-			<script src="vendor/daterangepicker/daterangepicker.js"></script>
-			<!--===============================================================================================-->
-			<script src="vendor/slick/slick.min.js"></script>
-			<script src="js/slick-custom.js"></script>
-			<!--===============================================================================================-->
-			<script src="vendor/parallax100/parallax100.js"></script>
+			<%- include('../partials/_footer') %>
 
-			<!--===============================================================================================-->
-			<script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
+				<!-- Back to top -->
+				<div class="btn-back-to-top" id="myBtn">
+					<span class="symbol-btn-back-to-top">
+						<i class="zmdi zmdi-chevron-up"></i>
+					</span>
+				</div>
 
-			<!--===============================================================================================-->
-			<script src="vendor/isotope/isotope.pkgd.min.js"></script>
 
-			<!--===============================================================================================-->
-			<script src="vendor/sweetalert/sweetalert.min.js"></script>
-			<!--===============================================================================================-->
-			<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-			<!--===============================================================================================-->
-			<script src="js/main.js"></script>
-			<script src="userjs/products.js"></script>
+				<!--===============================================================================================-->
+				<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+				<!--===============================================================================================-->
+				<script src="vendor/animsition/js/animsition.min.js"></script>
+				<!--===============================================================================================-->
+				<script src="vendor/bootstrap/js/popper.js"></script>
+				<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+				<!--===============================================================================================-->
+				<script src="vendor/select2/select2.min.js"></script>
+				<!--===============================================================================================-->
+				<script src="vendor/daterangepicker/moment.min.js"></script>
+				<script src="vendor/daterangepicker/daterangepicker.js"></script>
+				<!--===============================================================================================-->
+				<script src="vendor/slick/slick.min.js"></script>
+				<script src="js/slick-custom.js"></script>
+				<!--===============================================================================================-->
+				<script src="vendor/parallax100/parallax100.js"></script>
 
-			<script>
-				const searchInput = document.querySelector('input[name="search-product"]');
-				const searchResultsContainer = document.querySelector('.isotope-grid');
+				<!--===============================================================================================-->
+				<script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
 
-				// Debouncing for performance
-				let timeout = null;
+				<!--===============================================================================================-->
+				<script src="vendor/isotope/isotope.pkgd.min.js"></script>
 
-				searchInput.addEventListener('input', () => {
-					clearTimeout(timeout);
-					timeout = setTimeout(async () => {
-						const query = searchInput.value;
-						const response = await fetch(`/product-search?q=${encodeURIComponent(query)}`);
-						const products = await response.json();
+				<!--===============================================================================================-->
+				<script src="vendor/sweetalert/sweetalert.min.js"></script>
+				<!--===============================================================================================-->
+				<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+				<!--===============================================================================================-->
+				<script src="js/main.js"></script>
+				<script src="userjs/products.js"></script>
 
-						// Clear the existing products
-						searchResultsContainer.innerHTML = '';
 
-						// Render the products in real-time
-						products.forEach(product => {
-							searchResultsContainer.innerHTML += `
+				<script>
+					const searchInput = document.querySelector('input[name="search-product"]');
+					const searchResultsContainer = document.querySelector('.isotope-grid');
+
+					// Debouncing for performance
+					let timeout = null;
+
+					searchInput.addEventListener('input', () => {
+						clearTimeout(timeout);
+						timeout = setTimeout(async () => {
+							const query = searchInput.value;
+							const response = await fetch(`/product-search?q=${encodeURIComponent(query)}`);
+							const products = await response.json();
+
+							// Clear the existing products
+							searchResultsContainer.innerHTML = '';
+
+
+
+							// Render the products in real-time
+							products.forEach(product => {
+								searchResultsContainer.innerHTML += `
 								<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item ${product.category ? product.category.name : 'uncategorized'}">
 									<div class="block2 ${product.stock <= 0 ? 'out-of-stock' : ''}">
 										<div class="block2-pic hov-img0 ${product.stock <= 0 ? 'out-of-stock-shade' : ''}">
 											${product.images && product.images.length > 0 ?
-									`<img src="/uploads/${product.images[0]}" alt="IMG-PRODUCT">` :
-									`<img src="/path/to/default-image.jpg" alt="Default Image">`
-								}
+										`<img src="/uploads/${product.images[0]}" alt="IMG-PRODUCT">` :
+										`<img src="/path/to/default-image.jpg" alt="Default Image">`
+									}
 											<a href="/product-detail/${product._id}"
 											   class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04"
 											   data-id="${product._id}">
@@ -592,7 +580,7 @@
 										<div class="block2-txt flex-w flex-t p-t-14">
 											<div class="block2-txt-child1 flex-col-l">
 												<a href="/product-detail/${product._id}"
-												   class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+												   class=" stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
 													${product.name}
 												</a>
 												<span class="stext-105 cl3">
@@ -604,13 +592,13 @@
 									</div>
 								</div>
 							`;
-						});
-					}, 300); // Wait 300ms after user stops typing before sending the request
-				});
-			</script>
+							});
+						}, 300); // Wait 300ms after user stops typing before sending the request
+					});
+				</script>
 
 
-			<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+				<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 </body>

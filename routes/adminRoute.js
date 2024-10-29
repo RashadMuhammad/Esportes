@@ -10,18 +10,31 @@ const Offer = require("../models/Offer");
 const multer = require("multer");
 const path = require("path");
 
+// ======================================================================================================
+
 // Admin login routes
 router.get("/adminlogin", auth.islogout, adminController.adminlogin);
 router.post("/adminlogin", adminController.verifylogin);
 
+// =======================================================================================================
+
 // Dashboard route
 router.get("/Dashboard", auth.islogin, adminController.renderDashboard);
+router.get("/sales-data", adminController.chartDashboard);
+
+// ========================================================================================================
+
+router.get("/sales-reportpage", auth.islogin, adminController.renderSalesReportPage);
 router.post("/sales-report", adminController.getSalesReport);
 router.post("/sales-report-pdf", adminController.downloadSalesReportPDF);
 router.post("/sales-report-csv", adminController.downloadSalesReportCSV);
 
+// =========================================================================================================
+
 router.get("/users", auth.islogin, adminController.getAllUsers);
 router.post("/users/:id/toggle-block", adminController.toggleBlock);
+
+// ==========================================================================================================
 
 //Product routes
 router.get("/products", auth.islogin, adminController.getAllProducts);
@@ -40,6 +53,8 @@ router.post(
   adminController.toggleProductListing
 );
 router.post("/products/delete/:id", adminController.deleteProduct);
+
+// ===========================================================================================================
 
 // Categories routes
 router.get("/Categories", auth.islogin, adminController.renderallcategories);
@@ -62,6 +77,8 @@ router.post(
 );
 router.get("/checkName", adminController.checkname);
 
+// ===========================================================================================================
+
 // Orders route
 router.get("/Orders", auth.islogin, adminController.renderOrders);
 router.put("/orders/status", auth.islogin, adminController.updateOrderStatus);
@@ -72,11 +89,15 @@ router.post(
   adminController.handleReturnRequest
 );
 
+// ============================================================================================================
+
 // Coupons route
 router.get("/Coupons", auth.islogin, adminController.renderCoupons);
 router.post("/coupons/edit/:id", adminController.updateCoupon);
 router.post("/coupons/delete/:couponId", adminController.deleteCoupon);
 router.post("/coupons/add", adminController.addCoupon);
+
+// =============================================================================================================
 
 // Offers route
 router.get("/Offers", auth.islogin, adminController.renderOffers);
@@ -90,11 +111,13 @@ router.put(
 );
 router.delete("/offers/delete/:id", auth.islogin, adminController.deleteOffer);
 
-// Deals route
-router.get("/Deals", auth.islogin, adminController.renderDeals);
+// ===============================================================================================================
+
 
 // Settings route
 router.get("/Settings", auth.islogin, adminController.renderSettings);
+
+// ===============================================================================================================
 
 // Logout route
 router.post("/logout", auth.islogin, adminController.logout);

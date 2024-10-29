@@ -526,6 +526,9 @@
 
 			<script>
 				let discountAmount = 0;
+				let totalAfterCoupon = 0
+				const couponCodeInput = document.getElementById('couponCode');
+
 
 
 				document.addEventListener('DOMContentLoaded', function () {
@@ -533,8 +536,8 @@
 					const couponCodeInput = document.getElementById('couponCode');
 					const totalAfterDiscount = document.getElementById('totalAfterDiscount');
 
-					let appliedCouponCode = null; 
-					let subtotal = Number(totalAfterDiscount.textContent.slice(1)); 
+					let appliedCouponCode = null;
+					let subtotal = Number(totalAfterDiscount.textContent.slice(1));
 
 
 					if (applyCouponButton) {
@@ -666,6 +669,8 @@
 									return;
 								}
 
+								console.log('discountAmount',discountAmount);
+								
 
 								if (couponData.discountType === 'percentage') {
 									discountAmount = (subtotal * couponData.discountValue) / 100;
@@ -679,7 +684,7 @@
 								console.log(discountAmount);
 
 
-								const totalAfterCoupon = subtotal - discountAmount;
+								totalAfterCoupon = subtotal - discountAmount;
 
 								// Show success message
 								Swal.fire({
@@ -688,6 +693,8 @@
 									text: `Discount of ₹${discountAmount.toFixed(2)} applied! New total: ₹${totalAfterCoupon.toFixed(2)}`,
 									confirmButtonText: 'Great'
 								});
+
+								// console.log('heiiiiii', totalAfterCoupon)
 
 								// Update the UI
 								totalAfterDiscount.textContent = `₹${totalAfterCoupon.toFixed(2)}`;
@@ -773,22 +780,16 @@
 								console.error('Error fetching product details:', error);
 								return;
 							}
-							console.log(2)
-
-							console.log(cartItems.length)
-							console.log(paymentMethodValue)
 
 							// Handle payment methods
 							if (cartItems.length > 0) {
 								console.log(3);
 
-								if (paymentMethodValue === 'OnlinePayment' && isAddressValid) {
-									// Online payment logic (already implemented)
-									console.log("sdvevewevwe");
-
+								if (paymentMethodValue === 'OnlinePayment' && isAddressValid   ) {
+									
 									const productIds = cartItems.map(item => item.productId);
 									let products = [];
-
+									
 									// Fetch product details
 									try {
 										const response = await fetch('/fetch-products', {
@@ -803,118 +804,155 @@
 										console.error('Error fetching product details:', error);
 										return;
 									}
-
+									
 									// Calculate subtotal
 									const total = cartItems.reduce((acc, item) => {
 										const product = products.find(p => p._id.toString() === item.productId);
 										return acc + (product ? product.price * item.quantity : 0);
 									}, 0);
-
-									const subtotal = parseFloat(document.getElementById('subtotal').textContent)
+									
+									const couponCode = couponCodeInput.value.trim();
+									
+									
+									const subtotalText = document.getElementById('subtotal').textContent.trim();
+									const subtotal = parseFloat(subtotalText.replace(/[^0-9.]/g, '')); console.log(`subtotal : ${subtotal}`)
 
 									// Assuming a fixed discount amount
-									const discountAmount = subtotal * 0.03; // 3% discount
-									const totalAfterDiscount = parseFloat(document.getElementById('totalAfterDiscount').textContent.replace(/₹|,/g, ''));
+									const totalAfterDiscount = Math.floor(parseFloat(document.getElementById('totalAfterDiscount').textContent.replace(/₹|,/g, '')));
+
 
 									if (subtotal > 0 && totalAfterDiscount >= 0) {
-										// Create Razorpay order
-										let orderData;
 										try {
-											const orderResponse = await fetch('/create-razorpay-order', {
+											// Prepare order data with initial payment status set to "Payment Failure"
+											const orderDataToSend = {
+												items: cartItems,
+												paymentMethod: paymentMethodValue,
+												address: selectedAddress,
+												subtotal: subtotal,
+												couponCode: couponCode,
+												total: total,
+												discountAmount,
+												status: "Payment Failure"
+											};
+
+
+
+											// Send the order data to the backend to place the order
+											const placeOrderResponse = await fetch('/place-order', {
 												method: 'POST',
 												headers: {
 													'Content-Type': 'application/json',
 												},
-												body: JSON.stringify({
-													amount: totalAfterDiscount,
-													currency: 'INR'
-												}),
+												body: JSON.stringify(orderDataToSend),
 											});
-											orderData = await orderResponse.json();
-										} catch (error) {
-											console.error('Error creating order:', error);
-											return;
-										}
 
-										if (orderData.razorpayOrderId) {
-											const razorpayOptions = {
-												key: orderData.razorpayKeyId,
-												amount: orderData.amount,
-												currency: 'INR',
-												name: 'Esportes',
-												description: 'Purchase Products',
-												order_id: orderData.razorpayOrderId,
-												handler: async function (response) {
-													console.log('Razorpay Response:', response);
+											const orderPlacementData = await placeOrderResponse.json();
 
-													// Verify payment on the server
-													try {
-														const verifyResponse = await fetch('/place-order', {
+											// Check if the order was placed successfully
+											if (orderPlacementData.orderId) {
+												const orderId = orderPlacementData.orderId;
+
+												// Proceed with Razorpay payment after placing the order
+												const orderResponse = await fetch('/create-razorpay-order', {
+													method: 'POST',
+													headers: {
+														'Content-Type': 'application/json',
+													},
+													body: JSON.stringify({
+														amount: totalAfterDiscount * 100, // Amount in paise
+														currency: 'INR'
+													}),
+												});
+
+												const orderData = await orderResponse.json();
+
+												const razorpayOptions = {
+													key: 'rzp_test_jQwdUt0mQkB6AR', // Razorpay Key ID
+													amount: orderData.amount * 100, // Amount in paise 
+													currency: 'INR',
+													name: 'Esportes',
+													description: 'Purchase Products',
+													order_id: orderData.razorpayOrderId, // Razorpay Order ID
+													handler: async function (response) {
+														// Handle Razorpay response on successful payment
+														const updateOrderData = {
+															razorpay_payment_id: response.razorpay_payment_id || null,
+															status: response.razorpay_payment_id ? "Pending" : "Payment Failure"
+														};
+
+														// Send payment details to update the order
+														const verifyResponse = await fetch(`/update-order/${orderId}`, {
 															method: 'POST',
 															headers: {
 																'Content-Type': 'application/json',
 															},
-															body: JSON.stringify({
-																items: cartItems,
-																paymentMethod: paymentMethodValue,
-																address: selectedAddress,
-																total: total,
-																subtotal: subtotal,
-																discountAmount: discountAmount,
-																totalAfterDiscount: totalAfterDiscount,
-																razorpay_payment_id: response.razorpay_payment_id,
-																razorpay_order_id: orderData.razorpayOrderId,
-																razorpay_signature: response.razorpay_signature,
-															}),
+															body: JSON.stringify(updateOrderData),
 														});
 
-														if (!verifyResponse.ok) {
-															const errorText = await verifyResponse.text();
-															console.error('Error verifying payment:', errorText);
-															Swal.fire({
-																icon: 'error',
-																title: 'Order Failed',
-																text: 'Please try again. Server response: ' + errorText,
-															});
-														}
+														const updateResponseData = await verifyResponse.json();
 
-														const orderPlacementData = await verifyResponse.json();
+														// Redirect to order confirmation page
+														window.location.href = `/order-confirmation/${orderId}`;
+													},
 
-														// Check if the order was placed successfully and redirect
-														if (orderPlacementData.message === 'Order placed successfully') {
-															window.location.href = `/order-confirmation/${orderPlacementData.orderId}`;
-														} else {
-															console.error('Order failed:', orderPlacementData);
-															Swal.fire({
-																icon: 'error',
-																title: 'Order Failed',
-																text: 'Please try again.',
+													// Handle when the Razorpay modal is dismissed
+													modal: {
+														ondismiss: async function () {
+															// Set the order status to "Payment Failure" if the modal is closed
+															await fetch(`/update-order/${orderId}`, {
+																method: 'POST',
+																headers: {
+																	'Content-Type': 'application/json',
+																},
+																body: JSON.stringify({ status: "Payment Failure" }),
 															});
+
+															// Redirect to order confirmation page with status "Payment Failure"
+															window.location.href = `/order-confirmation/${orderId}`;
 														}
-													} catch (error) {
-														console.error('Error verifying payment:', error);
+													},
+
+													prefill: {
+														name: 'Esportes',
+														email: 'ecommerceesportes@gmail.com',
+														contact: '9656801830'
+													},
+													theme: {
+														color: '#F37254'
 													}
-												},
-												prefill: {
-													name: 'Esportes',
-													email: 'ecommerceesportes@gmail.com',
-													contact: '9656801830'
-												},
-												theme: {
-													color: '#F37254'
-												}
-											};
+												};
 
-											const razorpay = new Razorpay(razorpayOptions);
-											razorpay.open();
-										} else {
-											console.error('Failed to create Razorpay order');
+												const razorpay = new Razorpay(razorpayOptions);
+												razorpay.open();
+											}
+										} catch (error) {
+											console.log(error.message);
 										}
-									}
-								} else if (paymentMethodValue === 'CashOnDelivery' && isAddressValid) {
 
+									}
+
+								} else if (paymentMethodValue === 'CashOnDelivery' && isAddressValid) {
+									const couponCode = couponCodeInput.value.trim();
 									const subtotalText = document.getElementById('subtotal').textContent.trim();
-									const subtotal = parseFloat(subtotalText.replace(/[^0-9.]/g, ''));									console.log(`subtotal : ${subtotal}`)
+									const subtotal = parseFloat(subtotalText.replace(/[^0-9.]/g, '')); console.log(`subtotal : ${subtotal}`)
+
+									console.log(112345);
+
+									console.log('subtotal',subtotal);
+									
+									console.log('totalAfterDiscount == ', totalAfterDiscount);
+
+
+									if (subtotal > 1000) {
+										Swal.fire({
+											icon: 'error',
+											title: 'Order Limit Exceeded',
+											text: 'Total amount after discount cannot exceed ₹1000 for Cash on Delivery.',
+											confirmButtonText: 'Okay'
+										});
+										return;
+									}
+
 									try {
 										const orderResponse = await fetch('/place-order', {
 											method: 'POST',
@@ -925,7 +963,8 @@
 												items: cartItems,
 												paymentMethod: paymentMethodValue,
 												address: selectedAddress,
-												subtotal : subtotal,
+												subtotal: subtotal,
+												couponCode: couponCode,
 												total: cartItems.reduce((acc, item) => {
 													const product = products.find(p => p._id.toString() === item.productId);
 													return acc + (product ? product.price * item.quantity : 0);
@@ -944,6 +983,7 @@
 										const orderPlacementData = await orderResponse.json();
 
 										console.log(orderPlacementData);
+										console.log('discountAount == ',discountAmount);
 
 
 										if (orderPlacementData.message === 'Order placed successfully') {
@@ -965,67 +1005,68 @@
 									});
 								}
 							}
-						});
-					}
+						}
+						)
+					};
 				});
 
 			</script>
 
 			<script>
-				document.addEventListener('DOMContentLoaded', function () {
-					const nameInput = document.getElementById('name');
-					const housenameInput = document.getElementById('housename');
-					const locationInput = document.getElementById('location');
-					const cityInput = document.getElementById('city');
-					const stateInput = document.getElementById('state');
-					const zipInput = document.getElementById('zip');
-					const addressTypeInput = document.getElementById('addressType');
+					document.addEventListener('DOMContentLoaded', function () {
+						const nameInput = document.getElementById('name');
+						const housenameInput = document.getElementById('housename');
+						const locationInput = document.getElementById('location');
+						const cityInput = document.getElementById('city');
+						const stateInput = document.getElementById('state');
+						const zipInput = document.getElementById('zip');
+						const addressTypeInput = document.getElementById('addressType');
 
 
-					const nameError = document.getElementById('nameError');
-					const housenameError = document.getElementById('housenameError');
-					const locationError = document.getElementById('locationError');
-					const cityError = document.getElementById('cityError');
-					const stateError = document.getElementById('stateError');
-					const zipError = document.getElementById('zipError');
-					const addressTypeError = document.getElementById('addressTypeError');
+						const nameError = document.getElementById('nameError');
+						const housenameError = document.getElementById('housenameError');
+						const locationError = document.getElementById('locationError');
+						const cityError = document.getElementById('cityError');
+						const stateError = document.getElementById('stateError');
+						const zipError = document.getElementById('zipError');
+						const addressTypeError = document.getElementById('addressTypeError');
 
-					// Function to validate non-empty fields with minimum length check
-					function validateField(input, errorElement, minLength = 3) {
-						const value = input.value.trim();
-						if (value.length < minLength) {
-							errorElement.textContent = `This field must have at least ${minLength} characters.`;
-							input.classList.add('is-invalid');
-						} else {
-							errorElement.textContent = '';
-							input.classList.remove('is-invalid');
-							input.classList.add('is-valid');
+						// Function to validate non-empty fields with minimum length check
+						function validateField(input, errorElement, minLength = 3) {
+							const value = input.value.trim();
+							if (value.length < minLength) {
+								errorElement.textContent = `This field must have at least ${minLength} characters.`;
+								input.classList.add('is-invalid');
+							} else {
+								errorElement.textContent = '';
+								input.classList.remove('is-invalid');
+								input.classList.add('is-valid');
+							}
 						}
-					}
 
-					// Function to validate ZIP code (digits only)
-					function validateZip(input, errorElement) {
-						const value = input.value.trim();
-						const zipPattern = /^\d{6,}$/;
-						if (!zipPattern.test(value)) {
-							errorElement.textContent = "ZIP Code must be digits only and at least 6 characters long.";
-							input.classList.add('is-invalid');
-						} else {
-							errorElement.textContent = '';
-							input.classList.remove('is-invalid');
-							input.classList.add('is-valid');
+						// Function to validate ZIP code (digits only)
+						function validateZip(input, errorElement) {
+							const value = input.value.trim();
+							const zipPattern = /^\d{6,}$/;
+							if (!zipPattern.test(value)) {
+								errorElement.textContent = "ZIP Code must be digits only and at least 6 characters long.";
+								input.classList.add('is-invalid');
+							} else {
+								errorElement.textContent = '';
+								input.classList.remove('is-invalid');
+								input.classList.add('is-valid');
+							}
 						}
-					}
 
-					// Real-time validation for location, city, state, and zip
-					nameInput.addEventListener('input', () => validateField(nameInput, nameError));
-					housenameInput.addEventListener('input', () => validateField(housenameInput, housenameError));
-					locationInput.addEventListener('input', () => validateField(locationInput, locationError));
-					cityInput.addEventListener('input', () => validateField(cityInput, cityError));
-					stateInput.addEventListener('input', () => validateField(stateInput, stateError));
-					zipInput.addEventListener('input', () => validateZip(zipInput, zipError));
-					addressTypeInput.addEventListener('input', () => validateField(addressTypeInput, addressTypeError));
-				});
+						// Real-time validation for location, city, state, and zip
+						nameInput.addEventListener('input', () => validateField(nameInput, nameError));
+						housenameInput.addEventListener('input', () => validateField(housenameInput, housenameError));
+						locationInput.addEventListener('input', () => validateField(locationInput, locationError));
+						cityInput.addEventListener('input', () => validateField(cityInput, cityError));
+						stateInput.addEventListener('input', () => validateField(stateInput, stateError));
+						zipInput.addEventListener('input', () => validateZip(zipInput, zipError));
+						addressTypeInput.addEventListener('input', () => validateField(addressTypeInput, addressTypeError));
+					});
 			</script>
 
 			<!--===============================================================================================-->
@@ -1034,191 +1075,191 @@
 
 
 			<script>
-				function selectAddress(card) {
-					const addressCard = card;
+					function selectAddress(card) {
+						const addressCard = card;
 
-					const cardText = addressCard.querySelector('.card-text');
+						const cardText = addressCard.querySelector('.card-text');
 
-					if (cardText) {
-						const details = cardText.innerHTML;
+						if (cardText) {
+							const details = cardText.innerHTML;
 
-						// Using regex to extract address details
-						const addressNameMatch = details.match(/<strong>Name:<\/strong>\s*([^<]+)<br>/);
-						const addressHousenameMatch = details.match(/<strong>House Name:<\/strong>\s*([^<]+)<br>/);
-						const addressLocationMatch = details.match(/<strong>Location:<\/strong>\s*([^<]+)<br>/);
-						const addressCityMatch = details.match(/<strong>City:<\/strong>\s*([^<]+)<br>/);
-						const addressStateMatch = details.match(/<strong>State:<\/strong>\s*([^<]+)<br>/);
-						const addressZipMatch = details.match(/<strong>ZIP Code:<\/strong>\s*([^<]+)<br>/);
-						const addressTypeMatch = details.match(/<strong>Address Type:<\/strong>\s*([^<]+)/);
+							// Using regex to extract address details
+							const addressNameMatch = details.match(/<strong>Name:<\/strong>\s*([^<]+)<br>/);
+							const addressHousenameMatch = details.match(/<strong>House Name:<\/strong>\s*([^<]+)<br>/);
+							const addressLocationMatch = details.match(/<strong>Location:<\/strong>\s*([^<]+)<br>/);
+							const addressCityMatch = details.match(/<strong>City:<\/strong>\s*([^<]+)<br>/);
+							const addressStateMatch = details.match(/<strong>State:<\/strong>\s*([^<]+)<br>/);
+							const addressZipMatch = details.match(/<strong>ZIP Code:<\/strong>\s*([^<]+)<br>/);
+							const addressTypeMatch = details.match(/<strong>Address Type:<\/strong>\s*([^<]+)/);
 
-						// Capture the matched details
-						const addressName = addressNameMatch ? addressNameMatch[1].trim() : '';
-						const addressHousename = addressHousenameMatch ? addressHousenameMatch[1].trim() : '';
-						const addressLocation = addressLocationMatch ? addressLocationMatch[1].trim() : '';
-						const addressCity = addressCityMatch ? addressCityMatch[1].trim() : '';
-						const addressState = addressStateMatch ? addressStateMatch[1].trim() : '';
-						const addressZip = addressZipMatch ? addressZipMatch[1].trim() : '';
-						const addressType = addressTypeMatch ? addressTypeMatch[1].trim() : '';
+							// Capture the matched details
+							const addressName = addressNameMatch ? addressNameMatch[1].trim() : '';
+							const addressHousename = addressHousenameMatch ? addressHousenameMatch[1].trim() : '';
+							const addressLocation = addressLocationMatch ? addressLocationMatch[1].trim() : '';
+							const addressCity = addressCityMatch ? addressCityMatch[1].trim() : '';
+							const addressState = addressStateMatch ? addressStateMatch[1].trim() : '';
+							const addressZip = addressZipMatch ? addressZipMatch[1].trim() : '';
+							const addressType = addressTypeMatch ? addressTypeMatch[1].trim() : '';
 
-						// Attempt to get the country from the next sibling element if available
-						const countryElement = addressCard.querySelector('.card-text').nextElementSibling; // Adjusted
-						const addressCountry = countryElement ? countryElement.innerText.trim() : ''; // Get country
+							// Attempt to get the country from the next sibling element if available
+							const countryElement = addressCard.querySelector('.card-text').nextElementSibling; // Adjusted
+							const addressCountry = countryElement ? countryElement.innerText.trim() : ''; // Get country
 
-						// Populate the form fields with the selected address data
-						document.getElementById('name').value = addressName;
-						document.getElementById('housename').value = addressHousename;
-						document.getElementById('location').value = addressLocation;
-						document.getElementById('city').value = addressCity;
-						document.getElementById('state').value = addressState;
-						document.getElementById('zip').value = addressZip;
-						document.getElementById('addressType').value = addressType;
+							// Populate the form fields with the selected address data
+							document.getElementById('name').value = addressName;
+							document.getElementById('housename').value = addressHousename;
+							document.getElementById('location').value = addressLocation;
+							document.getElementById('city').value = addressCity;
+							document.getElementById('state').value = addressState;
+							document.getElementById('zip').value = addressZip;
+							document.getElementById('addressType').value = addressType;
 
-						// Show a message to confirm selection
-						const message = document.getElementById('addressSelectionMessage');
-						if (message) {
-							message.innerText = `Selected Location: ${addressLocation}`;
-							message.classList.remove('text-warning');
-							message.classList.add('text-success');
+							// Show a message to confirm selection
+							const message = document.getElementById('addressSelectionMessage');
+							if (message) {
+								message.innerText = `Selected Location: ${addressLocation}`;
+								message.classList.remove('text-warning');
+								message.classList.add('text-success');
+							}
+						} else {
+							console.error('Card text not found.');
 						}
-					} else {
-						console.error('Card text not found.');
 					}
-				}
 			</script>
 
 
 			<script>
-				document.addEventListener('DOMContentLoaded', () => {
-					const proceedToPaymentBtn = document.getElementById('proceedToPayment');
-					const form = document.getElementById('addressForm');
+					document.addEventListener('DOMContentLoaded', () => {
+						const proceedToPaymentBtn = document.getElementById('proceedToPayment');
+						const form = document.getElementById('addressForm');
 
-					// Validation function for each field
-					const validateName = () => {
-						const nameInput = document.getElementById('name').value.trim();
-						if (nameInput === '') {
-							return false;
-						}
-						return true;
-					};
+						// Validation function for each field
+						const validateName = () => {
+							const nameInput = document.getElementById('name').value.trim();
+							if (nameInput === '') {
+								return false;
+							}
+							return true;
+						};
 
-					const validateHousename = () => {
-						const housenameInput = document.getElementById('housename').value.trim();
-						if (housenameInput === '') {
-							return false;
-						}
-						return true;
-					};
+						const validateHousename = () => {
+							const housenameInput = document.getElementById('housename').value.trim();
+							if (housenameInput === '') {
+								return false;
+							}
+							return true;
+						};
 
-					const validateLocation = () => {
-						const locationInput = document.getElementById('location').value.trim();
-						if (locationInput === '') {
-							return false;
-						}
-						return true;
-					};
+						const validateLocation = () => {
+							const locationInput = document.getElementById('location').value.trim();
+							if (locationInput === '') {
+								return false;
+							}
+							return true;
+						};
 
-					const validateCity = () => {
-						const cityInput = document.getElementById('city').value.trim();
-						if (cityInput === '') {
-							return false;
-						}
-						return true;
-					};
+						const validateCity = () => {
+							const cityInput = document.getElementById('city').value.trim();
+							if (cityInput === '') {
+								return false;
+							}
+							return true;
+						};
 
-					const validateState = () => {
-						const stateInput = document.getElementById('state').value.trim();
-						if (stateInput === '') {
-							return false;
-						}
-						return true;
-					};
+						const validateState = () => {
+							const stateInput = document.getElementById('state').value.trim();
+							if (stateInput === '') {
+								return false;
+							}
+							return true;
+						};
 
-					const validateZip = () => {
-						const zipInput = document.getElementById('zip').value.trim();
-						const zipRegex = /^\d{6}$/;
-						if (!zipRegex.test(zipInput)) {
-							return false;
-						}
-						return true;
-					};
+						const validateZip = () => {
+							const zipInput = document.getElementById('zip').value.trim();
+							const zipRegex = /^\d{6}$/;
+							if (!zipRegex.test(zipInput)) {
+								return false;
+							}
+							return true;
+						};
 
-					const validateAddressType = () => {
-						const addressType = document.getElementById('addressType').value;
-						if (addressType === '') {
-							return false;
-						}
-						return true;
-					};
+						const validateAddressType = () => {
+							const addressType = document.getElementById('addressType').value;
+							if (addressType === '') {
+								return false;
+							}
+							return true;
+						};
 
-					proceedToPaymentBtn.addEventListener('click', (e) => {
-						e.preventDefault();
+						proceedToPaymentBtn.addEventListener('click', (e) => {
+							e.preventDefault();
 
-						if (!validateName()) {
-							Swal.fire({
-								icon: 'error',
-								title: 'Oops...',
-								text: 'Please fill  the Name!',
-							});
-							return;
-						}
+							if (!validateName()) {
+								Swal.fire({
+									icon: 'error',
+									title: 'Oops...',
+									text: 'Please fill  the Name!',
+								});
+								return;
+							}
 
-						if (!validateHousename()) {
-							Swal.fire({
-								icon: 'error',
-								title: 'Oops...',
-								text: 'Please fill  Housename!',
-							});
-							return;
-						}
+							if (!validateHousename()) {
+								Swal.fire({
+									icon: 'error',
+									title: 'Oops...',
+									text: 'Please fill  Housename!',
+								});
+								return;
+							}
 
-						if (!validateLocation()) {
-							Swal.fire({
-								icon: 'error',
-								title: 'Oops...',
-								text: 'Please fill in the location!',
-							});
-							return;
-						}
+							if (!validateLocation()) {
+								Swal.fire({
+									icon: 'error',
+									title: 'Oops...',
+									text: 'Please fill in the location!',
+								});
+								return;
+							}
 
-						if (!validateCity()) {
-							Swal.fire({
-								icon: 'error',
-								title: 'Oops...',
-								text: 'Please fill in the city!',
-							});
-							return;
-						}
+							if (!validateCity()) {
+								Swal.fire({
+									icon: 'error',
+									title: 'Oops...',
+									text: 'Please fill in the city!',
+								});
+								return;
+							}
 
-						if (!validateState()) {
-							Swal.fire({
-								icon: 'error',
-								title: 'Oops...',
-								text: 'Please fill in the state!',
-							});
-							return;
-						}
+							if (!validateState()) {
+								Swal.fire({
+									icon: 'error',
+									title: 'Oops...',
+									text: 'Please fill in the state!',
+								});
+								return;
+							}
 
-						if (!validateZip()) {
-							Swal.fire({
-								icon: 'error',
-								title: 'Oops...',
-								text: 'Please enter a valid 6-digit ZIP code!',
-							});
-							return;
-						}
+							if (!validateZip()) {
+								Swal.fire({
+									icon: 'error',
+									title: 'Oops...',
+									text: 'Please enter a valid 6-digit ZIP code!',
+								});
+								return;
+							}
 
-						if (!validateAddressType()) {
-							Swal.fire({
-								icon: 'error',
-								title: 'Oops...',
-								text: 'Please select an address type!',
-							});
-							return;
-						}
+							if (!validateAddressType()) {
+								Swal.fire({
+									icon: 'error',
+									title: 'Oops...',
+									text: 'Please select an address type!',
+								});
+								return;
+							}
 
-						form.submit();
+							form.submit();
+						});
 					});
-				});
 			</script>
 
 			<script src="https://checkout.razorpay.com/v1/checkout.js"></script>

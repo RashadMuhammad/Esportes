@@ -55,6 +55,10 @@ const {
     getWallet,
     getAvailableCoupons,
     removeCoupon,
+    updateOrder,
+    sendFailure,
+    retryPayment,
+    getInvoice,
 } = require('../controllers/usercontroller');
 const multer = require('multer');
 const path = require('path');
@@ -64,7 +68,7 @@ const { isAuthenticated, isNotAuthenticated, noCache } = require('../middlewares
 const userRoute = express.Router();
 
 // HomePage
-userRoute.get('/',noCache, home);
+userRoute.get('/', home);
 userRoute.get('/homesearch', advancedHomeSearch);
 userRoute.get('/product-search',  searchProducts);
 
@@ -119,7 +123,13 @@ userRoute.post('/remove-from-cart', isAuthenticated, removeFromCart);
 //Checkout Page which the User checked Before Placing Orders
 userRoute.get('/checkout',isAuthenticated,noCache,checkoutPage)
 userRoute.post('/create-razorpay-order', isAuthenticated, createRazorpayOrder);
+userRoute.post('/update-order/:id', isAuthenticated, updateOrder)
 userRoute.post('/place-order', isAuthenticated, orderPlaced);
+userRoute.post('/send-failue/:id', isAuthenticated, sendFailure)
+userRoute.get('/get-order/:orderId',isAuthenticated,retryPayment) 
+
+
+
 userRoute.post('/fetch-products', isAuthenticated, fetchProducts)
 userRoute.post('/validate-coupon', isAuthenticated, applyCoupon)
 userRoute.post('/remove-coupon', isAuthenticated, removeCoupon)
@@ -132,6 +142,7 @@ userRoute.post('/orders/return/:id', isAuthenticated, returnOrder);
 //Success Page for Order Confirmation of an User
 userRoute.get('/order-confirmation/:id', isAuthenticated, orderConfrimation);
 userRoute.get('/orders/:id',isAuthenticated,viewOrderDetails)
+userRoute.get('/download-invoice/:orderId',isAuthenticated,getInvoice)
 
 
 //Get wallet
