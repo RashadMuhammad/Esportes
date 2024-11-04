@@ -117,7 +117,7 @@
                               </td>
                               <td>
                                 <select class="form-control order-status-select" data-order-id="<%= order._id %>"
-                                  id="orderStatus-<%= order._id %>" <%=order.status==='canceled' ? 'disabled' : '' %>>
+                                  id="orderStatus-<%= order._id %>" <%=order.status==='Canceled' ? 'disabled' : '' %>>
 
                                   <% if (order.status==='Canceled' ) { %>
                                     <option value="Canceled" selected>Cancelled</option>
@@ -138,7 +138,7 @@
                               </td>
                               <td>
                                 <button id="cancelOrderBtn-<%= order._id %>" class="btn btn-danger"
-                                  onclick="showCancelModal('<%= order._id %>')" <%=order.status==='canceled'
+                                  onclick="showCancelModal('<%= order._id %>')" <%=order.status==='Canceled'
                                   ? 'disabled' : '' %>>Cancel</button>
 
                                 <% if (order.returnRequested) { %>
@@ -272,7 +272,6 @@
           
           <script src="/path/to/jquery.js"></script>
           <script src="/path/to/bootstrap.js"></script>
-
           <script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
           <script src="/adminjs/order.js"></script>
           <script src="../../assets/js/off-canvas.js"></script>

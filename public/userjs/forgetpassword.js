@@ -1,44 +1,33 @@
-  // const loginForm = document.getElementById("loginForm");
-  // const emailInput = document.getElementById("emailInput");
+document.addEventListener("DOMContentLoaded", function () {
+  const alertMessage = document.getElementById("alertMessage");
 
-  // loginForm.addEventListener("submit", function (event) {
-  //   event.preventDefault();
+  if (alertMessage) {
+    setTimeout(() => {
+      alertMessage.style.display = "none";
+    }, 5000);
+  }
+});
 
-  //   const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+document.addEventListener("DOMContentLoaded", function () {
+  const emailInput = document.getElementById("emailInput");
+  const emailFeedback = document.getElementById("emailFeedback");
+  const submitButton = document.getElementById("submitButton");
 
-  //   emailInput.classList.remove("is-invalid");
+  emailInput.addEventListener("input", function () {
+    validateEmail();
+  });
 
-  //   if (!emailPattern.test(emailInput.value.trim())) {
-  //     emailInput.classList.add("is-invalid");
-  //     return;
-  //   }
+  function validateEmail() {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  //   // Prepare the form data as JSON
-  //   const formData = {
-  //     email: emailInput.value.trim(),
-  //   };
-
-  //   // Send OTP request to the server
-  //   fetch("/send-otp", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json", // Indicating that we're sending JSON
-  //     },
-  //     body: JSON.stringify(formData), // Sending the email in JSON format
-  //   })
-  //   .then((response) => response.json())
-  //   .then((data) => {
-  //     if (data.message === "OTP sent successfully") {
-  //       // Redirect to OTP verification page if successful
-  //       window.location.href = "/forgetotppage";
-  //     } else if (data.message === "Email not found") {
-  //       alert("Email not found. Please check and try again.");
-  //     } else {
-  //       alert("Failed to send OTP. Please try again.");
-  //     }
-  //   })
-  //   .catch((error) => {
-  //     console.error("Error:", error);
-  //     alert("An error occurred while sending OTP.");
-  //   });
-  // });
+    if (!emailPattern.test(emailInput.value)) {
+      emailFeedback.style.display = "block";
+      emailInput.classList.add("is-invalid");
+      submitButton.disabled = true;
+    } else {
+      emailFeedback.style.display = "none";
+      emailInput.classList.remove("is-invalid");
+      submitButton.disabled = false;
+    }
+  }
+});

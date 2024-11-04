@@ -70,25 +70,20 @@ exports.verifylogin = async (req, res) => {
 // Render the dashboard
 exports.renderDashboard = async (req, res) => {
   try {
-    // Total Users
     const totalUsers = await User.countDocuments();
 
-    // Total Orders
     const totalOrders = await Order.countDocuments();
 
-    // Total Sales Amount
     const totalSales = await Order.aggregate([
-      { $match: { status: "Completed" } }, // Include only "Completed" orders
+      { $match: { status: "Completed" } }, 
       { $group: { _id: null, total: { $sum: "$paymentTotal" } } },
     ]);
     
     const totalSalesAmount = totalSales[0] ? totalSales[0].total : 0;
     
 
-    // Pending Orders
     const pendingOrders = await Order.countDocuments({ status: "Pending" });
 
-    // Best Selling Products
     const bestSellingProducts = await Order.aggregate([
       { $match: { status: "Completed" } },
       { $unwind: "$items" },
@@ -124,7 +119,6 @@ exports.renderDashboard = async (req, res) => {
     
     
 
-    // Best Selling Categories
     const bestSellingCategories = await Order.aggregate([
       { $match: { status: "Completed" } },
       { $unwind: "$items" },
@@ -159,7 +153,6 @@ exports.renderDashboard = async (req, res) => {
     ]);
 
 
-    // Render the dashboard
     res.render("admin/index", {
       totalUsers,
       totalOrders,
@@ -177,7 +170,6 @@ exports.renderDashboard = async (req, res) => {
 // routes/dashboard.js
 exports.chartDashboard = async (req, res) => {
   const { filter } = req.query;
-   // Logs the filter value
 
   let groupFormat;
   if (filter === 'weekly') {

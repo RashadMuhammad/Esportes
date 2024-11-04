@@ -7,11 +7,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const fetchDataAndRenderChart = async (filter) => {
       try {
         const response = await fetch(`/admin/sales-data?filter=${filter.toLowerCase()}`);
-         // For debugging status
         if (!response.ok) throw new Error("Network response was not ok");
 
         const data = await response.json();
-         // For debugging data
 
         const labels = data.map(item => {
           if (filter === 'weekly') return `Week ${item._id.week}, ${item._id.year}`;
@@ -50,10 +48,8 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     };
 
-    // Initial chart load (default to monthly)
     fetchDataAndRenderChart(filterSelect.value);
 
-    // Update chart when filter changes
     filterSelect.addEventListener("change", () => {
       fetchDataAndRenderChart(filterSelect.value);
     });

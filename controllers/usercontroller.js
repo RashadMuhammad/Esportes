@@ -233,21 +233,19 @@ exports.forgetPassword = async (req, res) => {
 
 // Function to handle OTP request
 exports.forgetPasswordOtp = async (req, res) => {
-  // const otp = crypto.randomInt(100000, 999999).toString();
   const { email } = req.body;
   req.session.forgetEmail = email;
 
   if (!email) {
-    return res.status(400).json({ message: "Email is required" });
+    return res.render("users/forgetpassword", { message: "Email is required" });
   }
 
   try {
     const user = await User.findOne({ email: email });
     if (!user) {
-      return res.status(404).json({ message: "Email not found" });
+      return res.render("users/forgetpassword", { message: "Email not found" });
     }
 
-    //=================================================================================
     const genotp = Math.floor(100000 + Math.random() * 900000);
 
     const transporter = nodemailer.createTransport({
@@ -262,27 +260,21 @@ exports.forgetPasswordOtp = async (req, res) => {
       from: process.env.EMAIL_USER,
       to: email,
       subject: "Your OTP for Signup",
-      text: ` Your OTP for signup is ${genotp}. It will expire in 10 minutes.`,
+      text: `Your OTP for signup is ${genotp}. It will expire in 10 minutes.`,
     };
 
     await transporter.sendMail(mailOptions);
 
     req.session.otp = genotp;
-    req.session.email = req.body;
-    req.session.otpExpires = Date.now() + 1 * 60 * 1000;
+    req.session.email = email;
+    req.session.otpExpires = Date.now() + 1 * 60 * 1000; 
 
     res.redirect("/forgetotppage");
-    
-
-    //======================================================================================
-
-    // req.session.otp = otp;
-    // req.session.email = email;
   } catch (error) {
-    console.error("Error during dfffdfd OTP sending:", error);
-    return res
-      .status(500)
-      .json({ error: "Failed to send OTP email rdgfhtrfghtrhftrfg" });
+    console.error("Error during OTP sending:", error);
+    return res.render("forgetPassword", {
+      message: "Failed to send OTP email. Please try again later.",
+    });
   }
 };
 
