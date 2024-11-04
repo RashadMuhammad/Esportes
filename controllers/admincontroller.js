@@ -15,6 +15,7 @@ const { Parser } = require("json2csv");
 const path = require("path");
 const { product } = require("./usercontroller");
 const flash = require("flash");
+const { log } = require("console");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -30,7 +31,7 @@ exports.adminlogin = async (req, res) => {
   try {
     res.render("admin/login");
   } catch (error) {
-    console.log(error.message);
+    
   }
 };
 
@@ -50,7 +51,7 @@ exports.verifylogin = async (req, res) => {
 
         req.session.save((err) => {
           if (err) {
-            console.log("Session save error:", err);
+            
           } else {
             res.redirect("/admin/Dashboard");
           }
@@ -62,7 +63,7 @@ exports.verifylogin = async (req, res) => {
       res.render("admin/login", { message: "Incorrect Gmail" });
     }
   } catch (error) {
-    console.log("Login error:", error.message);
+    
   }
 };
 
@@ -89,6 +90,7 @@ exports.renderDashboard = async (req, res) => {
 
     // Best Selling Products
     const bestSellingProducts = await Order.aggregate([
+      { $match: { status: "Completed" } },
       { $unwind: "$items" },
       {
         $group: {
@@ -119,9 +121,12 @@ exports.renderDashboard = async (req, res) => {
       { $limit: 10 },
     ]);
 
+    
+    
 
     // Best Selling Categories
     const bestSellingCategories = await Order.aggregate([
+      { $match: { status: "Completed" } },
       { $unwind: "$items" },
       {
         $lookup: {
@@ -172,7 +177,7 @@ exports.renderDashboard = async (req, res) => {
 // routes/dashboard.js
 exports.chartDashboard = async (req, res) => {
   const { filter } = req.query;
-  console.log("Filter received:", filter); // Logs the filter value
+   // Logs the filter value
 
   let groupFormat;
   if (filter === 'weekly') {
@@ -193,9 +198,9 @@ exports.chartDashboard = async (req, res) => {
       { $sort: { "_id": 1 } }
     ]);
 
-    console.log(1);
     
-    console.log("Sales data fetched:", salesData); 
+    
+     
     res.json(salesData);
   } catch (error) {
     console.error("Error fetching sales data:", error);
@@ -208,7 +213,7 @@ exports.renderSalesReportPage = async (req, res) => {
     const adminData = await admin.find();
     res.render("admin/salesreport", { admin: adminData });
   } catch (error) {
-    console.log(error.message);
+    
   }
 };
 
@@ -272,7 +277,7 @@ exports.getSalesReport = async (req, res) => {
 exports.downloadSalesReportCSV = async (req, res) => {
   try {
     const { orders } = req.body;
-    console.log(orders); 
+     
 
     const fields = [
       { label: "Order ID", value: "_id" },
@@ -290,7 +295,7 @@ exports.downloadSalesReportCSV = async (req, res) => {
     res.attachment("sales_report.csv");
     return res.send(csv);
   } catch (error) {
-    console.log("Error generating CSV:", error.message);
+    
     return res
       .status(500)
       .json({ message: "An error occurred while generating the CSV." });
@@ -314,17 +319,15 @@ exports.downloadSalesReportPDF = async (req, res) => {
     );
     res.setHeader("Content-Type", "application/pdf");
 
-    // Title for the PDF report
     doc
       .font("Helvetica-Bold")
       .fontSize(16)
       .text("Sales Report", { align: "center" });
     doc.moveDown(2);
 
-    // Define table structure with column headers
     const tableTop = 180;
     const cellHeight = 40;
-    const columnWidths = [100, 80, 100, 80, 80, 80]; // Adjust column widths as needed
+    const columnWidths = [100, 80, 100, 80, 80, 80]; 
     const columns = [
       "Order ID",
       "Offer Discount",
@@ -334,13 +337,11 @@ exports.downloadSalesReportPDF = async (req, res) => {
       "Status",
     ];
 
-    // Function to draw a row in the table
     const drawRow = (y, rowValues, isHeader = false) => {
       doc.lineWidth(0.5);
       let x = 30; // Starting x position for the first column
 
       rowValues.forEach((text, i) => {
-        // Adjust font size for header and content
         if (isHeader) {
           doc.font("Helvetica-Bold").fontSize(10); // Larger text for headers
         } else {
@@ -356,15 +357,11 @@ exports.downloadSalesReportPDF = async (req, res) => {
       });
     };
 
-    // Draw the table header row
     drawRow(tableTop, columns, true);
 
-    // Variable to keep track of the y position of rows
     let yPos = tableTop + cellHeight;
 
-    // Iterate over each order to generate rows in the PDF
     orders.forEach((order) => {
-      // Extracting relevant order details
       const orderId = order._id || "N/A"; // Fallback to "N/A" if order ID is missing
       const offerDiscount = order.afteroffer || 0; // Offer Discount
       const couponDiscount = order.discountAmount || 0; // Coupon Discount
@@ -372,17 +369,6 @@ exports.downloadSalesReportPDF = async (req, res) => {
       const totalAmount = parseFloat(order.paymentTotal).toFixed(2); // Total Amount
       const status = order.status || "N/A"; // Status fallback
 
-      // Log order details to the console for debugging
-      console.log("Order Details:", {
-        ID: orderId,
-        OfferDiscount: offerDiscount,
-        CouponDiscount: couponDiscount,
-        TotalDiscount: totalDiscount,
-        TotalAmount: totalAmount,
-        Status: status,
-      });
-
-      // Create a row for this order's data
       const row = [
         `${orderId}`, // Order ID
         `${offerDiscount}`, // Offer Discount
@@ -400,7 +386,7 @@ exports.downloadSalesReportPDF = async (req, res) => {
     // Finalize the PDF document and send it as a response
     doc.pipe(res);
     doc.end();
-    console.log("PDF generated and sent successfully.");
+    
   } catch (error) {
     console.error("Error generating PDF:", error.message);
     return res
@@ -518,7 +504,6 @@ exports.addProduct = async (req, res) => {
   try {
     const { productNo, name, description, category, stock, price } = req.body;
 
-    // Check if a product with the same name already exists
     const existingProduct = await Product.findOne({ name: name });
     if (existingProduct) {
       req.flash(
@@ -526,7 +511,7 @@ exports.addProduct = async (req, res) => {
         "Product name already exists. Please choose another name."
       );
       console.log("Flash Error Set:", req.flash("errorMessage"));
-      return res.redirect("/admin/products"); // Redirect to the same page
+      return res.redirect("/admin/products"); 
     }
 
     // Process images and save the new product
@@ -593,7 +578,7 @@ exports.editProduct = async (req, res) => {
 
     res.status(200).redirect("/admin/products");
   } catch (error) {
-    console.log("Error updating product:", error);
+    
     res.status(400).send("Error editing product.");
   }
 };
@@ -742,7 +727,7 @@ exports.handleReturnRequest = async (req, res) => {
       order.returnStatus = "Approved";
       order.status = "Returned";
 
-      const refundAmount = order.totalAfterDiscount; // Amount to refund
+      const refundAmount = order.paymentTotal; // Amount to refund
 
       wallet.balance += refundAmount;
 
@@ -920,7 +905,7 @@ exports.renderCoupons = async (req, res) => {
 // To handle coupon update
 exports.updateCoupon = async (req, res) => {
   try {
-    console.log("Incoming coupon update request:", req.body);
+    
     const couponId = req.params.id;
 
     const {
@@ -967,10 +952,10 @@ exports.deleteCoupon = async (req, res) => {
     const result = await Coupon.findByIdAndDelete(couponId);
 
     if (result) {
-      console.log(`Coupon with ID ${couponId} deleted successfully.`);
+      
       res.redirect("/admin/coupons");
     } else {
-      console.log(`Coupon with ID ${couponId} not found.`);
+      
       res.status(404).send("Coupon not found");
     }
   } catch (error) {
@@ -1026,7 +1011,7 @@ exports.addCoupon = async (req, res) => {
 
     await newCoupon.save();
 
-    console.log(`Coupon ${code} added successfully.`);
+    
 
     res.redirect("/admin/coupons");
   } catch (error) {
@@ -1056,7 +1041,113 @@ exports.renderOffers = async (req, res) => {
   }
 };
 
+exports.addOffer = async (req, res) => {
+  try {
+    const {
+      offerType,
+      productName,
+      categoryName,
+      discountType,
+      discountValue,
+      maxDiscountValue,
+      validFrom,
+      validUntil,
+      minProductPrice,
+      referrerBonus,
+      refereeBonus,
+    } = req.body;
+
+    const offers = await Offer.find()
+      .populate("product", "name") // Only fetch the product name
+      .populate("category", "name") // Only fetch the category name
+      .exec();
+
+    // Fetch products and categories
+    const products = await Product.find();
+    const categories = await Category.find();
+
+    if (minProductPrice < 0) {
+      return res.render("admin/offers", {offer: offers, offers, products, categories, message: "Minimum product price cannot be negative." });
+    }
+
+    if (offerType === "product") {
+      const product = await Product.findOne({ name: productName });
+      if (!product) {
+        return res.render("admin/offers", { offer: offers, offers, products, categories,message: "Product not found." });
+      }
+
+      if (discountType === "fixed") {
+        if (discountValue > product.price) {
+          return res.render("admin/offers", { offer: offers, offers, products, categories,message: "Discount value cannot be greater than product price." });
+        }
+      } else if (discountType === "percentage") {
+        if (discountValue > 80) {
+          return res.render("admin/offers", { offer: offers, offers, products, categories,message: "Percentage discount cannot exceed 80%." });
+        }
+      }
+    } else if (offerType === "category") {
+      const category = await Category.findOne({ name: categoryName });
+      if (!category) {
+        return res.render("admin/offers", { offer: offers, offers, products, categories,message: "Category not found." });
+      }
+
+      const productsInCategory = await Product.find({ category: category._id });
+      const minPrice = Math.min(...productsInCategory.map(p => p.price));
+
+      if (discountType === "fixed") {
+        if (minProductPrice <= discountValue) {
+          return res.render("admin/offers", { offer: offers, offers, products, categories,message: "Minimum product price must be greater than discount value." });
+        }
+      } else if (discountType === "percentage") {
+        if (discountValue > 80) {
+          return res.render("admin/offers", { offer: offers, offers, products, categories,message: "Percentage discount cannot exceed 80%." });
+        }
+      }
+    }
+
+    const currentDate = new Date();
+    currentDate.setHours(23, 59, 59, 999);
+
+    const validFromDate = new Date(validFrom);
+    validFromDate.setHours(23, 59, 59, 999);
+
+    if (validFromDate < currentDate) {
+      return res.render("admin/offers", { offer: offers, offers, products, categories,message: "Valid From date cannot be in the past." });
+    }
+
+    const validUntilDate = new Date(validUntil);
+    if (validUntilDate <= validFromDate) {
+      return res.render("admin/offers", {offer: offers, offers, products, categories, message: "Valid Until date must be after Valid From date." });
+    }
+
+    const newOffer = new Offer({
+      type: offerType,
+      discountType,
+      discountValue,
+      maxDiscountValue,
+      validFrom,
+      validUntil,
+      minProductPrice,
+      referrerBonus,
+      refereeBonus,
+    });
+
+    if (offerType === "product") {
+      newOffer.product = (await Product.findOne({ name: productName }))._id;
+    } else if (offerType === "category") {
+      newOffer.category = (await Category.findOne({ name: categoryName }))._id;
+    }
+
+    await newOffer.save();
+    return res.render("admin/offers", {offer: offers, offers, products, categories });
+  } catch (error) {
+    console.error(error);
+    return res.render("admin/offers", { message: "Server error" });
+  }
+};
+
 // Controller for fetching offer data for editing
+// Controller for fetching an offer to edit
 exports.editmodalof = async (req, res) => {
   try {
     const offer = await Offer.findById(req.params.id)
@@ -1069,6 +1160,7 @@ exports.editmodalof = async (req, res) => {
 
     res.json(offer);
   } catch (error) {
+    console.error("Error fetching offer data:", error);
     res.status(500).json({ message: "Error fetching offer data" });
   }
 };
@@ -1078,6 +1170,7 @@ exports.updateOffer = async (req, res) => {
   try {
     const {
       type,
+      discountType,
       discountValue,
       maxDiscountValue,
       validFrom,
@@ -1087,33 +1180,33 @@ exports.updateOffer = async (req, res) => {
       category,
     } = req.body;
 
-    // Ensure that at least one of product or category exists
     if (!product && !category) {
       return res
         .status(400)
-        .json({ message: "Product or Category is required" });
+        .json({ message: "Please select either a product or a category." });
     }
 
-    // Validate maxDiscountValue against minProductPrice
     if (maxDiscountValue > minProductPrice) {
       return res.status(400).json({
         message: "Max Discount Value cannot exceed Min Product Price.",
       });
     }
 
-    // Prepare the update object, only including fields that are provided
     const updateData = {
       type,
+      discountType,
       discountValue,
       maxDiscountValue,
       validFrom,
       validUntil,
       minProductPrice,
+      product: product || undefined,
+      category: category || undefined,
     };
 
-    if (product) updateData.product = product;
-    if (category) updateData.category = category;
 
+    
+    
     const updatedOffer = await Offer.findByIdAndUpdate(
       req.params.id,
       updateData,
@@ -1128,104 +1221,6 @@ exports.updateOffer = async (req, res) => {
   } catch (error) {
     console.error("Error updating offer:", error);
     res.status(500).json({ message: "Error updating offer" });
-  }
-};
-
-exports.addOffer = async (req, res) => {
-  try {
-    const {
-      offerType,
-      productName,
-      categoryName,
-      discountType,
-      discountValue,
-      maxDiscountValue, // maxDiscountValue validation added
-      validFrom,
-      validUntil,
-      minProductPrice,
-      referrerBonus,
-      refereeBonus,
-    } = req.body;
-
-    // Validate minimum product price
-    if (minProductPrice < 0) {
-      return res.status(400).send("Minimum product price cannot be negative.");
-    }
-
-    // Validate maxDiscountValue must be greater than minProductPrice
-    if (offerType === "product") {
-      const product = await Product.findOne({ name: productName });
-      if (product) {
-        if (discountType === "fixed" && discountValue > product.price) {
-          return res
-            .status(400)
-            .send(" Discount value cannot be greater than Product price.");
-        }
-      }
-    }
-    // Validate discountType and discountValue
-    if (discountType === "percentage") {
-      if (discountValue > 80) {
-        return res.status(400).send("Percentage discount cannot exceed 80%.");
-      }
-    }
-
-    // Validate validFrom and validUntil dates
-    const currentDate = new Date();
-    currentDate.setHours(23, 59, 59, 999); // Set current date to the end of today
-
-    const validFromDate = new Date(validFrom);
-    validFromDate.setHours(23, 59, 59, 999); // Set validFrom date to the end of the chosen date
-
-    // Check if 'validFrom' is in the past or today
-    if (validFromDate < currentDate) {
-      return res.status(400).send("Valid From date cannot be in the past.");
-    }
-
-    // Check if 'validUntil' is after 'validFrom'
-    const validUntilDate = new Date(validUntil);
-    if (validUntilDate <= validFromDate) {
-      return res
-        .status(400)
-        .send("Valid Until date must be after Valid From date.");
-    }
-
-    // Create a new offer object
-    const newOffer = new Offer({
-      type: offerType,
-      discountType,
-      discountValue,
-      maxDiscountValue, // Include maxDiscountValue in the new offer object
-      validFrom,
-      validUntil,
-      minProductPrice,
-      referrerBonus, // Add bonuses to the new offer
-      refereeBonus,
-    });
-
-    // Add product or category based on offerType
-    if (offerType === "product") {
-      const product = await Product.findOne({ name: productName });
-      if (!product) {
-        return res.status(400).send("Product not found.");
-      }
-      newOffer.product = product._id;
-    } else if (offerType === "category") {
-      const category = await Category.findOne({ name: categoryName });
-      if (!category) {
-        return res.status(400).send("Category not found.");
-      }
-      newOffer.category = category._id;
-    }
-
-    // Save the offer to the database
-    await newOffer.save();
-
-    // Redirect to offers page after success
-    res.redirect("/admin/offers");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Server error");
   }
 };
 
@@ -1270,6 +1265,6 @@ exports.logout = async (req, res) => {
     res.clearCookie("connect.sid");
     res.redirect("/admin/adminlogin");
   } catch (error) {
-    console.log(error.message);
+    
   }
 };

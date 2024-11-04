@@ -1,0 +1,47 @@
+.main_heading {
+    font-weight: 1000;
+}
+
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20vh;
+}
+
+.confirm {
+    font-size: 3rem;
+}
+
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+}
+
+.confirm {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.card {
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.subheading {
+    color: black;
+    font-weight: 700;
+}
+
+.sub {
+    color: black;
+    font-weight: 400;
+}
+
+.result {
+    font-weight: 400;
+}

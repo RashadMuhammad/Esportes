@@ -1,5 +1,5 @@
 function unlistCategory(categoryId) {
-    console.log(`Unlisting category with ID: ${categoryId}`);  // Check if function is triggered
+      // Check if function is triggered
 
     fetch(`/admin/unlist-category/${categoryId}`, {
       method: 'POST',
@@ -10,7 +10,7 @@ function unlistCategory(categoryId) {
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          console.log('Category unlisted successfully');
+          
 
           // Change the Unlist button to List with a green color
           const button = document.getElementById(`unlistButton${categoryId}`);
@@ -309,3 +309,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //   =================================================================================
+
+
+setTimeout(function () {
+    var alertElement = document.getElementById('alertMessage');
+    if (alertElement) {
+      alertElement.style.display = 'none'; 
+    }
+  }, 3000);

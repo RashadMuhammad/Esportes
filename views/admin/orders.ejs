@@ -2,75 +2,21 @@
 <html lang="en">
 
 <head>
-  <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Esportes Admin</title>
-  <!-- plugins:css -->
   <link rel="stylesheet" href="../../assets/vendors/mdi/css/materialdesignicons.min.css">
   <link rel="stylesheet" href="../../assets/vendors/css/vendor.bundle.base.css">
-  <!-- endinject -->
-  <!-- Plugin css for this page -->
-  <!-- End Plugin css for this page -->
-  <!-- inject:css -->
-  <!-- endinject -->
-  <!-- Layout styles -->
   <link rel="stylesheet" href="../../assets/css/style.css">
-  <!-- End layout styles -->
-  <link rel="shortcut icon" href="/favicon.png" />
-
-  <style>
-    .order-items-list {
-      list-style-type: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .order-item {
-      padding: 8px 0;
-      font-size: 14px;
-    }
-
-    .product-name {
-      font-weight: 400;
-      margin-right: 10px;
-    }
-
-    .product-quantity {
-      color: #777;
-    }
-
-    .order-item:last-child {
-      border-bottom: none;
-    }
-
-    .form-control[disabled] {
-      background-color: #e9ecef;
-      color: #495057;
-      opacity: 1;
-
-    }
-
-    .pagination .page-item {
-      margin: 0 5px;
-    }
-
-    .pagination .page-link {
-      padding: 5px 10px;
-      font-size: 10px;
-    }
-  </style>
-
+	<link rel="stylesheet" type="text/css" href="/css/admin/order.css">
+  <link rel="shortcut icon" href="/favicon.ico" />
 </head>
 
 <body>
   <div class="container-scroller">
-    <!-- partial:../../partials/_sidebar.html -->
     <%- include('../partials/_sidebaradmin') %>
     
-    <!-- partial -->
     <div class="container-fluid page-body-wrapper">
-      <!-- partial:../../partials/_navbar.html -->
       <nav class="navbar p-0 fixed-top d-flex flex-row">
         <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
           <a class="navbar-brand brand-logo-mini" href="../../index.html"><img src="../../assets/images/logo-mini.svg"
@@ -80,157 +26,8 @@
           <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
             <span class="mdi mdi-menu"></span>
           </button>
-          <ul class="navbar-nav w-100">
-            <li class="nav-item w-100">
-              <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search" id="searchForm">
-                <input type="text" class="form-control" id="searchInput" placeholder="Search Orders by Username">
-                <button type="button" class="btn btn-primary ml-2" id="searchBtn">
-                  Search
-                </button>
-              </form>
-            </li>
-          </ul>
+         
           <ul class="navbar-nav navbar-nav-right">
-            <!-- <li class="nav-item dropdown d-none d-lg-block">
-              <a class="nav-link btn btn-success create-new-button" id="createbuttonDropdown" data-toggle="dropdown"
-                aria-expanded="false" href="#">+ Create New Project</a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
-                aria-labelledby="createbuttonDropdown">
-                <h6 class="p-3 mb-0">Projects</h6>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <div class="preview-icon bg-dark rounded-circle">
-                      <i class="mdi mdi-file-outline text-primary"></i>
-                    </div>
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject ellipsis mb-1">Software Development</p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <div class="preview-icon bg-dark rounded-circle">
-                      <i class="mdi mdi-web text-info"></i>
-                    </div>
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject ellipsis mb-1">UI Development</p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <div class="preview-icon bg-dark rounded-circle">
-                      <i class="mdi mdi-layers text-danger"></i>
-                    </div>
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject ellipsis mb-1">Software Testing</p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <p class="p-3 mb-0 text-center">See all projects</p>
-              </div>
-            </li>
-            <li class="nav-item nav-settings d-none d-lg-block">
-                <a class="nav-link" href="#">
-                  <i class="mdi mdi-view-grid"></i>
-                </a>
-              </li>
-            <li class="nav-item dropdown border-left">
-              <a class="nav-link count-indicator dropdown-toggle" id="messageDropdown" href="#" data-toggle="dropdown"
-                aria-expanded="false">
-                <i class="mdi mdi-email"></i>
-                <span class="count bg-success"></span>
-              </a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
-                aria-labelledby="messageDropdown">
-                <h6 class="p-3 mb-0">Messages</h6>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <img src="../../assets/images/faces/face4.jpg" alt="image" class="rounded-circle profile-pic">
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject ellipsis mb-1">Mark send you a message</p>
-                    <p class="text-muted mb-0"> 1 Minutes ago </p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <img src="../../assets/images/faces/face2.jpg" alt="image" class="rounded-circle profile-pic">
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject ellipsis mb-1">Cregh send you a message</p>
-                    <p class="text-muted mb-0"> 15 Minutes ago </p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <img src="../../assets/images/faces/face3.jpg" alt="image" class="rounded-circle profile-pic">
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject ellipsis mb-1">Profile picture updated</p>
-                    <p class="text-muted mb-0"> 18 Minutes ago </p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <p class="p-3 mb-0 text-center">4 new messages</p>
-              </div>
-            </li>
-            <li class="nav-item dropdown border-left">
-              <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#"
-                data-toggle="dropdown">
-                <i class="mdi mdi-bell"></i>
-                <span class="count bg-danger"></span>
-              </a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
-                aria-labelledby="notificationDropdown">
-                <h6 class="p-3 mb-0">Notifications</h6>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <div class="preview-icon bg-dark rounded-circle">
-                      <i class="mdi mdi-calendar text-success"></i>
-                    </div>
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject mb-1">Event today</p>
-                    <p class="text-muted ellipsis mb-0"> Just a reminder that you have an event today </p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <div class="preview-icon bg-dark rounded-circle">
-                      <i class="mdi mdi-settings text-danger"></i>
-                    </div>
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject mb-1">Settings</p>
-                    <p class="text-muted ellipsis mb-0"> Update dashboard </p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <div class="preview-icon bg-dark rounded-circle">
-                      <i class="mdi mdi-link-variant text-warning"></i>
-                    </div>
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject mb-1">Launch Admin</p>
-                    <p class="text-muted ellipsis mb-0"> New admin wow! </p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <p class="p-3 mb-0 text-center">See all notifications</p>
-              </div>
-            </li> -->
             <li class="nav-item dropdown">
               <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
                 <div class="navbar-profile">
@@ -264,9 +61,6 @@
                     <p class="preview-subject mb-1">Log out</p>
                   </div>
                 </a>
-                <!-- <div class="dropdown-divider"></div>
-                  <p class="p-3 mb-0 text-center">Advanced settings</p>
-                </div> -->
             </li>
           </ul>
           <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
@@ -275,17 +69,10 @@
           </button>
         </div>
       </nav>
-      <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
           <div class="page-header">
             <h3 class="page-title"> Orders Management </h3>
-            <!-- <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                  <li class="breadcrumb-item"><a href="#">Tables</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Basic tables</li>
-                </ol>
-              </nav> -->
           </div>
           <div class="row">
             <div class="col-lg-12 grid-margin stretch-card">
@@ -332,19 +119,17 @@
                                 <select class="form-control order-status-select" data-order-id="<%= order._id %>"
                                   id="orderStatus-<%= order._id %>" <%=order.status==='canceled' ? 'disabled' : '' %>>
 
-                                  <!-- Show Cancelled option only when the order is canceled -->
-                                  <% if (order.status==='canceled' ) { %>
-                                    <option value="canceled" selected>Cancelled</option>
+                                  <% if (order.status==='Canceled' ) { %>
+                                    <option value="Canceled" selected>Cancelled</option>
+                                    <% } %>
+                                    <% if (order.status==='Returned' ) { %>
+                                      <option value="Returned" selected>Returned</option>
                                     <% } else { %>
-                                      <!-- Default options when the order is not canceled -->
                                       <option value="Pending" <%=order.status==='Pending' ? 'selected' : '' %>>Pending
                                       </option>
                                       <option value="Completed" <%=order.status==='Completed' ? 'selected' : '' %>
                                         >Completed</option>
                                       <option value="Shipped" <%=order.status==='Shipped' ? 'selected' : '' %>>Shipped
-                                      </option>
-                                      <option value="Returned" <%=order.status==='Returned' ? 'selected' : '' %>
-                                        >Returned
                                       </option>
                                       <option value="Return completed" <%=order.status==='Return completed' ? 'selected'
                                         : '' %>>Return Completed</option>
@@ -368,7 +153,6 @@
 
 
                               </td>
-                              <!-- Modal to view return request -->
                               <div class="modal fade" id="returnRequestModal-<%= order._id %>" tabindex="-1"
                                 role="dialog" aria-labelledby="returnRequestModalLabel" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
@@ -421,7 +205,6 @@
                   <!-- Pagination controls -->
                   <nav aria-label="Page navigation" style="margin-top: 20px;">
                     <ul class="pagination pagination-sm justify-content-center">
-                      <!-- Previous Button -->
                       <% if (currentPage> 1) { %>
                         <li class="page-item">
                           <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
@@ -436,7 +219,6 @@
                           </li>
                           <% } %>
 
-                            <!-- Page Numbers -->
                             <% for (let i=1; i <=totalPages; i++) { %>
                               <li class="page-item <%= currentPage === i ? 'active' : '' %>">
                                 <a class="page-link" href="?page=<%= i %>">
@@ -445,7 +227,6 @@
                               </li>
                               <% } %>
 
-                                <!-- Next Button -->
                                 <% if (currentPage < totalPages) { %>
                                   <li class="page-item">
                                     <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
@@ -488,119 +269,12 @@
               </div>
             </div>
           </div>
-
-          <script>
-            let selectedOrderId = null;
-
-            function showCancelModal(orderId) {
-              selectedOrderId = orderId;
-              $('#cancelOrderModal').modal('show');
-            }
-
-            document.getElementById('confirmCancelBtn').addEventListener('click', async function () {
-              if (selectedOrderId) {
-                try {
-                  const response = await fetch(`/admin/orders/${selectedOrderId}`, {
-                    method: 'DELETE',
-                    headers: {
-                      'Content-Type': 'application/json'
-                    }
-                  });
-
-                  const result = await response.json();
-
-                  if (response.ok) {
-                    window.location.reload()
-                  } else {
-                    alert('Error canceling order: ' + result.error);
-                  }
-
-                  $('#cancelOrderModal').modal('hide');
-                } catch (error) {
-                  alert('Error canceling order: ' + error.message);
-                }
-              }
-            });
-
-
-
-            document.addEventListener('DOMContentLoaded', function () {
-              const selectElements = document.querySelectorAll('.order-status-select');
-
-              const setTextColor = (select) => {
-                const status = select.value;
-                switch (status) {
-                  case 'Pending':
-                    select.style.color = 'orange';
-                    break;
-                  case 'Completed':
-                    select.style.color = 'green';
-                    break;
-                  case 'Shipped':
-                    select.style.color = 'blue';
-                    break;
-                  case 'Canceled':
-                    select.style.color = 'red';
-                    break;
-                  case 'Returned':
-                    select.style.color = 'blue';
-                    break;
-                    case 'Return completed':
-                    select.style.color = 'red';
-                    break;
-                  default:
-                    select.style.color = '';
-                }
-              };
-
-              selectElements.forEach(select => {
-                setTextColor(select); // Set initial color
-
-                select.addEventListener('change', () => setTextColor(select));
-              });
-            });
-          </script>
-
-          <script>
-
-            document.addEventListener('DOMContentLoaded', function () {
-
-              const selectElements = document.querySelectorAll('.order-status-select');
-
-              selectElements.forEach(select => {
-                select.addEventListener('change', async function () {
-                  const orderId = this.getAttribute('data-order-id');
-                  const newStatus = this.value;
-                  try {
-
-                    const response = await fetch(`/admin/orders/status`, {
-                      method: 'PUT',
-                      headers: {
-                        'Content-Type': 'application/json'
-                      },
-                      body: JSON.stringify({ orderId, status: newStatus })
-                    });
-
-                    const result = await response.json();
-
-                  } catch (error) {
-                    console.log('Error caught in catch:', error);
-                    // alert('Error updating order status: ' + error.message);
-                  }
-                });
-              });
-            });
-          </script>
-
-
-
-
-
+          
           <script src="/path/to/jquery.js"></script>
           <script src="/path/to/bootstrap.js"></script>
 
           <script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
-
+          <script src="/adminjs/order.js"></script>
           <script src="../../assets/js/off-canvas.js"></script>
           <script src="../../assets/js/hoverable-collapse.js"></script>
           <script src="../../assets/js/misc.js"></script>

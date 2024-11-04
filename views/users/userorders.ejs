@@ -42,215 +42,10 @@
     <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="/css/util.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/user/userorders.css">
     <!--===============================================================================================-->
     <style>
-        body {
-            overflow-x: hidden;
-        }
 
-        .modal-content {
-            border-radius: 10px;
-            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .modal-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
-            padding: 20px;
-        }
-
-        .modal-header h5 {
-            font-weight: 600;
-        }
-
-        .modal-body img {
-            max-width: 100%;
-            border-radius: 5px;
-            transition: transform 0.3s ease;
-        }
-
-        .modal-body img:hover {
-            transform: scale(1.05);
-        }
-
-        .modal-body p {
-            color: #6c757d;
-            font-size: 16px;
-        }
-
-        .modal-footer {
-            border-top: 1px solid #e9ecef;
-            padding: 15px;
-            justify-content: space-between;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-
-        #sizeSelect,
-        #quantitySelect {
-            border-radius: 5px;
-        }
-
-        .thumbnail-images img {
-            cursor: pointer;
-            margin-right: 5px;
-        }
-
-        .modal.fade .modal-dialog {
-            opacity: 0;
-            transition: opacity 0.15s linear;
-        }
-
-        .modal-body {
-            max-height: 170vh;
-            /* Limits the height of the modal body */
-            overflow-y: auto;
-            /* Adds scroll if content overflows */
-        }
-
-        .custom-modal {
-            margin-top: 50px;
-            /* Adjust this value as needed */
-        }
-
-        .modal.show .modal-dialog {
-            opacity: 1;
-        }
-
-        .modal {
-            z-index: 1050;
-            /* Higher than the default navbar z-index */
-        }
-
-        .wrap-menu-desktop {
-            z-index: 1000;
-            /* Lower than modal */
-        }
-
-        .modal-backdrop {
-            z-index: 1040;
-            /* Below the modal but above the navbar */
-            opacity: 0.5;
-            /* Adjust for more/less opacity */
-        }
-
-        /* Sidebar Custom Styles */
-        .custom-sidebar {
-            border: 0;
-            border-radius: 10px;
-            background-color: #f8f9fa;
-            /* Light background for the sidebar */
-            border-right: 1px solid #e9ecef;
-            /* Subtle right border */
-            padding: 20px;
-            /* Padding around the sidebar */
-            height: 100%;
-            /* Full height for sidebar */
-        }
-
-        .custom-sidebar-menu {
-            list-style: none;
-            /* Remove default list styling */
-            padding: 0;
-            /* Remove default padding */
-            margin: 0;
-            /* Remove default margin */
-        }
-
-        .custom-sidebar-item {
-            /* border-radius: 10px; */
-            border: 0;
-            margin-bottom: 15px;
-            /* Space between items */
-        }
-
-        .custom-sidebar-link {
-            color: black;
-            /* Link color */
-            text-decoration: none;
-            /* Remove underline */
-            font-weight: lighter;
-            /* Make links bold */
-            transition: color 0.5s;
-            /* Smooth color transition on hover */
-        }
-
-        .custom-sidebar-link:hover {
-            color: #007bff;
-            /* Darker color on hover */
-            transition: color 0.3s ease;
-        }
-
-        .heading {
-            font-size: 35px;
-            font-weight: bold;
-            color: black;
-        }
-
-
-
-        .label {
-            font-weight: lighter;
-            /* Make labels bold */
-            color: black;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            /* height: 30px; */
-            /* Custom blue color */
-            border: none;
-            /* Remove default border */
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-            /* Darker blue on hover */
-        }
-
-        .modal-content {
-            border-radius: 10px;
-            /* Rounded corners for the modal */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            /* Subtle shadow */
-        }
-
-        .btn-close {
-            filter: invert(1);
-            /* Change close button color for better contrast */
-        }
-
-        .modal-body {
-            background-color: #f8f9fa;
-            /* Light background for the body */
-        }
-
-        .modal-title {
-            color: black;
-            font-weight: bolder;
-        }
-
-        .logout {
-            color: red;
-        }
     </style>
 </head>
 
@@ -306,7 +101,8 @@
                                                             </p>
                                                             <% }); %>
                                                     </td>
-                                                    <td>$<%= order.subtotal ? order.subtotal.toFixed(2) : '0.00' %>
+                                                    <td>₹ <%= order.paymentTotal ? order.paymentTotal.toFixed(2)
+                                                            : '0.00' %>
                                                     </td>
                                                     <td>
                                                         <!-- Conditional status color -->
@@ -463,21 +259,25 @@
                                                         });
                                                     });
 
-                                                    // Function to validate before submission
                                                     function validateReturnReason(orderId) {
                                                         const textarea = document.getElementById(`returnReason${orderId}`);
                                                         const errorDiv = document.getElementById(`returnReasonError${orderId}`);
                                                         const returnReason = textarea.value.trim();
 
-                                                        // Regular expression to check for non-special characters (only letters, numbers, and spaces allowed)
                                                         const validPattern = /^[A-Za-z0-9\s]+$/;
 
-                                                        // Validation checks
                                                         if (returnReason === "" || !validPattern.test(returnReason) || returnReason.length < 5) {
-                                                            return false;  // Prevent form submission
+                                                            return false;
                                                         }
 
-                                                        return true;  // Allow form submission
+                                                        return true;
+                                                    }
+
+                                                    function confirmCancelOrder(orderId) {
+                                                        const modal = new bootstrap.Modal(document.getElementById('cancelOrderModal'));
+                                                        const form = document.getElementById('cancelOrderForm');
+                                                        form.action = `/profile/orders/cancel/${orderId}`;
+                                                        modal.show();
                                                     }
                                                 </script>
 
@@ -518,15 +318,6 @@
                         </div>
                     </div>
 
-                    <script>
-                        // JavaScript function to show confirmation modal and set form action
-                        function confirmCancelOrder(orderId) {
-                            const modal = new bootstrap.Modal(document.getElementById('cancelOrderModal'));
-                            const form = document.getElementById('cancelOrderForm');
-                            form.action = `/profile/orders/cancel/${orderId}`;
-                            modal.show();
-                        }
-                    </script>
 
 
 
@@ -567,105 +358,9 @@
                         <!--===============================================================================================-->
                         <script src="/vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
                         <script src="/js/main.js"></script>
+                        <script src="/userjs/userorders.js"></script>
+                        <script src="/userjs/userorders1.js"></script>
                         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                        <!-- Bootstrap JS -->
-
-
-
-
-
-                        <script>
-                            document.addEventListener('DOMContentLoaded', () => {
-                                document.querySelectorAll('.pay-again-btn').forEach(button => {
-                                    button.addEventListener('click', async function () {
-                                        const orderId = this.getAttribute('data-id');
-                                        console.log(orderId);
-
-                                        payAgain(orderId);
-                                    });
-                                });
-                            });
-
-
-                            async function payAgain(orderId) {
-                                try {
-                                    // Fetch the order details for the specified order ID
-                                    const response = await fetch(`/get-order/${orderId}`);
-                                    const order = await response.json();
-
-                                    if (!order || !order.totalAfterDiscount) {
-                                        console.error('Order details could not be retrieved.');
-                                        return;
-                                    }
-
-                                    // Set up Razorpay options
-                                    const razorpayOptions = {
-                                        key: 'rzp_test_jQwdUt0mQkB6AR', // Razorpay Key ID
-                                        amount: order.totalAfterDiscount * 100, // Convert to paise
-                                        currency: 'INR',
-                                        name: 'Esportes',
-                                        description: 'Purchase Products',
-                                        order_id: order.razorpayOrderId, // Razorpay Order ID from backend
-
-                                        // Handler for successful payment
-                                        handler: async function (response) {
-                                            const updateOrderData = {
-                                                razorpay_payment_id: response.razorpay_payment_id || null,
-                                                status: response.razorpay_payment_id ? "Pending" : "Payment Failure"
-                                            };
-
-                                            // Update the order status on the server
-                                            await fetch(`/update-order/${orderId}`, {
-                                                method: 'POST',
-                                                headers: {
-                                                    'Content-Type': 'application/json',
-                                                },
-                                                body: JSON.stringify(updateOrderData),
-                                            });
-
-                                            // Redirect to the order confirmation page
-                                            window.location.href = `/order-confirmation/${orderId}`;
-                                        },
-
-                                        // Handle Razorpay modal dismissal
-                                        modal: {
-                                            ondismiss: async function () {
-                                                // Update order status to "Payment Failure" if the user dismisses Razorpay
-                                                await fetch(`/update-order/${orderId}`, {
-                                                    method: 'POST',
-                                                    headers: {
-                                                        'Content-Type': 'application/json',
-                                                    },
-                                                    body: JSON.stringify({ status: "Payment Failure" }),
-                                                });
-
-                                                // Redirect to the order confirmation page
-                                                window.location.href = `/order-confirmation/${orderId}`;
-                                            }
-                                        },
-
-                                        // Prefill customer details
-                                        prefill: {
-                                            name: 'Esportes',
-                                            email: 'ecommerceesportes@gmail.com',
-                                            contact: '9656801830'
-                                        },
-                                        theme: {
-                                            color: '#F37254'
-                                        }
-                                    };
-
-                                    // Initiate Razorpay
-                                    const razorpay = new Razorpay(razorpayOptions);
-                                    razorpay.open();
-
-                                } catch (error) {
-                                    console.error('Error initializing Razorpay:', error);
-                                }
-                            }
-
-                        </script>
-
                         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 

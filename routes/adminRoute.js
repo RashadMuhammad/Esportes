@@ -24,6 +24,7 @@ router.get("/sales-data", adminController.chartDashboard);
 
 // ========================================================================================================
 
+//Sales Report
 router.get("/sales-reportpage", auth.islogin, adminController.renderSalesReportPage);
 router.post("/sales-report", adminController.getSalesReport);
 router.post("/sales-report-pdf", adminController.downloadSalesReportPDF);

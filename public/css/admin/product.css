@@ -1,0 +1,11 @@
+.pagination .page-item {
+    margin: 0 5px;
+  }
+
+  .pagination .page-link {
+    padding: 5px 10px;
+  }
+
+  .pagination .page-link {
+    font-size: 10px;
+  }

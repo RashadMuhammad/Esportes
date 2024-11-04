@@ -1,5 +1,5 @@
 function handleEdit(productId) {
-  console.log(productId);
+  
   let editCropper1, editCropper2, editCropper3;
 
   document
@@ -102,8 +102,8 @@ function handleEdit(productId) {
             body: formData,
           })
             .then((data) => {
-              console.log(data);
-              console.log("Image uploaded by promise");
+              
+              
               alert("Product added successfully!");
             })
             .catch((error) => {
@@ -270,7 +270,7 @@ document.addEventListener("DOMContentLoaded", function () {
           // Append blob to form for upload
           const formData = new FormData();
           formData.append("croppedImage", blob, "croppedImage.jpg");
-          console.log("Cropped image ready for upload");
+          
           // Use fetch to upload blob to server
         });
       });
@@ -298,7 +298,7 @@ document
   .getElementById("imageUpload1")
   .addEventListener("change", function (event) {
     handleFileUpload(event, "imagePreview1", "croppedImage1", cropper1);
-    console.log(cropper1);
+    
   });
 
 document
@@ -380,7 +380,7 @@ document
           body: formData,
         })
           .then((data) => {
-            console.log(data);
+            
             window.location.href = "/admin/Products";
             // alert('Product added successfully!');
           })
@@ -560,3 +560,11 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // =============================================================================
+
+
+setTimeout(function () {
+  var alertElement = document.getElementById('alertMessage');
+  if (alertElement) {
+    alertElement.style.display = 'none'; 
+  }
+}, 5000);

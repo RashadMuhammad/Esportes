@@ -70,8 +70,8 @@
             window.console = {};
             window.console.log = function(str){ return str; };
           }
-          if(!this.length) console.log('Animsition: Element does not exist on page.');
-          if(!support) console.log('Animsition: Does not support this browser.');
+          if(!this.length) 
+          if(!support) 
           return __.destroy.call(this);
         }
       }

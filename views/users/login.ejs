@@ -10,37 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
         integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        html,
-        body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            /* Prevent scrolling */
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: center;
-            /* Center the image horizontally */
-            align-items: center;
-            /* Center the image vertically */
-            height: 80px;
-            /* Set a height for the navbar */
-        }
-
-        .navbar img {
-            max-height: 100%;
-            /* Ensure the image fits within the navbar height */
-        }
-
-        @media (max-width: 767px) {
-            .img-fluid-main {
-                display: none;
-            }
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/user/login.css">
 </head>
 
 <body style="background: white">
@@ -60,11 +30,6 @@
                     <div class="card shadow-sm">
                         <div class="card-body p-5">
                             <h1 class="text-center mb-4 fw-bold">Login</h1>
-
-                            <!-- Flash Messages for Google Sign-In -->
-
-
-                            <!-- Error/Success Messages for Regular Login -->
 
                             <% if (message.length > 0) { %>
                                 <div class="alert alert-danger mt-3">

@@ -34,149 +34,15 @@
 	<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<link rel="stylesheet" type="text/css" href="/css/user/product.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 	<!--===============================================================================================-->
-	<style>
-		.product-container {
-			flex-direction: row !important;
-		}
-
-		.modal-content {
-			border-radius: 10px;
-			box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-		}
-
-		.modal-header {
-			background-color: #f8f9fa;
-			border-bottom: 1px solid #e9ecef;
-			padding: 20px;
-		}
-
-		.modal-header h5 {
-			font-weight: 600;
-		}
-
-		.modal-body img {
-			max-width: 100%;
-			border-radius: 5px;
-			transition: transform 0.3s ease;
-		}
-
-		.modal-body img:hover {
-			transform: scale(1.05);
-		}
-
-		.modal-body p {
-			color: #6c757d;
-			font-size: 16px;
-		}
-
-		.modal-footer {
-			border-top: 1px solid #e9ecef;
-			padding: 15px;
-			justify-content: space-between;
-		}
-
-		.btn-primary {
-			background-color: #007bff;
-			border-color: #007bff;
-			transition: all 0.3s ease;
-		}
-
-		.btn-primary:hover {
-			background-color: #0056b3;
-			border-color: #0056b3;
-		}
-
-		.btn-secondary {
-			background-color: #6c757d;
-			transition: background-color 0.3s ease;
-		}
-
-		.btn-secondary:hover {
-			background-color: #5a6268;
-		}
-
-		#sizeSelect,
-		#quantitySelect {
-			border-radius: 5px;
-		}
-
-
-		.thumbnail-images img {
-			cursor: pointer;
-			margin-right: 5px;
-		}
-
-		.modal.fade .modal-dialog {
-			opacity: 0;
-			transition: opacity 0.15s linear;
-		}
-
-		.modal-body {
-			max-height: 170vh;
-			/* Limits the height of the modal body */
-			overflow-y: auto;
-			/* Adds scroll if content overflows */
-		}
-
-		.custom-modal {
-			margin-top: 50px;
-			/* Adjust this value as needed */
-		}
-
-		.modal.show .modal-dialog {
-			opacity: 1;
-		}
-
-		.modal {
-			z-index: 1050;
-			/* Higher than the default navbar z-index */
-		}
-
-		.wrap-menu-desktop {
-			z-index: 1000;
-			/* Lower than modal */
-		}
-
-		.modal-backdrop {
-			z-index: 1040;
-			/* Below the modal but above the navbar */
-			opacity: 0.5;
-			/* Adjust for more/less opacity */
-		}
-
-		/* Shade overlay for out-of-stock products */
-		.out-of-stock-shade {
-			position: relative;
-		}
-
-		.out-of-stock-shade::after {
-			content: "";
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			background-color: rgba(0, 0, 0, 0.4);
-			z-index: 1;
-			pointer-events: none;
-		}
-
-		.out-of-stock {
-			color: red;
-			/* Change the color to red */
-			font-weight: bold;
-			/* Optional: Make it bold for emphasis */
-		}
-	</style>
 </head>
 
 <body class="animsition">
 
 	<!-- Header -->
 	<%- include('../partials/_header') %>
-
 
 		<!-- Product -->
 		<section class="bg0 p-t-23"><br><br>
@@ -189,13 +55,14 @@
 
 				<div class="flex-w flex-sb-m p-b-52">
 					<div class="flex-w flex-l-m filter-tope-group m-tb-10">
-						<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
-							All Products
+						<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter="*">
+							<a href="product">All Products</a>
 						</button>
 
 						<% categories.forEach(category=> { %>
-							<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 filter-button"
-								data-filter=".category-<%= category._id %>">
+							<button id="categoryButton"
+								class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 filter-button "
+								data-filter="<%= category._id %>">
 								<%= category.name %>
 							</button>
 							<% }) %>
@@ -219,68 +86,95 @@
 						</div>
 					</div>
 
-
 					<!-- Search product -->
 					<div class="dis-none panel-search w-full p-t-10 p-b-15">
 						<div class="bor8 dis-flex p-l-15">
 							<button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
 								<i class="zmdi zmdi-search"></i>
 							</button>
-							<input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search-product"
-								placeholder="Search">
+							<input id="search-product" class="mtext-107 cl2 size-114 plh2 p-r-15" type="text"
+								name="search-product" placeholder="Search">
 						</div>
 					</div>
 
+
+					<!-- Filter -->
 					<div class="dis-none panel-filter w-full p-t-10">
 						<div class="wrap-filter flex-w bg-white w-full p-4 rounded shadow-lg text-center">
 							<div class="filter-col1 w-100 mb-3">
-								<div class="mtext-102 text-dark font-weight-bold mb-3">Sort By</div>
+								<div class="mtext-102 text-dark font-weight-bold mb-3">
+									Sort By
+								</div>
 								<div class="row">
 									<div class="col-md-4 mb-2">
-										<a class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
-											data-sort="default">Default</a>
+										<a href="#"
+											class="filter-link btn text-white btn-dark  btn-block rounded-pill px-3"
+											data-sort="default">
+											Default
+										</a>
 									</div>
 									<div class="col-md-4 mb-2">
-										<a class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
-											data-sort="popularity">Popularity</a>
+										<a href="#"
+											class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
+											data-sort="popularity">
+											Popularity
+										</a>
 									</div>
 									<div class="col-md-4 mb-2">
-										<a class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
-											data-sort="averageRating">Avg. Rating</a>
+										<a href="#"
+											class="filter-link text-white btn btn-dark btn-block rounded-pill px-3"
+											data-sort="averageRating">
+											Avg. Rating
+										</a>
 									</div>
 									<div class="col-md-4 mb-2">
-										<a class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
-											data-sort="newness">New arrivals</a>
+										<a href="#"
+											class="filter-link text-white btn btn-dark btn-block rounded-pill px-3"
+											data-sort="newness">
+											New arrivals
+										</a>
 									</div>
 									<div class="col-md-4 mb-2">
-										<a class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
-											data-sort="priceLowToHigh">Price: Low to High</a>
+										<a href="#"
+											class="filter-link text-white btn btn-dark btn-block rounded-pill px-3"
+											data-sort="priceLowToHigh">
+											Price: Low to High
+										</a>
 									</div>
 									<div class="col-md-4 mb-2">
-										<a class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
-											data-sort="priceHighToLow">Price: High to Low</a>
+										<a href="#"
+											class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
+											data-sort="priceHighToLow">
+											Price: High to Low
+										</a>
 									</div>
 									<div class="col-md-4 mb-2">
-										<a class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
-											data-sort="aToZ">A - Z</a>
+										<a href="#"
+											class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
+											data-sort="aToZ">
+											A - Z
+										</a>
 									</div>
 									<div class="col-md-4 mb-2">
-										<a class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
-											data-sort="zToA">Z - A</a>
+										<a href="#"
+											class="filter-link btn text-white btn-dark btn-block rounded-pill px-3"
+											data-sort="zToA">
+											Z - A
+										</a>
 									</div>
 								</div>
 							</div>
-						</div>
+						</div>    
 					</div>
 				</div>
 
-				<div class="product-container row isotope-grid" id="product-container2">
+
+
+
+				<div id="product-container" class="product-container row">
 					<% products.forEach(product=> { %>
-						<div class="products col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item category-<%= product.category._id %>"
-							data-name="<%= product.name %>" data-rating="<%= product.averageRating %>"
-							data-created-at="<%= product.createdAt.toISOString() %>"
-							data-image="/uploads/<%= product.images[0]%>"
-							data-price="<%= product.discountedPrice ? product.discountedPrice : product.price %>">
+						<div class="col-sm-6 col-md-4 col-lg-2 p-b-35  category-<%= product.category._id %>">
+							<!-- Block2 -->
 							<div class="block2">
 								<div class="block2-pic hov-img0 <%= product.stock <= 0 ? 'out-of-stock-shade' : '' %>">
 									<% if (product.images && product.images.length> 0) { %>
@@ -297,11 +191,14 @@
 									<% if (product.stock <=0) { %>
 										<span class="stext-105 cl3 out-of-stock">Out of Stock</span>
 										<% } %>
+
 											<div class="block2-txt-child1 flex-col-l">
 												<a href="/product-detail/<%= product._id %>"
 													class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6 card-title">
 													<%= product.name %>
 												</a>
+
+												<!-- Original and Discounted Price -->
 												<span class="stext-105 cl3">
 													<% if (product.discountedPrice===product.price) { %>
 														₹ <%= product.price %>
@@ -314,6 +211,8 @@
 																	</span>
 																	<% } %>
 												</span>
+
+												<!-- Wishlist Button -->
 												<button
 													class="align-items-center wishlist-btn flex-c-m stext-103 cl2 py-2 bg0 bor2 trans-04"
 													data-product-id="<%= product._id %>"
@@ -327,167 +226,8 @@
 						<% }) %>
 				</div>
 
-				<script>
-					async function addToWishlist(productId) {
-						try {
-							const response = await fetch('/wishlist/add', {
-								method: 'POST',
-								headers: {
-									'Content-Type': 'application/json',
-								},
-								body: JSON.stringify({ productId })
-							});
-
-							if (response.ok) {
-								const result = await response.json();
-								if (result.success) {
-									Swal.fire({
-										icon: 'success',
-										title: 'Added to Wishlist!',
-										text: 'The product has been added to your wishlist.',
-									});
-								} else {
-									Swal.fire({
-										icon: 'error',
-										title: 'Oops...',
-										text: result.message || 'Something went wrong!',
-									});
-								}
-							} else {
-								Swal.fire({
-									icon: 'error',
-									title: 'Failed to add',
-									text: 'Product is already in the wishlist.',
-								});
-							}
-						} catch (error) {
-							console.error('Error:', error);
-							Swal.fire({
-								icon: 'error',
-								title: 'Error!',
-								text: 'An error occurred while adding the product to the wishlist.',
-							});
-						}
-					}
-
-					document.addEventListener('DOMContentLoaded', function () {
-						const productContainer = document.getElementById('product-container2');
-						const productContainerParent = document.getElementById('product-container2').parentElement;
-
-						function sortProducts(criteria) {
-							let products = Array.from(productContainer.children);
-
-							// Sort products
-							products.sort((a, b) => {
-								let valueA, valueB;
-
-								switch (criteria) {
-									case 'popularity':
-									case 'averageRating':
-										valueA = parseFloat(a.getAttribute('data-rating'));
-										valueB = parseFloat(b.getAttribute('data-rating'));
-										return valueB - valueA;
-									case 'newness':
-										valueA = new Date(a.getAttribute('data-created-at'));
-										valueB = new Date(b.getAttribute('data-created-at'));
-										return valueB - valueA;
-									case 'priceLowToHigh':
-										valueA = parseFloat(a.getAttribute('data-price'));
-										valueB = parseFloat(b.getAttribute('data-price'));
-										return valueA - valueB;
-									case 'priceHighToLow':
-										valueA = parseFloat(a.getAttribute('data-price'));
-										valueB = parseFloat(b.getAttribute('data-price'));
-										return valueB - valueA;
-									case 'aToZ':
-										valueA = a.querySelector('.js-name-b2').textContent;
-										valueB = b.querySelector('.js-name-b2').textContent;
-										return valueA.localeCompare(valueB);
-									case 'zToA':
-										valueA = a.querySelector('.js-name-b2').textContent;
-										valueB = b.querySelector('.js-name-b2').textContent;
-										return valueB.localeCompare(valueA);
-									default:
-										return 0;
-								}
-							});
-							// Use replaceChildren to update the product container
-							// productContainer.replaceChildren(...products);
-							const newProductContainer = document.createElement('div')
-							// console.log(productContainer);
-							
-							productContainer.innerHTML=''
-							
-							
-							
-							products.forEach((product, index) => {
-								const newproduct = document.createElement('div')
-								let name=product.getAttribute('data-name')
-								let imgSrc=product.getAttribute('data-image')
-								let img=document.createElement('img')
-								img.src=imgSrc
-								img.style.height="30px"
-								img.style.width="30px"
-								let p=document.createElement('p')
-								p.textContent=name
-								newproduct.appendChild(p)
-								newproduct.appendChild(img)
-								productContainer.appendChild(newproduct)
-								
-								// if (index < 4) {
-								// 	const newProduct = product.cloneNode(true)
-								// 	newProduct.style.backgroundColor = "#ff0000"
-								// 	console.log(newProduct);
-								// 	newProductContainer.appendChild(newProduct)
-								// 	// newProductContainer.innerText = index
-								// }
-							})
-
-							// productContainerParent.innerHTML = ''
-							// productContainer.replaceWith(newProductContainer);
-							// productContainerParent.innerHTML = null
-							// productContainerParent.appendChild(newProductContainer)
-							
-							// console.log(parentElement);
-							// productContainer.appendChild(parentElement)
-							
-							// Trigger layout update if using a library like Isotope or Masonry
-							// if (typeof Isotope !== 'undefined') {
-							// 	Isotope.data(productContainer).reloadItems();
-							// 	Isotope.data(productContainer).layout();
-							// } else {
-							// 	// If not using a layout library, a simple reflow might be enough
-							// 	const parent = productContainer.parentNode;
-							// 	const nextSibling = productContainer.nextSibling;
-							// 	parent.removeChild(productContainer);
-							// 	parent.insertBefore(productContainer, nextSibling);
-							// }
-
-							// console.log('Updated product container after sort:', productContainer);
-							productContainer.childNodes.forEach((product)=>{
-								console.log(product)
-							})
-						}
-
-						// Event listeners for filter links
-						document.querySelectorAll('.filter-link').forEach(link => {
-							link.addEventListener('click', (event) => {
-								event.preventDefault();
-								const sortCriteria = event.currentTarget.getAttribute('data-sort');
-								sortProducts(sortCriteria); // Call sort function
-							});
-						});
-					});
-
-				</script>
-
-
-
-
-
-
-
-
+				<!-- Hidden div to store products JSON data -->
+				<div id="products-data" data-products='<%= JSON.stringify(products) %>' style="display: none;"></div>
 
 				<!-- Load more -->
 				<div class="flex-c-m flex-w w-full p-t-45 pb-5">
@@ -526,12 +266,8 @@
 				<script src="js/slick-custom.js"></script>
 				<!--===============================================================================================-->
 				<script src="vendor/parallax100/parallax100.js"></script>
-
 				<!--===============================================================================================-->
 				<script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
-
-				<!--===============================================================================================-->
-				<script src="vendor/isotope/isotope.pkgd.min.js"></script>
 
 				<!--===============================================================================================-->
 				<script src="vendor/sweetalert/sweetalert.min.js"></script>
@@ -540,64 +276,7 @@
 				<!--===============================================================================================-->
 				<script src="js/main.js"></script>
 				<script src="userjs/products.js"></script>
-
-
-				<script>
-					const searchInput = document.querySelector('input[name="search-product"]');
-					const searchResultsContainer = document.querySelector('.isotope-grid');
-
-					// Debouncing for performance
-					let timeout = null;
-
-					searchInput.addEventListener('input', () => {
-						clearTimeout(timeout);
-						timeout = setTimeout(async () => {
-							const query = searchInput.value;
-							const response = await fetch(`/product-search?q=${encodeURIComponent(query)}`);
-							const products = await response.json();
-
-							// Clear the existing products
-							searchResultsContainer.innerHTML = '';
-
-
-
-							// Render the products in real-time
-							products.forEach(product => {
-								searchResultsContainer.innerHTML += `
-								<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item ${product.category ? product.category.name : 'uncategorized'}">
-									<div class="block2 ${product.stock <= 0 ? 'out-of-stock' : ''}">
-										<div class="block2-pic hov-img0 ${product.stock <= 0 ? 'out-of-stock-shade' : ''}">
-											${product.images && product.images.length > 0 ?
-										`<img src="/uploads/${product.images[0]}" alt="IMG-PRODUCT">` :
-										`<img src="/path/to/default-image.jpg" alt="Default Image">`
-									}
-											<a href="/product-detail/${product._id}"
-											   class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04"
-											   data-id="${product._id}">
-												View Details
-											</a>
-										</div>
-										<div class="block2-txt flex-w flex-t p-t-14">
-											<div class="block2-txt-child1 flex-col-l">
-												<a href="/product-detail/${product._id}"
-												   class=" stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-													${product.name}
-												</a>
-												<span class="stext-105 cl3">
-													₹ ${product.price}
-												</span>
-												${product.stock <= 0 ? '<span class="stext-105 cl3 out-of-stock">Out of Stock</span>' : ''}
-											</div>
-										</div>
-									</div>
-								</div>
-							`;
-							});
-						}, 300); // Wait 300ms after user stops typing before sending the request
-					});
-				</script>
-
-
+				<script src="userjs/product.js"></script>
 				<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 

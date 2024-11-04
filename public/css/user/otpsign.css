@@ -1,0 +1,55 @@
+html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            /* Prevent scrolling */
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: center;
+            /* Center the image horizontally */
+            align-items: center;
+            /* Center the image vertically */
+            height: 80px;
+            /* Set a height for the navbar */
+        }
+
+        .navbar img {
+            max-height: 100%;
+            /* Ensure the image fits within the navbar height */
+        }
+
+        #timer {
+            font-size: 14px;
+            font-weight: medium;
+            color: red;
+        }
+
+        #validationMessage {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+            /* Hidden by default */
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            text-align: center;
+            margin: 0 5px;
+            -moz-appearance: textfield;
+            appearance: unset;
+            /* Remove spinner for Firefox */
+        }
+
+        /* Remove spinner in Chrome and Safari */
+        .otp-input::-webkit-inner-spin-button,
+        .otp-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }

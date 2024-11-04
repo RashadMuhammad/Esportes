@@ -79,10 +79,10 @@ $(document).on("click", ".js-show-modal1", function (e) {
   });
 });
 
-document.getElementById("sizeSelect").addEventListener("change", function () {
-  let selectedSize = this.value; // Get the selected size
-  console.log("Selected size:", selectedSize); // Use this value accordingly
-});
+// document.getElementById("sizeSelect").addEventListener("change", function () {
+//   let selectedSize = this.value; // Get the selected size
+//    // Use this value accordingly
+// });
 
 // =================================================================================
 

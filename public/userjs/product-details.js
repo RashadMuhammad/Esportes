@@ -30,20 +30,14 @@ $(document).on("click", ".js-show-modal1", function (e) {
     url: `/product/${productId}`,
     method: "GET",
     success: function (product) {
-      // Populate the modal with product details
       $("#productId").text(product._id);
       $("#productName").text(product.name);
       $("#productDescription").text(product.description);
       $("#productPrice").text(`₹ ${product.price}`);
       $("#mainImage").attr("src", `/uploads/${product.images[0]}`);
 
-      // Handle sizes (if you have size options in your product schema)
       const sizeSelect = $("#sizeSelect");
       sizeSelect.empty();
-      // Add sizes dynamically if sizes are stored in the product model
-      // Example: product.sizes.forEach(size => sizeSelect.append(new Option(size, size)));
-
-      // Show the modal
       $("#quickViewModal").modal("show");
     },
     error: function () {
@@ -59,16 +53,14 @@ const zoomedView = document.getElementById("zoomedView");
 document.querySelectorAll(".zoom-img").forEach((image) => {
   image.addEventListener("mousemove", (e) => {
     const imgRect = image.getBoundingClientRect();
-    const offsetX = e.clientX - imgRect.left; // Mouse X position relative to the image
-    const offsetY = e.clientY - imgRect.top; // Mouse Y position relative to the image
+    const offsetX = e.clientX - imgRect.left;
+    const offsetY = e.clientY - imgRect.top; 
 
-    const zoomLevel = 2; // Zoom level (e.g., 2 for 200%, 3 for 300%)
+    const zoomLevel = 2; 
 
-    // Calculate the percentage of the mouse position relative to the image
     const bgPosX = (offsetX / imgRect.width) * 100;
     const bgPosY = (offsetY / imgRect.height) * 100;
 
-    // Show the zoomed view and set its background image and zoomed size
     zoomedView.style.display = "block";
     zoomedView.style.backgroundImage = `url(${image.getAttribute(
       "data-image"
@@ -77,19 +69,17 @@ document.querySelectorAll(".zoom-img").forEach((image) => {
       imgRect.height * zoomLevel
     }px`; // 200% size
 
-    // Adjust background position to focus on the exact mouse point
     const zoomedBgPosX = (offsetX / imgRect.width) * 100 * zoomLevel + 300;
     const zoomedBgPosY = (offsetY / imgRect.height) * 100 * zoomLevel + 300;
 
     zoomedView.style.backgroundPosition = `${zoomedBgPosX}% ${zoomedBgPosY}%`;
 
-    // Position the zoomed view near the mouse pointer
-    zoomedView.style.left = `${e.pageX - 300}px`; // Offset to the right of the mouse pointer
-    zoomedView.style.top = `${e.pageY - 300}px`; // Slightly above/below the pointer
+    zoomedView.style.left = `${e.pageX - 300}px`; 
+    zoomedView.style.top = `${e.pageY - 300}px`; 
   });
 
   image.addEventListener("mouseleave", () => {
-    zoomedView.style.display = "none"; // Hide zoomed view when mouse leaves the image
+    zoomedView.style.display = "none"; 
   });
 });
 
@@ -159,4 +149,6 @@ $('.gallery-lb').each(function () {
     mainClass: 'mfp-fade'
   });
 });
+
+
 

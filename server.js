@@ -1,6 +1,5 @@
 const express = require("express");
 const session = require("express-session");
-const mongoose = require("mongoose");
 const passport = require("passport");
 const path = require("path");
 const flash = require('connect-flash')
@@ -11,19 +10,14 @@ const MongoStore = require('connect-mongo');
 const bcrypt = require('bcrypt');
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const Razorpay = require('razorpay');
-const crypto = require('crypto');
+const connectDB = require("./config/db");
 
 // Load environment variables
 dotenv.config();
 
+connectDB()
+
 const app = express();
-
-// Database connection
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log("An error occurred:", err));
-
 
 // Middleware to parse request body
 app.use(express.urlencoded({ extended: false }));
@@ -54,12 +48,6 @@ app.use(
     },
   })
 );
-
-// app.use((req,res,next)=>{
-//   console.log(req.method,' : ',req.url);
-//   next();
-// })
-
 
 app.use((req, res, next) => {
   res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
@@ -148,7 +136,7 @@ app.get(
     if (req.user && req.user.status === "blocked") {
       req.logout(err => {
         if (err) {
-          console.log("Error logging out:", err);
+          
         }
         // Store error message in session and redirect to login
         req.flash("message", "You have been blocked by the admin.");
@@ -175,5 +163,5 @@ app.use("/admin", adminRoute);
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on: http://localhost:${PORT}`);
+  console.log('Server running on http://localhost:3000');
 });

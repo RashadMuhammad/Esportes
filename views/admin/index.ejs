@@ -2,206 +2,24 @@
 <html lang="en">
 
 <head>
-  <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Esportes Admin</title>
-  <!-- plugins:css -->
   <link rel="stylesheet" href="../../assets/vendors/mdi/css/materialdesignicons.min.css">
   <link rel="stylesheet" href="../../assets/vendors/css/vendor.bundle.base.css">
-  <!-- endinject -->
-  <!-- Plugin css for this page -->
-  <!-- End Plugin css for this page -->
-  <!-- inject:css -->
-  <!-- endinject -->
-  <!-- Layout styles -->
   <link rel="stylesheet" href="../../assets/css/style.css">
-  <!-- End layout styles -->
-  <link rel="shortcut icon" href="/favicon.png" />
+	<link rel="stylesheet" type="text/css" href="/css/admin/index.css">
+  <link rel="shortcut icon" href="/favicon.ico" />
 </head>
 
 <style>
-  .content-wrapper {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  .page-header h3 {
-    margin-bottom: 15px;
-    color: #333;
-  }
-
-  .filter-container {
-    margin-bottom: 20px;
-  }
-
-  .filter-form {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .filter-form label {
-    margin: 10px 0 5px;
-    font-weight: bold;
-  }
-
-  .filter-form select,
-  .filter-form input[type="date"] {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 15px;
-  }
-
-  .btn {
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-
-  .btn:hover {
-    background-color: #0056b3;
-  }
-
-  .download-buttons {
-    margin-top: 15px;
-    display: flex;
-    gap: 10px;
-  }
-
-  .date-range {
-    display: none;
-  }
-
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    color: #333;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.7);
-  }
-
-  .modal-content {
-    background-color: #fff;
-    margin: 10% auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    color: #333;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 800px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    animation: fadeIn 0.3s ease;
-    overflow-x: auto;
-    overflow-y: auto;
-    max-height: 80vh;
-  }
-
-  .close {
-    color: #333;
-    float: right;
-    font-size: 25px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-
-  .close:hover,
-  .close:focus {
-    color: #ff0000;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    color: #333;
-  }
-
-  th,
-  td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #ddd;
-    text-align: left;
-    color: #fffefe;
-  }
-
-  tr th {
-    background-color: #007bff;
-    color: #fff;
-    text-transform: uppercase;
-  }
-
-  .qwerty th {
-    color: white !important
-  }
-
-  /* tbody tr:hover {
-    background-color: #f1f1f1;
-    /* Light hover effect */
-  /* } */
-  * tbody tr {
-    transition: background-color 0.2s ease;
-  }
-
-
-
-  /* Header */
-  h3 {
-    color: white;
-    /* Match the table header */
-    text-align: center;
-    font-weight: 600;
-  }
-
-  .table_heading {
-    color: white;
-  }
-
-  /* Fade-in effect */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-
-    to {
-      opacity: 1;
-    }
-  }
-
-  .hover-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  .hover-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
-  }
-
-  .main th {
-    color: white !important
-  }
-  .page-title{
-    position: relative;
-    left: 470px;
-  }
 </style>
 
 <body>
   <div class="container-scroller">
-    <!-- partial:partials/_sidebar.html -->
     <%- include('../partials/_sidebaradmin') %>
 
-      <!-- partial -->
       <div class="container-fluid page-body-wrapper">
-        <!-- partial:partials/_navbar.html -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
           <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
             <a class="navbar-brand brand-logo-mini" href="index.html"><img src="/assets/images/logo-mini.svg"
@@ -212,11 +30,6 @@
               <span class="mdi mdi-menu"></span>
             </button>
             <ul class="navbar-nav w-100">
-              <li class="nav-item w-100">
-                <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-                  <input type="text" class="form-control" placeholder="Search products">
-                </form>
-              </li>
             </ul>
             <ul class="navbar-nav navbar-nav-right">
               <li class="nav-item dropdown">
@@ -263,16 +76,13 @@
             </button>
           </div>
         </nav>
-        <!-- partial -->
         <div class="main-panel pt-5">
           <div class="text-center content-wrapper p-5">
             <div class="page-header">
               <h3 class="page-title text-light">Overall Management</h3>
             </div>
 
-            <!-- Cards Row -->
             <div class="row">
-              <!-- Total Users Card -->
               <div class="col-md-3">
                 <div class="card hover-card bg-info text-white mb-4">
                   <div class="card-body">
@@ -284,7 +94,6 @@
                 </div>
               </div>
 
-              <!-- Total Orders Card -->
               <div class="col-md-3">
                 <div class="card hover-card bg-success text-white mb-4">
                   <div class="card-body">
@@ -296,7 +105,6 @@
                 </div>
               </div>
 
-              <!-- Total Sales Amount Card -->
               <div class="col-md-3">
                 <div class="card hover-card bg-warning text-white mb-4">
                   <div class="card-body">
@@ -307,7 +115,6 @@
                 </div>
               </div>
 
-              <!-- Pending Orders Card -->
               <div class="col-md-3">
                 <div class="card hover-card bg-danger text-white mb-4">
                   <div class="card-body">
@@ -320,7 +127,6 @@
               </div>
             </div>
 
-            <!-- Best Selling Products Table -->
             <div class="text-center mt-5">
               <h4>Best Selling Products</h4>
               <table class="table table-bordered">
@@ -351,7 +157,6 @@
               </table>
             </div>
 
-            <!-- Best Selling Categories Table -->
             <div class="text-center mt-5">
               <h4>Best Selling Categories</h4>
               <table class="table table-bordered">
@@ -404,69 +209,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const ctx = document.getElementById("salesChart").getContext("2d");
-    const filterSelect = document.getElementById("sales-filter");
-
-    let salesChart;
-
-    const fetchDataAndRenderChart = async (filter) => {
-      try {
-        const response = await fetch(`/admin/sales-data?filter=${filter.toLowerCase()}`);
-        console.log("Response status:", response.status); // For debugging status
-        if (!response.ok) throw new Error("Network response was not ok");
-
-        const data = await response.json();
-        console.log("Fetched data:", data); // For debugging data
-
-        const labels = data.map(item => {
-          if (filter === 'weekly') return `Week ${item._id.week}, ${item._id.year}`;
-          if (filter === 'monthly') return `Month ${item._id.month}, ${item._id.year}`;
-          if (filter === 'yearly') return `Year ${item._id.year}`;
-        });
-
-        const salesAmount = data.map(item => item.totalSales);
-
-        if (salesChart) salesChart.destroy();
-
-        salesChart = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: `Total Sales (${filter})`,
-              data: salesAmount,
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              borderWidth: 1,
-              fill: true,
-            }]
-          },
-          options: {
-            responsive: true,
-            scales: {
-              y: {
-                beginAtZero: true
-              }
-            }
-          }
-        });
-      } catch (error) {
-        console.error("Error fetching sales data:", error);
-      }
-    };
-
-    // Initial chart load (default to monthly)
-    fetchDataAndRenderChart(filterSelect.value);
-
-    // Update chart when filter changes
-    filterSelect.addEventListener("change", () => {
-      fetchDataAndRenderChart(filterSelect.value);
-    });
-  });
+  
 </script>
 
-  <!-- <script src="assets/vendors/js/vendor.bundle.base.js"></script>
+  <script src="assets/vendors/js/vendor.bundle.base.js"></script>
   <script src="assets/vendors/chart.js/Chart.min.js"></script>
   <script src="assets/vendors/progressbar.js/progressbar.min.js"></script>
   <script src="assets/vendors/jvectormap/jquery-jvectormap.min.js"></script>
@@ -478,9 +224,8 @@
   <script src="assets/js/settings.js"></script>
   <script src="assets/js/todolist.js"></script>
   <script src="assets/js/dashboard.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
-
-
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/adminjs/index.js"></script>
 
 
 

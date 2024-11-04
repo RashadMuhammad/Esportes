@@ -1,0 +1,170 @@
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 20px;
+}
+
+.modal-header h5 {
+    font-weight: 600;
+}
+
+.modal-body img {
+    max-width: 100%;
+    border-radius: 5px;
+    transition: transform 0.3s ease;
+}
+
+.modal-body img:hover {
+    transform: scale(1.05);
+}
+
+.modal-body p {
+    color: #6c757d;
+    font-size: 16px;
+}
+
+.modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 15px;
+    justify-content: space-between;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+#sizeSelect,
+#quantitySelect {
+    border-radius: 5px;
+}
+
+
+.thumbnail-images img {
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.modal.fade .modal-dialog {
+    opacity: 0;
+    transition: opacity 0.15s linear;
+}
+
+.modal-body {
+    max-height: 170vh;
+    overflow-y: auto;
+}
+
+.custom-modal {
+    margin-top: 50px;
+}
+
+.modal.show .modal-dialog {
+    opacity: 1;
+}
+
+.modal {
+    z-index: 1050;
+}
+
+.wrap-menu-desktop {
+    z-index: 1000;
+}
+
+.modal-backdrop {
+    z-index: 1040;
+    opacity: 0.5;
+}
+
+.wrap-pic-w {
+    position: relative;
+    overflow: visible;
+}
+
+.zoomed-view {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border: 2px solid #000;
+    display: none;
+    background: rgba(255, 255, 255, 0.8);
+    pointer-events: none;
+    background-size: 200%;
+    z-index: 9999;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.rating {
+    direction: rtl;
+    display: inline-flex;
+}
+
+.fa-star {
+    font-size: 20px;
+    color: lightgray;
+}
+
+.fa-star.checked {
+    color: gold;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card-img-top {
+    border-bottom: 1px solid #ddd;
+}
+
+.sub_heading {
+    font-weight: 800;
+    font-size: 25px;
+
+}
+
+.card_heading {
+    font-weight: 400;
+}
+
+.custom-border {
+    border: 2px solid #343a40;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.main_heading {
+    font-size: 500;
+    font-weight: 900;
+    margin-bottom: 20px;
+}
+p {
+    margin-bottom: 15px;
+}

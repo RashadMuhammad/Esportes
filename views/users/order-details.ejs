@@ -35,220 +35,11 @@
     <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="/css/util.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/user/order-details.css">
     <!--===============================================================================================-->
 
     <style>
-        .modal-content {
-            border-radius: 10px;
-            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-        }
 
-        .modal-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
-            padding: 20px;
-        }
-
-        .modal-header h5 {
-            font-weight: 600;
-        }
-
-        .modal-body img {
-            max-width: 100%;
-            border-radius: 5px;
-            transition: transform 0.3s ease;
-        }
-
-        .modal-body img:hover {
-            transform: scale(1.05);
-        }
-
-        .modal-body p {
-            color: #6c757d;
-            font-size: 16px;
-        }
-
-        .modal-footer {
-            border-top: 1px solid #e9ecef;
-            padding: 15px;
-            justify-content: space-between;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-
-        #sizeSelect,
-        #quantitySelect {
-            border-radius: 5px;
-        }
-
-
-        .thumbnail-images img {
-            cursor: pointer;
-            margin-right: 5px;
-        }
-
-        .modal.fade .modal-dialog {
-            opacity: 0;
-            transition: opacity 0.15s linear;
-        }
-
-        .modal-body {
-            max-height: 170vh;
-            /* Limits the height of the modal body */
-            overflow-y: auto;
-            /* Adds scroll if content overflows */
-        }
-
-        .custom-modal {
-            margin-top: 50px;
-            /* Adjust this value as needed */
-        }
-
-        .modal.show .modal-dialog {
-            opacity: 1;
-        }
-
-        .modal {
-            z-index: 1050;
-            /* Higher than the default navbar z-index */
-        }
-
-        .wrap-menu-desktop {
-            z-index: 1000;
-            /* Lower than modal */
-        }
-
-        .modal-backdrop {
-            z-index: 1040;
-            /* Below the modal but above the navbar */
-            opacity: 0.5;
-            /* Adjust for more/less opacity */
-        }
-
-        .wrap-pic-w {
-            position: relative;
-            overflow: visible;
-            /* Ensure zoomed view is not clipped */
-        }
-
-        .zoomed-view {
-            position: absolute;
-            width: 150px;
-            /* Adjust the size of the zoomed view */
-            height: 150px;
-            border: 2px solid #000;
-            display: none;
-            /* Hidden until hovering */
-            background: rgba(255, 255, 255, 0.8);
-            pointer-events: none;
-            /* Disable interaction with the zoomed area */
-            background-size: 200%;
-            /* Make background image larger for zoom effect */
-            z-index: 9999;
-            /* Ensure it appears in front of other elements */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            /* Optional shadow for better visibility */
-        }
-
-        .rating {
-            direction: rtl;
-            /* Makes it easy to fill stars from left to right */
-            display: inline-flex;
-        }
-
-        .fa-star {
-            font-size: 20px;
-            /* Adjust star size */
-            color: lightgray;
-            /* Default color */
-        }
-
-        .fa-star.checked {
-            color: gold;
-            /* Color for checked stars */
-        }
-
-        .card {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .card:hover {
-            transform: scale(1.05);
-        }
-
-        .card-img-top {
-            border-bottom: 1px solid #ddd;
-        }
-
-        .sub_heading {
-            font-weight: 800;
-            font-size: 25px;
-
-        }
-
-        .card_heading {
-            font-weight: 400;
-        }
-
-        .custom-border {
-            border: 2px solid #343a40;
-            /* Dark border */
-            border-radius: 10px;
-            /* Rounded corners */
-            padding: 20px;
-            /* Inner padding */
-            background-color: #f8f9fa;
-            /* Light background color */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            /* Subtle shadow for depth */
-        }
-
-        .main_heading {
-            font-size: 500;
-            /* Customize heading size */
-            font-weight: 900;
-            margin-bottom: 20px;
-        }
-
-        /* .text-dark {
-            font-size: 5rem;
-        } */
-
-        /* .fw-bold {
-            font-weight: 700;
-        }
-/*  */
-        p {
-            margin-bottom: 15px;
-        } */
-
-        /* .custom-border p {
-            font-size: 1.1rem;
-        } */
-
-        /* .custom-border p strong {
-            font-size: 1.1rem;
-        } */
     </style>
 </head>
 
@@ -256,110 +47,105 @@
 
     <!-- Header -->
     <%- include('../partials/_header') %>
-    
-
-
         <div class="container mt-lg-5 pt-5">
             <h1 class="main_heading text-center text-dark">Order Details</h1>
-            <div class="d-flex justify-content-center mt-3">
-                <a href="/download-invoice/<%= order._id %>">
-                    <span class="badge badge-success" style="font-size: 0.9rem; padding: 0.8rem 1rem;">
-                        Invoice Download
-                    </span>
-                </a>                
-            </div>
-            
-            <div class="row ">
-                <div class="col-md-6 mt-3">
-                    <div class="order-details mt-4 custom-border">
-                        <h1 class="sub_heading text-center text-dark">Order Information</h1>
-                        <div class="mt-4">
-                            <p class="text-danger"><strong class="text-dark fw-bold">Order ID : </strong>
-                                <%= order._id %>
-                            </p><br>
-                            <p class="text-dark"><strong class="text-dark fw-bold">Status : </strong>
-                                <%= order.status %>
-                            </p><br>
-                            <p class="text-dark"><strong class="text-dark fw-bold">Placed At : </strong>
-                                <%= order.placedAt.toDateString() %>
-                            </p><br>
-                            <p class="text-dark"><strong class="text-dark fw-bold">Payment Method : </strong>
-                                <%= order.paymentMethod %>
-                            </p><br>
-                            <p class="text-dark"><strong class="text-dark fw-bold">Total : </strong> ₹<%=
-                                    order.totalAfterDiscount.toFixed(2) %>
-                            </p><br>
-                            <p class="text-dark"><strong class="text-dark fw-bold">Delivery Address : </strong>
-                                <%= order.address.location %>, <%= order.address.city %>,
-                                        <%= order.address.state %> - <%= order.address.zip %>
-                                                (<%= order.address.addressType %>)
-                            </p>
-                        </div>
-                    </div>
+            <% if (order.status !=='Payment Failure' ) { %>
+                <div class="d-flex justify-content-center mt-3">
+                    <a href="/download-invoice/<%= order._id %>">
+                        <span class="badge badge-success" style="font-size: 0.9rem; padding: 0.8rem 1rem;">
+                            Invoice Download
+                        </span>
+                    </a>
                 </div>
+                <% } %>
 
-                <!-- User Information -->
-                <div class="col-md-6 mt-3">
-                    <div class="user-details mt-4 custom-border">
-                        <h1 class="sub_heading text-center text-dark">User Information</h1>
-                        <div class="mt-4">
-                            <p class="text-dark"><strong class="text-dark fw-bold">Username : </strong>
-                                <%= order.userId.username %>
-                            </p><br>
-                            <p class="text-dark"><strong class="text-dark fw-bold">Email : </strong>
-                                <%= order.userId.email %>
-                            </p><br>
-                            <p class="text-dark"><strong class="text-dark fw-bold">Phone Number : </strong>
-                                <%= order.userId.phone %>
-                            </p><br>
+
+                    <div class="row ">
+                        <div class="col-md-6 mt-3">
+                            <div class="order-details mt-4 custom-border">
+                                <h1 class="sub_heading text-center text-dark">Order Information</h1>
+                                <div class="mt-4">
+                                    <p class="text-danger"><strong class="text-dark fw-bold">Order ID : </strong>
+                                        <%= order._id %>
+                                    </p><br>
+                                    <p class="text-dark"><strong class="text-dark fw-bold">Status : </strong>
+                                        <%= order.status %>
+                                    </p><br>
+                                    <p class="text-dark"><strong class="text-dark fw-bold">Placed At : </strong>
+                                        <%= order.placedAt.toDateString() %>
+                                    </p><br>
+                                    <p class="text-dark"><strong class="text-dark fw-bold">Payment Method : </strong>
+                                        <%= order.paymentMethod %>
+                                    </p><br>
+                                    <p class="text-dark"><strong class="text-dark fw-bold">Total : </strong> ₹<%=
+                                            order.paymentTotal.toFixed(2) %>
+                                    </p><br>
+                                    <p class="text-dark"><strong class="text-dark fw-bold">Delivery Address : </strong>
+                                        <%= order.address.location %>, <%= order.address.city %>,
+                                                <%= order.address.state %> - <%= order.address.zip %>
+                                                        (<%= order.address.addressType %>)
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- User Information -->
+                        <div class="col-md-6 mt-3">
+                            <div class="user-details mt-4 custom-border">
+                                <h1 class="sub_heading text-center text-dark">User Information</h1>
+                                <div class="mt-4">
+                                    <p class="text-dark"><strong class="text-dark fw-bold">Username : </strong>
+                                        <%= order.userId.username %>
+                                    </p><br>
+                                    <p class="text-dark"><strong class="text-dark fw-bold">Email : </strong>
+                                        <%= order.userId.email %>
+                                    </p><br>
+                                    <p class="text-dark"><strong class="text-dark fw-bold">Phone Number : </strong>
+                                        <%= order.userId.phone %>
+                                    </p><br>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Row: Products (Display in a Grid with 4 Cards per Row) -->
-            <div class="row mt-5">
-                <h3 class="sub_heading text-dark col-12 text-center mt-5">Products</h3>
+                    <div class="row mt-5">
+                        <h3 class="sub_heading text-dark col-12 text-center mt-5">Products</h3>
+                        <% order.items.forEach(item=> { %>
+                            <div class="col-md-3 mb-4 mt-5">
+                                <div class="card h-100">
+                                    <% if (item.productId && item.productId.images.length> 0) { %>
+                                        <img src="/uploads/<%= item.productId.images[0] %>" class="card-img-top"
+                                            alt="<%= item.productId.name %>"
+                                            style="max-height: 250px; object-fit: cover;">
+                                        <% } else { %>
+                                            <img src="/path/to/placeholder-image.jpg" class="card-img-top"
+                                                alt="No image available" style="max-height: 250px; object-fit: cover;">
+                                            <% } %>
 
-                <!-- Loop Through Items to Display Product Cards -->
-                <% order.items.forEach(item=> { %>
-                    <div class="col-md-3 mb-4 mt-5">
-                        <div class="card h-100">
-                            <% if (item.productId && item.productId.images.length> 0) { %>
-                                <img src="/uploads/<%= item.productId.images[0] %>" class="card-img-top"
-                                    alt="<%= item.productId.name %>" style="max-height: 250px; object-fit: cover;">
-                                <% } else { %>
-                                    <img src="/path/to/placeholder-image.jpg" class="card-img-top"
-                                        alt="No image available" style="max-height: 250px; object-fit: cover;">
-                                    <% } %>
-
-                                        <div class="card-body">
-                                            <h4 class="card_heading card-title text-dark">
-                                                <%= item.productId ? item.productId.name : 'Product not found' %>
-                                            </h4>
-                                            <p class="card-text text-dark">
-                                                <strong class="text-dark fw-bold">Quantity : </strong>
-                                                <%= item.quantity %><br>
-                                                    <strong class="text-dark fw-bold">Price : </strong> ₹<%=
-                                                        (item.productId ? item.productId.price : 0).toFixed(2) %>
-                                            </p>
-                                        </div>
-                        </div>
+                                                <div class="card-body">
+                                                    <h4 class="card_heading card-title text-dark">
+                                                        <%= item.productId ? item.productId.name : 'Product not found'
+                                                            %>
+                                                    </h4>
+                                                    <p class="card-text text-dark">
+                                                        <strong class="text-dark fw-bold">Quantity : </strong>
+                                                        <%= item.quantity %><br>
+                                                            <strong class="text-dark fw-bold">Price : </strong> ₹<%=
+                                                                (item.productId ? item.productId.price : 0).toFixed(2)
+                                                                %>
+                                                    </p>
+                                                </div>
+                                </div>
+                            </div>
+                            <% }); %>
                     </div>
-                    <% }); %>
-            </div>
         </div>
-
-
-
 
         <!-- Load more -->
         <div class="flex-c-m flex-w w-full p-t-45 pb-5">
             <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
                 Load More
             </a>
-        </div>
-        </div>
         </div>
 
         <%- include('../partials/_footer') %>
@@ -370,11 +156,6 @@
                     <i class="zmdi zmdi-chevron-up"></i>
                 </span>
             </div>
-
-
-
-
-
 
             <!--===============================================================================================-->
             <script src="/vendor/jquery/jquery-3.2.1.min.js"></script>

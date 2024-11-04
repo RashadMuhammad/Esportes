@@ -9,7 +9,7 @@ function setDeleteAddressId(addressId) {
 document
   .getElementById("confirmDeleteButton")
   .addEventListener("click", async () => {
-    console.log(addressIdToDelete);
+    
 
     if (addressIdToDelete) {
       try {

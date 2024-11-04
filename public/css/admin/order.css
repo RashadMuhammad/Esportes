@@ -1,0 +1,39 @@
+.order-items-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .order-item {
+    padding: 8px 0;
+    font-size: 14px;
+  }
+
+  .product-name {
+    font-weight: 400;
+    margin-right: 10px;
+  }
+
+  .product-quantity {
+    color: #777;
+  }
+
+  .order-item:last-child {
+    border-bottom: none;
+  }
+
+  .form-control[disabled] {
+    background-color: #e9ecef;
+    color: #495057;
+    opacity: 1;
+
+  }
+
+  .pagination .page-item {
+    margin: 0 5px;
+  }
+
+  .pagination .page-link {
+    padding: 5px 10px;
+    font-size: 10px;
+  }

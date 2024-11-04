@@ -1,0 +1,209 @@
+body {
+    overflow-x: hidden;
+}
+
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 20px;
+}
+
+.modal-header h5 {
+    font-weight: 600;
+}
+
+.modal-body img {
+    max-width: 100%;
+    border-radius: 5px;
+    transition: transform 0.3s ease;
+}
+
+.modal-body img:hover {
+    transform: scale(1.05);
+}
+
+.modal-body p {
+    color: #6c757d;
+    font-size: 16px;
+}
+
+.modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 15px;
+    justify-content: space-between;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+#sizeSelect,
+#quantitySelect {
+    border-radius: 5px;
+}
+
+.thumbnail-images img {
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.modal.fade .modal-dialog {
+    opacity: 0;
+    transition: opacity 0.15s linear;
+}
+
+.modal-body {
+    max-height: 170vh;
+    overflow-y: auto;
+}
+
+.custom-modal {
+    margin-top: 50px;
+}
+
+.modal.show .modal-dialog {
+    opacity: 1;
+}
+
+.modal {
+    z-index: 1050;
+}
+
+.wrap-menu-desktop {
+    z-index: 1000;
+}
+
+.modal-backdrop {
+    z-index: 1040;
+    opacity: 0.5;
+}
+
+.custom-sidebar {
+    border: 0;
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    border-right: 1px solid #e9ecef;
+    padding: 20px;
+    height: 100%;
+}
+
+.custom-sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.custom-sidebar-item {
+    border: 0;
+    margin-bottom: 15px;
+}
+
+.custom-sidebar-link {
+    color: black;
+    text-decoration: none;
+    font-weight: lighter;
+    transition: color 0.5s;
+}
+
+.custom-sidebar-link:hover {
+    color: #007bff;
+    transition: color 0.3s ease;
+}
+
+.heading {
+    font-size: 35px;
+    font-weight: bold;
+    color: black;
+}
+
+
+
+.label {
+    font-weight: lighter;
+    color: black;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-close {
+    filter: invert(1);
+}
+
+.modal-body {
+    background-color: #f8f9fa;
+}
+
+.modal-title {
+    color: black;
+    font-weight: bolder;
+}
+
+#phone::placeholder {
+    color: red;
+    opacity: 1;
+}
+
+.logout {
+    color: red;
+}
+
+.coupon-card {
+    font-weight: 500;
+    border: 5px solid black;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 15px;
+    background-color: #f8f9fa;
+    transition: transform 0.2s;
+}
+
+.coupon-card:hover {
+    transform: scale(1.02);
+}
+
+.coupon-card h5 {
+    font-weight: bold;
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+}
+
+.coupon-card p {
+    margin: 5px 0;
+}
+
+.coupon-card .badge {
+    margin-right: 5px;
+}

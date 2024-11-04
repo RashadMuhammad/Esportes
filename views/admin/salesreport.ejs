@@ -2,728 +2,153 @@
 <html lang="en">
 
 <head>
-  <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Esportes Admin</title>
-  <!-- plugins:css -->
   <link rel="stylesheet" href="../../assets/vendors/mdi/css/materialdesignicons.min.css">
   <link rel="stylesheet" href="../../assets/vendors/css/vendor.bundle.base.css">
-  <!-- endinject -->
-  <!-- Plugin css for this page -->
-  <!-- End Plugin css for this page -->
-  <!-- inject:css -->
-  <!-- endinject -->
-  <!-- Layout styles -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <link rel="stylesheet" href="../../assets/css/style.css">
-  <!-- End layout styles -->
-  <link rel="shortcut icon" href="/favicon.png" />
+	<link rel="stylesheet" type="text/css" href="/css/admin/salesreport.css">
+  <link rel="shortcut icon" href="/favicon.ico" />
 </head>
-
-<style>
-
-  .content-wrapper {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  .page-header h3 {
-    margin-bottom: 15px;
-    color: #333;
-  }
-
-  .filter-container {
-    margin-bottom: 20px;
-  }
-
-  .filter-form {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .filter-form label {
-    margin: 10px 0 5px;
-    font-weight: bold;
-  }
-
-  .filter-form select,
-  .filter-form input[type="date"] {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 15px;
-  }
-
-  .btn {
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-
-  .btn:hover {
-    background-color: #0056b3;
-  }
-
-  .download-buttons {
-    margin-top: 15px;
-    display: flex;
-    gap: 10px;
-  }
-
-  .date-range {
-    display: none;
-  }
-
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    color: #333;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.7);
-  }
-
-  .modal-content {
-    background-color: #fff;
-    margin: 10% auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    color: #333;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 800px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    animation: fadeIn 0.3s ease;
-    overflow-x: auto;
-    overflow-y: auto;
-    max-height: 80vh;
-  }
-
-  .close {
-    color: #333;
-    float: right;
-    font-size: 25px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-
-  .close:hover,
-  .close:focus {
-    color: #ff0000;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    color: #333;
-  }
-
-  th,
-  td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #ddd;
-    text-align: left;
-    color: #fffefe;
-  }
-
-  tr th {
-    background-color: #007bff;
-    color: #fff;
-    text-transform: uppercase;
-  }
-
-  .qwerty th {
-    color: white !important
-  }
-
-  /* tbody tr:hover {
-    background-color: #f1f1f1;
-    /* Light hover effect */
-  /* } */
-  * tbody tr {
-    transition: background-color 0.2s ease;
-  }
-
-
-
-  /* Header */
-  h3 {
-    color: white;
-    /* Match the table header */
-    text-align: center;
-    font-weight: 600;
-  }
-
-  .table_heading {
-    color: white;
-  }
-
-  /* Fade-in effect */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-
-    to {
-      opacity: 1;
-    }
-  }
-</style>
-
 <body>
   <div class="container-scroller">
-    <!-- partial:partials/_sidebar.html -->
     <%- include('../partials/_sidebaradmin') %>
-    
-    <!-- partial -->
-    <div class="container-fluid page-body-wrapper">
-      <!-- partial:partials/_navbar.html -->
-      <nav class="navbar p-0 fixed-top d-flex flex-row">
-        <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-          <a class="navbar-brand brand-logo-mini" href="index.html"><img src="/assets/images/logo-mini.svg"
-              alt="logo" /></a>
-        </div>
-        <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
-          <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
-            <span class="mdi mdi-menu"></span>
-          </button>
-          <ul class="navbar-nav w-100">
-            <li class="nav-item w-100">
-              <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-                <input type="text" class="form-control" placeholder="Search products">
-              </form>
-            </li>
-          </ul>
-          <ul class="navbar-nav navbar-nav-right">
-            <li class="nav-item dropdown">
-              <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
-                <div class="navbar-profile">
-                  <img class="img-xs rounded-circle" src="/assets/images/faces/rash.jpg" alt="">
-                  <p class="mb-0 d-none d-sm-block navbar-profile-name">Muhammad Rashad</p>
-                  <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+
+      <div class="container-fluid page-body-wrapper">
+        <nav class="navbar p-0 fixed-top d-flex flex-row">
+          <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+            <a class="navbar-brand brand-logo-mini" href="index.html"><img src="/assets/images/logo-mini.svg"
+                alt="logo" /></a>
+          </div>
+          <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+              <span class="mdi mdi-menu"></span>
+            </button>
+            <ul class="navbar-nav navbar-nav-right">
+              <li class="nav-item dropdown">
+                <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
+                  <div class="navbar-profile">
+                    <img class="img-xs rounded-circle" src="/assets/images/faces/rash.jpg" alt="">
+                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Muhammad Rashad</p>
+                    <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                  </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
+                  aria-labelledby="profileDropdown">
+                  <h6 class="p-3 mb-0">Profile</h6>
+                  <div class="dropdown-divider"></div>
+                  <a href="/Settings" class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-settings text-success"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Settings</p>
+                    </div>
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a href="/logout" class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-logout text-danger"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Log out</p>
+                    </div>
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <p class="p-3 mb-0 text-center">Advanced settings</p>
                 </div>
-              </a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
-                aria-labelledby="profileDropdown">
-                <h6 class="p-3 mb-0">Profile</h6>
-                <div class="dropdown-divider"></div>
-                <a href="/Settings" class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <div class="preview-icon bg-dark rounded-circle">
-                      <i class="mdi mdi-settings text-success"></i>
-                    </div>
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject mb-1">Settings</p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="/logout" class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <div class="preview-icon bg-dark rounded-circle">
-                      <i class="mdi mdi-logout text-danger"></i>
-                    </div>
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject mb-1">Log out</p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <p class="p-3 mb-0 text-center">Advanced settings</p>
-              </div>
-            </li>
-          </ul>
-          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
-            data-toggle="offcanvas">
-            <span class="mdi mdi-format-line-spacing"></span>
-          </button>
-        </div>
-      </nav>
-      <!-- partial -->
-      <div class="main-panel pt-5">
-        <div class="content-wrapper p-5 ">
-          <div class="page-header">
-            <h3 class="page-title">Overall Management</h3>
+              </li>
+            </ul>
+            <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+              data-toggle="offcanvas">
+              <span class="mdi mdi-format-line-spacing"></span>
+            </button>
           </div>
-          <div class="filter-container">
-            <h4>Filter Sales Report</h4>
-            <form id="sales-filter-form" class="filter-form">
-              <label for="reportType">Select Report Type:</label>
-              <select id="reportType" name="reportType" onchange="toggleCustomDate()">
-                <option value="custom">Custom Date Range</option>
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
-              </select>
-
-              <div id="customDateRange" class="date-range" style="display: block;">
-                <label for="startDate">Start Date:</label>
-                <input type="date" id="startDate" name="startDate" required>
-                <label for="endDate">End Date:</label>
-                <input type="date" id="endDate" name="endDate" required>
-              </div>
-
-              <button type="button" class="btn" onclick="generateSalesReport()">Generate Report</button>
-            </form>
-            <div class="download-buttons">
-              <button class="btn" onclick="downloadPDF()">Download PDF</button>
-              <button class="btn" onclick="downloadCSV()">Download CSV</button>
+        </nav>
+        <!-- partial -->
+        <div class="main-panel pt-5">
+          <div class="content-wrapper p-5 ">
+            <div class="page-header">
+              <h3 class="page-title">Overall Management</h3>
             </div>
-          </div>
+            <div class="filter-container">
+              <h4>Filter Sales Report</h4>
+              <form id="sales-filter-form" class="filter-form">
+                <label for="reportType">Select Report Type:</label>
+                <select id="reportType" name="reportType" onchange="toggleCustomDate()">
+                  <option value="custom">Custom Date Range</option>
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="yearly">Yearly</option>
+                </select>
 
-          <!-- Sales Report Table -->
-          <div class="sales-report-container mt-5">
-            <h4>Sales Report</h4>
-            <table id="salesReportTable" class="table">
-              <thead>
-                <tr class="qwerty">
-                  <th>Order ID</th>
-                  <th>Offer Discount</th>
-                  <th>Coupon Discount</th>
-                  <th>Total Discount</th>
-                  <th>Total Amount</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Rows will be dynamically inserted here -->
-              </tbody>
-            </table>
+                <div id="customDateRange" class="date-range" style="display: block;">
+                  <label for="startDate">Start Date:</label>
+                  <input type="date" id="startDate" name="startDate" required>
+                  <label for="endDate">End Date:</label>
+                  <input type="date" id="endDate" name="endDate" required>
+                </div>
 
-            <div id="overallStats" class="overall-stats mt-3">
-              <p id="overallSalesCount">Overall Sales Count: 0</p>
-              <p id="overallOrderAmount">Overall Order Amount: $0.00</p>
-              <p id="overallDiscount">Overall Discount: $0.00</p>
-              <p id="overallCouponDeductions">Overall Coupon Deductions: $0.00</p>
+                <button type="button" class="btn" onclick="generateSalesReport()">Generate Report</button>
+              </form>
+              <div class="download-buttons">
+                <button class="btn" onclick="downloadPDF()">Download PDF</button>
+                <button class="btn" onclick="downloadCSV()">Download CSV</button>
+              </div>
+            </div>
+
+            <!-- Sales Report Table -->
+            <div class="sales-report-container mt-5">
+              <h4>Sales Report</h4>
+              <table id="salesReportTable" class="table">
+                <thead>
+                  <tr class="qwerty">
+                    <th>Order ID</th>
+                    <th>Offer Discount</th>
+                    <th>Coupon Discount</th>
+                    <th>Total Discount</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+
+              <div id="overallStats" class="overall-stats mt-3">
+                <p id="overallSalesCount">Overall Sales Count: 0</p>
+                <p id="overallOrderAmount">Overall Order Amount: $0.00</p>
+                <p id="overallDiscount">Overall Discount: $0.00</p>
+                <p id="overallCouponDeductions">Overall Coupon Deductions: $0.00</p>
+              </div>
             </div>
           </div>
         </div>
-
-        <div class="content-wrapper">
-          <div class="page-header">
-            <h3 class="page-title">Products Management</h3>
-          </div>
-          <div class="row">
-            <!-- Other Product Management Content Can Be Added Here -->
-          </div>
-        </div>
       </div>
-    </div>
 
-    <!-- <div id="salesReportModal" class="modal">
-      <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h3>Sales Report</h3>
-        <table id="salesReportTable">
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Subtotal</th>
-              <th>Discount</th>
-              <th>Total</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-             Dynamic content here
-          </tbody>
-        </table>
-      </div>
-    </div> 
+      <script src="assets/vendors/js/vendor.bundle.base.js"></script>
+      <script src="assets/vendors/chart.js/Chart.min.js"></script>
+      <script src="assets/vendors/progressbar.js/progressbar.min.js"></script>
+      <script src="assets/vendors/jvectormap/jquery-jvectormap.min.js"></script>
+      <script src="assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+      <script src="assets/vendors/owl-carousel-2/owl.carousel.min.js"></script>
+      <script src="assets/js/off-canvas.js"></script>
+      <script src="assets/js/hoverable-collapse.js"></script>
+      <script src="assets/js/misc.js"></script>
+      <script src="assets/js/settings.js"></script>
+      <script src="assets/js/todolist.js"></script>
+      <script src="assets/js/dashboard.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script src="/adminjs/salesreport.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
-
-    <!-- plugins:js -->
-    <script src="assets/vendors/js/vendor.bundle.base.js"></script>
-    <!-- Plugin js for this page -->
-    <script src="assets/vendors/chart.js/Chart.min.js"></script>
-    <script src="assets/vendors/progressbar.js/progressbar.min.js"></script>
-    <script src="assets/vendors/jvectormap/jquery-jvectormap.min.js"></script>
-    <script src="assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
-    <script src="assets/vendors/owl-carousel-2/owl.carousel.min.js"></script>
-    <!-- End plugin js for this page -->
-    <!-- inject:js -->
-    <script src="assets/js/off-canvas.js"></script>
-    <script src="assets/js/hoverable-collapse.js"></script>
-    <script src="assets/js/misc.js"></script>
-    <script src="assets/js/settings.js"></script>
-    <script src="assets/js/todolist.js"></script>
-    <!-- endinject -->
-    <!-- Custom js for this page -->
-    <script src="assets/js/dashboard.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- End custom js for this page -->
-    <!-- <script>
-    const ctx = document.getElementById('myChart').getContext('2d');
-
-    const myChart = new Chart(ctx, {
-      type: 'line', // You can change the chart type to 'bar', 'pie', etc.
-      data: {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June'], // X-axis labels
-        datasets: [{
-          label: 'Sales', // Name of the dataset
-          data: [12, 19, 3, 5, 2, 3], // Data points for each month
-          backgroundColor: 'rgba(75, 192, 192, 0.2)', // Background color for the line
-          borderColor: 'rgba(75, 192, 192, 1)', // Line color
-          borderWidth: 1, // Line width
-          fill: true // Whether to fill under the line
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true // Starts the Y-axis at zero
-          }
-        }
-      }
-    });
-  </script>
-
-   <script>
-    // Bar Chart
-    const barCtx = document.getElementById('myBarChart').getContext('2d');
-    const myBarChart = new Chart(barCtx, {
-      type: 'bar',
-      data: {
-        labels: ['Product A', 'Product B', 'Product C', 'Product D'],
-        datasets: [{
-          label: 'Sales',
-          data: [300, 200, 100, 400],
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)'
-          ],
-          borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        },
-        plugins: {
-          legend: {
-            position: 'top',
-          },
-          title: {
-            display: true,
-            text: 'Product Sales Performance'
-          }
-        }
-      }
-    });
-
- // Pie Chart
-    const pieCtx = document.getElementById('myPieChart').getContext('2d');
-    const myPieChart = new Chart(pieCtx, {
-      type: 'pie',
-      data: {
-        labels: ['Category A', 'Category B', 'Category C', 'Category D'],
-        datasets: [{
-          label: 'Categories',
-          data: [300, 200, 100, 400],
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)'
-          ],
-          borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'top',
-          },
-          title: {
-            display: true,
-            text: 'Product Category Distribution'
-          }
-        }
-      }
-    });
-  </script>
-
-  <script>
-    // Download PDF
-    function downloadPDF() {
-      fetch('/download-sales-report/pdf')
-        .then(response => response.blob())
-        .then(blob => {
-          const link = document.createElement('a');
-          link.href = window.URL.createObjectURL(blob);
-          link.download = 'sales_report.pdf';
-          link.click();
-        });
-    }
-
-    // Download Excel
-    function downloadExcel() {
-      fetch('/download-sales-report/excel')
-        .then(response => response.blob())
-        .then(blob => {
-          const link = document.createElement('a');
-          link.href = window.URL.createObjectURL(blob);
-          link.download = 'sales_report.xlsx';
-          link.click();
-        });
-    }
-
-    document.getElementById('reportType').addEventListener('change', function () {
-      if (this.value === 'custom') {
-        document.getElementById('customDateRange').style.display = 'block';
-      } else {
-        document.getElementById('customDateRange').style.display = 'none';
-      }
-    });
-
-    function generateReport() {
-      const reportType = document.getElementById('reportType').value;
-      const startDate = document.getElementById('startDate').value;
-      const endDate = document.getElementById('endDate').value;
-
-      // Make an AJAX call to your backend to fetch filtered data
-      // Then update the chart data dynamically based on the response
-
-      fetch('/admin/generate-sales-report', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ reportType, startDate, endDate })
-      })
-        .then(response => response.json())
-        .then(data => {
-          updateCharts(data);
-        });
-    }
-
-    function updateCharts(data) {
-      myChart.data.datasets[0].data = data.salesData;
-      myChart.update();
-
-    }
-
-
-
-
-  </script> -->
-
-
-    <script>
-      async function generateSalesReport() {
-        const reportType = document.getElementById('reportType').value;
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-
-        // Validate custom date range if 'custom' is selected
-        if (reportType === "custom" && (!startDate || !endDate)) {
-          alert("Please provide both start and end dates for the custom date range.");
-          return;
-        }
-
-        try {
-          const response = await fetch('/admin/sales-report', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ reportType, startDate, endDate }),
-          });
-
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Error fetching report: ${errorData.message}`);
-          }
-
-          const reportData = await response.json();
-          console.log(reportData);
-          
-
-          const tbody = document.getElementById('salesReportTable').getElementsByTagName('tbody')[0];
-          tbody.innerHTML = ''; // Clear existing rows
-
-          reportData.orders.forEach(order => {
-            const row = tbody.insertRow();
-            row.insertCell(0).textContent = order._id;                                                    // Order ID
-            row.insertCell(1).textContent = parseFloat(order.afteroffer).toFixed(2);                      // Offer Discount
-            row.insertCell(2).textContent = parseFloat(order.discountAmount).toFixed(2);                  // Coupon Discount
-            row.insertCell(3).textContent = parseFloat(order.totalAfterDiscount).toFixed(2);              // Total Discount
-            row.insertCell(4).textContent = parseFloat(order.paymentTotal).toFixed(2);                    // Total Amount
-            row.insertCell(5).textContent = order.status;                                                 // Status
-          });
-
-          // Update overall stats
-          document.getElementById('overallSalesCount').textContent = `Overall Sales Count: ${reportData.overallSalesCount}`;
-          document.getElementById('overallOrderAmount').textContent = `Overall Order Amount: $${parseFloat(reportData.paymentTotal).toFixed(2)}`;
-          document.getElementById('overallDiscount').textContent = `Overall Discount: $${parseFloat(reportData.overallDiscount).toFixed(2)}`;
-          document.getElementById('overallCouponDeductions').textContent = `Overall Coupon Deductions: $${parseFloat(reportData.overallCouponDeductions).toFixed(2)}`;
-        } catch (error) {
-          console.error('Error generating report:', error.message);
-          alert('An error occurred while generating the report. Please try again.');
-        }
-      }
-
-      function toggleCustomDate() {
-        const reportType = document.getElementById('reportType').value;
-        const customDateRange = document.getElementById('customDateRange');
-
-        if (reportType === "custom") {
-          customDateRange.style.display = "block";
-        } else {
-          customDateRange.style.display = "none";
-          document.getElementById('startDate').value = ""; // Clear start date
-          document.getElementById('endDate').value = "";   // Clear end date
-        }
-      }
-
-
-      function closeModal() {
-        document.getElementById('salesReportModal').style.display = 'none';
-      }
-
-      async function downloadPDF() {
-        const reportType = document.getElementById('reportType').value;
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-
-        // Input validation
-        if (reportType === "custom") {
-          alert("Please fill in all fields.");
-          return;
-        }
-
-        // || !startDate || !endDate
-
-        try {
-          // Fetch the report data to get orders
-          const response = await fetch('/admin/sales-report', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ reportType, startDate, endDate }),
-          });
-
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Error fetching report: ${errorData.message}`);
-          }
-
-          const reportData = await response.json();
-          const orders = reportData.orders;
-          console.log(reportData.orders);
-
-          // Now, use the fetched orders to generate the PDF
-          const pdfResponse = await fetch('/admin/sales-report-pdf', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ orders }),
-          });
-
-          if (!pdfResponse.ok) {
-            const errorData = await pdfResponse.json();
-            throw new Error(`Error generating PDF: ${errorData.message}`);
-          }
-
-          const blob = await pdfResponse.blob();
-          const link = document.createElement('a');
-          link.href = window.URL.createObjectURL(blob);
-          link.download = 'sales_report.pdf';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        } catch (error) {
-          console.error('Download failed:', error.message);
-          alert('An error occurred while downloading the report. Please try again.');
-        }
-      }
-
-      async function downloadCSV() {
-        const reportType = document.getElementById('reportType').value;
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-
-        // // Input validation
-        // if (!reportType || !startDate || !endDate) {
-        //   alert("Please fill in all fields.");
-        //   return;
-        // }
-
-        try {
-          // Fetch the report data to get orders
-          const response = await fetch('/admin/sales-report', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ reportType, startDate, endDate }),
-          });
-
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Error fetching report: ${errorData.message}`);
-          }
-
-          const reportData = await response.json();
-          const orders = reportData.orders;
-
-          // Now, use the fetched orders to generate the CSV
-          const csvResponse = await fetch('/admin/sales-report-csv', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ orders }), // Pass the orders to the CSV endpoint
-          });
-
-          if (!csvResponse.ok) {
-            const errorData = await csvResponse.json();
-            throw new Error(`Error generating CSV: ${errorData.message}`);
-          }
-
-          const blob = await csvResponse.blob();
-          const link = document.createElement('a');
-          link.href = window.URL.createObjectURL(blob);
-          link.download = 'sales_report.csv';
-          link.click();
-        } catch (error) {
-          console.error('Download failed:', error.message);
-          alert('An error occurred while downloading the report. Please try again.');
-        }
-      }
-
-    </script>
 </body>
 
 </html>

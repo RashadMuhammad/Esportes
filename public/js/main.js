@@ -99,7 +99,7 @@
             }
 
             $('.sub-menu-m').each(function(){
-                if($(this).css('display') == 'block') { console.log('hello');
+                if($(this).css('display') == 'block') { 
                     $(this).css('display','none');
                     $(arrowMainMenu).removeClass('turn-arrow-main-menu-m');
                 }
@@ -126,46 +126,46 @@
     });
 
 
-    /*==================================================================
-    [ Isotope ]*/
-    var $topeContainer = $('.isotope-grid');
-    var $filter = $('.filter-tope-group');
+    // /*==================================================================
+    // [ Isotope ]*/
+    // var $topeContainer = $('.isotope-grid');
+    // var $filter = $('.filter-tope-group');
 
-    // filter items on button click
-    $filter.each(function () {
-        $filter.on('click', 'button', function () {
-            var filterValue = $(this).attr('data-filter');
-            $topeContainer.isotope({filter: filterValue});
-        });
+    // // filter items on button click
+    // $filter.each(function () {
+    //     $filter.on('click', 'button', function () {
+    //         var filterValue = $(this).attr('data-filter');
+    //         $topeContainer.isotope({filter: filterValue});
+    //     });
         
-    });
+    // });
 
-    // init Isotope
-    $(window).on('load', function () {
-        var $grid = $topeContainer.each(function () {
-            $(this).isotope({
-                itemSelector: '.isotope-item',
-                layoutMode: 'fitRows',
-                percentPosition: true,
-                animationEngine : 'best-available',
-                masonry: {
-                    columnWidth: '.isotope-item'
-                }
-            });
-        });
-    });
+    // // init Isotope
+    // $(window).on('load', function () {
+    //     var $grid = $topeContainer.each(function () {
+    //         $(this).isotope({
+    //             itemSelector: '.isotope-item',
+    //             layoutMode: 'fitRows',
+    //             percentPosition: true,
+    //             animationEngine : 'best-available',
+    //             masonry: {
+    //                 columnWidth: '.isotope-item'
+    //             }
+    //         });
+    //     });
+    // });
 
-    var isotopeButton = $('.filter-tope-group button');
+    // var isotopeButton = $('.filter-tope-group button');
 
-    $(isotopeButton).each(function(){
-        $(this).on('click', function(){
-            for(var i=0; i<isotopeButton.length; i++) {
-                $(isotopeButton[i]).removeClass('how-active1');
-            }
+    // $(isotopeButton).each(function(){
+    //     $(this).on('click', function(){
+    //         for(var i=0; i<isotopeButton.length; i++) {
+    //             $(isotopeButton[i]).removeClass('how-active1');
+    //         }
 
-            $(this).addClass('how-active1');
-        });
-    });
+    //         $(this).addClass('how-active1');
+    //     });
+    // });
 
     /*==================================================================
     [ Filter / Search product ]*/

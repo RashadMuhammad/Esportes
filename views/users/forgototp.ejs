@@ -6,55 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Esportes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        html,
-        body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            /* Prevent scrolling */
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: center;
-            /* Center the image horizontally */
-            align-items: center;
-            /* Center the image vertically */
-            height: 80px;
-            /* Set a height for the navbar */
-        }
-
-        .navbar img {
-            max-height: 100%;
-            /* Ensure the image fits within the navbar height */
-        }
-
-        #timer {
-            font-size: 14px;
-            font-weight: medium;
-            color: red;
-        }
-
-        .otp-input {
-            width: 50px;
-            height: 50px;
-            font-size: 24px;
-            text-align: center;
-            margin: 0 5px;
-            -moz-appearance: textfield;
-            appearance: unset;
-            /* Remove spinner for Firefox */
-        }
-
-        /* Remove spinner in Chrome and Safari */
-        .otp-input::-webkit-inner-spin-button,
-        .otp-input::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/user/forgetotp.css">
 </head>
 
 <body style="background: white">
@@ -103,9 +55,10 @@
 
                             <p class="text-center mt-3" id="resendMessage" style="display:none;">
                                 Didn't receive the OTP?
-                            <form action="/forgetverify-otp" method="post" id="resendOtpForm"
+                            <form action="/resendforgetotppage" method="post" id="resendOtpForm"
                                 class="d-flex justify-content-center">
-                                <button type="submit" class="btn btn-link" id="resendOtpButton">Resend OTP</button>
+                                <button type="submit" class="btn btn-link" style="display: none;"
+                                    id="resendOtpButton">Resend OTP</button>
                             </form>
                             </p>
                         </div>
@@ -114,109 +67,7 @@
             </div>
         </div>
     </section>
-
-    <script>
-        // Function to display an alert message if it exists
-        const urlParams = new URLSearchParams(window.location.search);
-        const message = urlParams.get('message');
-
-        if (message) {
-            const errorMessageElement = document.getElementById('errormessage');
-            errorMessageElement.textContent = message;
-            errorMessageElement.classList.remove('d-none'); // Show the alert
-        }
-
-        const otpInputs = document.querySelectorAll('.otp-input');
-        let countdown = sessionStorage.getItem('otpCountdown') || 60;
-        const timerElement = document.getElementById('timer');
-
-        // Function to handle input movement
-        const handleInputMovement = (input, index) => {
-            if (input.value.length === 1 && !isNaN(input.value)) {
-                if (index < otpInputs.length - 1) {
-                    otpInputs[index + 1].focus();
-                }
-            }
-        };
-
-        const otpForm = document.getElementById('otpForm');
-
-        // Handle OTP form submission
-        otpForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            // Get OTP value
-            const enteredOtp = Array.from(otpInputs).map(input => input.value).join('');
-
-            fetch('/forgetverify-otp', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    otp1: otpInputs[0].value,
-                    otp2: otpInputs[1].value,
-                    otp3: otpInputs[2].value,
-                    otp4: otpInputs[3].value,
-                    otp5: otpInputs[4].value,
-                    otp6: otpInputs[5].value
-                })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        sessionStorage.removeItem('otpCountdown');
-                        console.log('removed');
-                        window.location.href = '/newpasswordPage';
-                    } else {
-                        document.getElementById('errormessage').textContent = data.message;
-                        document.getElementById('errormessage').classList.remove('d-none');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error during OTP verification:', error);
-                });
-        });
-
-        // Handle input field movement and keydown events
-        otpInputs.forEach((input, index) => {
-            input.addEventListener('input', (e) => {
-                handleInputMovement(input, index);
-                if (isNaN(e.target.value) || e.target.value.length > 1) {
-                    e.target.value = ''; // Clear invalid input
-                }
-            });
-
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Backspace' && index > 0 && input.value === '') {
-                    otpInputs[index - 1].focus();
-                }
-            });
-        });
-
-        // Set initial timer display
-        timerElement.textContent = `Time remaining: 00:${String(countdown).padStart(2, '0')}`;
-
-        // Countdown logic
-        const interval = setInterval(() => {
-            countdown--;
-            timerElement.textContent = `Time remaining: 00:${String(countdown).padStart(2, '0')}`;
-            sessionStorage.setItem('otpCountdown', countdown);
-
-            if (countdown <= 0) {
-                clearInterval(interval);
-                sessionStorage.removeItem('otpCountdown');
-                document.getElementById('countdown').style.display = 'none';
-                document.getElementById('resendMessage').style.display = 'block';
-            }
-        }, 1000);
-
-        // Clear countdown if it has already expired
-        if (countdown <= 0) {
-            sessionStorage.removeItem('otpCountdown');
-        }
-    </script>
-
+    <script src="/userjs/forgetotp.js"></script>
 </body>
 
 </html>

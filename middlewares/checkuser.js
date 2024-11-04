@@ -32,3 +32,4 @@ const checkUserStatus = async (req, res, next) => {
       return res.redirect('/login');
     }
   };
+  

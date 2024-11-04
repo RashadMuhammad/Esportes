@@ -1,0 +1,171 @@
+.content-wrapper {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .page-header h3 {
+    margin-bottom: 15px;
+    color: #333;
+  }
+
+  .filter-container {
+    margin-bottom: 20px;
+  }
+
+  .filter-form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .filter-form label {
+    margin: 10px 0 5px;
+    font-weight: bold;
+  }
+
+  .filter-form select,
+  .filter-form input[type="date"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+  }
+
+  .btn {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .btn:hover {
+    background-color: #0056b3;
+  }
+
+  .download-buttons {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .date-range {
+    display: none;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    color: #333;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+
+  .modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    color: #333;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s ease;
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 80vh;
+  }
+
+  .close {
+    color: #333;
+    float: right;
+    font-size: 25px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: #ff0000;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    color: #333;
+  }
+
+  th,
+  td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+    color: #fffefe;
+  }
+
+  tr th {
+    background-color: #007bff;
+    color: #fff;
+    text-transform: uppercase;
+  }
+
+  .qwerty th {
+    color: white !important
+  }
+
+  /* tbody tr:hover {
+    background-color: #f1f1f1;
+    /* Light hover effect */
+  /* } */
+  * tbody tr {
+    transition: background-color 0.2s ease;
+  }
+
+
+
+  /* Header */
+  h3 {
+    color: white;
+    /* Match the table header */
+    text-align: center;
+    font-weight: 600;
+  }
+
+  .table_heading {
+    color: white;
+  }
+
+  /* Fade-in effect */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  .hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .hover-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  .main th {
+    color: white !important
+  }
+  .page-title{
+    position: relative;
+    left: 470px;
+  }

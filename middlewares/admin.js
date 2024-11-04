@@ -8,7 +8,7 @@ const islogin = (req,res,next) => {
         }
         
     } catch (error) {
-        console.log(error.message);
+        
         
     }
 }
@@ -22,7 +22,7 @@ const islogout = (req,res,next) => {
         next()
         }
     } catch (error) {
-        console.log(error.message);        
+                
     }
 }
 

@@ -12,7 +12,7 @@ const nodemailer = require("nodemailer");
 const PDFDocument = require("pdfkit");
 const crypto = require("crypto");
 const { log } = require("console");
-require("dotenv").config(); // Ensure dotenv is loaded at the start
+require("dotenv").config();
 
 const Razorpay = require("razorpay");
 
@@ -52,7 +52,7 @@ exports.insertUser = async (req, res) => {
       message: "Username and Password cannot contain spaces",
     });
   }
-  console.log(password);
+  
 
   try {
     // Check if email is already registered
@@ -108,7 +108,7 @@ const sendOtpEmail = async (email, otp) => {
 
   try {
     let info = await transporter.sendMail(mailOptions);
-    console.log("OTP email sent:", info.messageId);
+    
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error("Error sending OTP email:", error.message);
@@ -156,6 +156,13 @@ exports.verifyOtp = async (req, res) => {
           totalPrice: 0,
         });
         await cart.save();
+
+        // Create a wallet for the user
+        const wallet = new Wallet({
+          userId: newUser._id,
+          balance: 0,
+        });
+        await wallet.save();
 
         // Send success response
         return res.status(200).json({ message: "Success! User created." });
@@ -220,7 +227,7 @@ exports.forgetPassword = async (req, res) => {
   try {
     res.render("users/forgetpassword");
   } catch (error) {
-    console.log(error.message);
+    
   }
 };
 
@@ -228,7 +235,7 @@ exports.forgetPassword = async (req, res) => {
 exports.forgetPasswordOtp = async (req, res) => {
   // const otp = crypto.randomInt(100000, 999999).toString();
   const { email } = req.body;
-  console.log(email);
+  req.session.forgetEmail = email;
 
   if (!email) {
     return res.status(400).json({ message: "Email is required" });
@@ -241,20 +248,16 @@ exports.forgetPasswordOtp = async (req, res) => {
     }
 
     //=================================================================================
-    // Generate a random 4-digit OTP
     const genotp = Math.floor(100000 + Math.random() * 900000);
-    console.log(genotp); // Log the OTP for debugging
 
-    // Configure the email transporter using nodemailer
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.EMAIL_USER, // Your email
-        pass: process.env.EMAIL_PASSWORD, // Your email password
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
       },
     });
 
-    // Email options
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -262,18 +265,14 @@ exports.forgetPasswordOtp = async (req, res) => {
       text: ` Your OTP for signup is ${genotp}. It will expire in 10 minutes.`,
     };
 
-    // Send the OTP via email
     await transporter.sendMail(mailOptions);
 
-    // Store OTP and expiration time in session
     req.session.otp = genotp;
     req.session.email = req.body;
-    req.session.otpExpires = Date.now() + 1 * 60 * 1000; // Set expiration time to 1 minute (60000 ms)
-
-    console.log(req.session.otp); // Log the session OTP for debugging
+    req.session.otpExpires = Date.now() + 1 * 60 * 1000;
 
     res.redirect("/forgetotppage");
-    console.log("hiigyitt765578584654666tfyutf7");
+    
 
     //======================================================================================
 
@@ -293,16 +292,66 @@ exports.forgetOtpPage = async (req, res) => {
     const message = req.query.message;
     res.render("users/forgototp"), { msg: message };
   } catch (error) {
-    console.log(error.message);
+    
   }
 };
 
 exports.newPassword = async (req, res) => {
   try {
-    console.log("Heyyy");
-    res.render("users/newpassword");
+    if (req.session.forgetEmail) {
+      res.render("users/newpassword");
+    }
   } catch (error) {
-    console.log(error.message);
+    
+  }
+};
+
+exports.resendForgetPasswordOtp = async (req, res) => {
+  const email = req.session.forgetEmail;
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  try {
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      return res.status(404).json({ message: "Email not found" });
+    }
+
+    //=================================================================================
+    const genotp = Math.floor(100000 + Math.random() * 900000);
+    
+
+    
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Your OTP for Signup",
+      text: ` Your OTP for signup is ${genotp}. It will expire in 10 minutes.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    req.session.otp = genotp;
+    req.session.email = req.body;
+    req.session.otpExpires = Date.now() + 1 * 60 * 1000;
+
+    res.redirect("/forgetotppage");
+  } catch (error) {
+    console.error("Error during dfffdfd OTP sending:", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to send OTP email rdgfhtrfghtrhftrfg" });
   }
 };
 
@@ -327,18 +376,13 @@ exports.forgetVerifyOtp = async (req, res) => {
     });
   }
 
-  console.log("OTP Verification attempt");
-  console.log(enteredOtp);
-
   // Verify entered OTP
   if (parseInt(enteredOtp) === req.session.otp) {
-    console.log("OTP verified successfully");
-
     // Clear OTP session variables
     req.session.otp = null;
     req.session.otpExpires = null;
     req.session.otpCountdown = null;
-    return res.status(200).json({ success: true }); // Send success response
+    return res.status(200).json({ success: true });
   } else {
     return res
       .status(400)
@@ -348,15 +392,9 @@ exports.forgetVerifyOtp = async (req, res) => {
 
 exports.newpassVerify = async (req, res) => {
   try {
-    console.log("Function newpassVerify invoked");
-
+    const email = req.session.forgetEmail;
     const { password } = req.body;
-    const email = req.session.email.email; // Make sure this is just the email string
-    console.log(email);
 
-    console.log(`Email: ${email.email}, Password: ${password}`);
-
-    // Find the user by email
     const existingUser = await User.findOne({ email });
 
     if (!existingUser) {
@@ -365,16 +403,18 @@ exports.newpassVerify = async (req, res) => {
       });
     }
 
-    // Hash the new password
     const hashPassword = await bcrypt.hash(password, 10);
 
-    // Update the existing user's password
     await User.updateOne(
       { email: email },
       { $set: { password: hashPassword } }
     );
 
-    console.log("Password updated successfully");
+    req.session.forgetEmail = null;
+
+    
+
+    
     res.redirect("/login");
   } catch (error) {
     console.error("Error updating password:", error.message);
@@ -387,7 +427,7 @@ exports.login = async (req, res) => {
   try {
     res.render("users/login");
   } catch (error) {
-    console.log(error);
+    
     res.status(500).send("Server error");
   }
 };
@@ -396,7 +436,7 @@ exports.login = async (req, res) => {
 exports.verifylogin = async (req, res) => {
   const { email, password } = req.body;
 
-  console.log("normal login ", req.session);
+  
 
   try {
     // Find the user by email
@@ -431,7 +471,7 @@ exports.verifylogin = async (req, res) => {
 // Render home page
 exports.home = async (req, res) => {
   try {
-    const categories = await Category.find(); // Fetch all categories from MongoDB
+    const categories = await Category.find();
     const products = await Product.find({ listed: true })
       .populate("category")
       .exec();
@@ -447,24 +487,18 @@ exports.home = async (req, res) => {
     // Apply offers to products
     for (const product of products) {
       const applicableOffers = activeOffers.filter((offer) => {
-        if (
-          offer.type === "product" &&
-          offer.product.toString() === product._id.toString()
-        ) {
-          return true;
-        }
-        if (
-          offer.type === "category" &&
-          offer.category.toString() === product.category._id.toString()
-        ) {
-          return true;
-        }
-        return false;
+        return (
+          (offer.type === "product" &&
+            offer.product.toString() === product._id.toString() &&
+            product.price >= offer.minProductPrice) ||
+          (offer.type === "category" &&
+            offer.category.toString() === product.category._id.toString() &&
+            product.price >= offer.minProductPrice)
+        );
       });
 
-      // Calculate the best applicable offer
       if (applicableOffers.length > 0) {
-        const bestOffer = applicableOffers[0]; // Assume the first applicable offer is the best
+        const bestOffer = applicableOffers[0];
         let discount = 0;
 
         if (bestOffer.discountType === "percentage") {
@@ -488,18 +522,16 @@ exports.home = async (req, res) => {
           { discountedPrice: discountedPrice }
         );
       } else {
-        // If no applicable offer, reset discountedPrice to null or remove it
-        product.discountedPrice = null; // or set it to product.price if preferred
+        product.discountedPrice = null;
         await Product.updateOne(
           { _id: product._id },
-          { discountedPrice: null } // or product.price
+          { discountedPrice: null }
         );
       }
     }
 
     const isAuthenticated = req.session.userId ? true : false;
 
-    // Fetch cart for the logged-in user and count unique products
     let cartProductCount = 0;
     if (isAuthenticated) {
       const cart = await Cart.findOne({ userId: req.session.userId });
@@ -512,7 +544,7 @@ exports.home = async (req, res) => {
 
     const user = await User.findById(req.session.userId);
     if (user && user.wishlist) {
-      wishlistCount = user.wishlist.length; // Calculate the wishlist count
+      wishlistCount = user.wishlist.length;
     }
 
     res.render("users/index", {
@@ -523,8 +555,7 @@ exports.home = async (req, res) => {
       wishlistCount,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).send("Server Error"); // Optional: handle the error response
+    res.status(500).send("Server Error");
   }
 };
 
@@ -593,60 +624,6 @@ exports.advancedHomeSearch = async (req, res) => {
   }
 };
 
-// exports.shopingcart = async (req, res) => {
-//   try {
-//     const userId = req.session.userId;
-//     const cart = await Cart.findOne({ userId }).populate("items.productId");
-
-//     if (!cart || !cart.items.length) {
-//       return res.render("users/shoping-cart", {
-//         cart,
-//         subtotal: 0,
-//         discountAmount: 0,
-//         totalAfterDiscount: 0,
-//       });
-//     }
-
-//     let subtotal = 0;
-//     cart.items.forEach((item) => {
-//       // Check if discountedPrice exists
-//       const productPrice = item.productId.discountedPrice
-//         ? parseFloat(item.productId.discountedPrice)
-//         : parseFloat(item.productId.price);
-
-//       // Debugging output
-//       console.log(
-//         `Item: ${item.productId.name}, Discounted Price: ${item.productId.discountedPrice}, Original Price: ${item.productId.price}, Quantity: ${item.quantity}`
-//       );
-
-//       subtotal += productPrice * item.quantity; // Calculate subtotal based on the chosen price
-//     });
-
-//     const discountRate = 0.03; // Adjust as necessary
-//     const discountAmount = subtotal * discountRate;
-//     const totalAfterDiscount = subtotal - discountAmount;
-
-//     // Debugging output for totals
-//     console.log(
-//       `Subtotal: ${subtotal.toFixed(
-//         2
-//       )}, Discount Amount: ${discountAmount.toFixed(
-//         2
-//       )}, Total After Discount: ${totalAfterDiscount.toFixed(2)}`
-//     );
-
-//     res.render("users/shoping-cart", {
-//       cart,
-//       subtotal: subtotal.toFixed(2), // Show calculated subtotal
-//       discountAmount: discountAmount.toFixed(2),
-//       totalAfterDiscount: totalAfterDiscount.toFixed(2),
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// };
-
 exports.shopingcart = async (req, res) => {
   try {
     const userId = req.session.userId;
@@ -686,27 +663,12 @@ exports.shopingcart = async (req, res) => {
       const productPrice = item.productId.discountedPrice
         ? parseFloat(item.productId.discountedPrice)
         : parseFloat(item.productId.price);
-
-      // Debugging output
-      console.log(
-        `Item: ${item.productId.name}, Discounted Price: ${item.productId.discountedPrice}, Original Price: ${item.productId.price}, Quantity: ${item.quantity}`
-      );
-
       subtotal += productPrice * item.quantity;
     });
 
     const discountRate = 0.03;
     const discountAmount = subtotal * discountRate;
     const totalAfterDiscount = subtotal - discountAmount;
-
-    // Debugging output for totals
-    console.log(
-      `Subtotal: ${subtotal.toFixed(
-        2
-      )}, Discount Amount: ${discountAmount.toFixed(
-        2
-      )}, Total After Discount: ${totalAfterDiscount.toFixed(2)}`
-    );
 
     res.render("users/shoping-cart", {
       cart,
@@ -757,7 +719,7 @@ exports.addToCart = async (req, res) => {
       }
       existingItem.quantity += 1;
     } else {
-      console.log(6);
+      
       if (1 > product.stock) {
         return res.status(400).send("Not enough stock available");
       }
@@ -765,9 +727,15 @@ exports.addToCart = async (req, res) => {
     }
 
     cart.totalPrice = await calculateTotalPrice(cart.items);
+
     // Save the updated cart
     await cart.save();
-    res.json({ success: true, message: "item added successfully" }); // Redirect to the shopping cart page
+    const cartProductCount = await Cart.findOne({ userId });
+    res.json({
+      success: true,
+      message: "item added successfully",
+      cartProductCount: cartProductCount.items.length,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -881,33 +849,37 @@ exports.product = async (req, res) => {
     const products = await Product.find({ listed: true })
       .populate("category")
       .exec();
-    console.log(1);
 
     // Fetch active offers
     const currentDate = new Date();
     const activeOffers = await Offer.find({
       status: "active",
-      // validFrom : { $gte: currentDate },
-      // validUntil : { $lte: currentDate },
+      // validFrom: { $lte: currentDate },
+      // validUntil: { $gte: currentDate },
     });
 
+    
+
     const isAuthenticated = req.session.userId ? true : false;
-    console.log(2);
 
     for (const product of products) {
       const applicableOffers = activeOffers.filter((offer) => {
         return (
           (offer.type === "product" &&
-            offer?.product?.toString() === product?._id?.toString()) ||
+            offer?.product?.toString() === product?._id?.toString() &&
+            product.price >= offer.minProductPrice) || 
           (offer.type === "category" &&
-            offer?.category?.toString() === product?.category?._id?.toString())
+            offer?.category?.toString() ===
+              product?.category?._id?.toString() &&
+            product.price >= offer.minProductPrice) 
         );
       });
 
-      let discountedPrice = product.price; // Default to the original price
-      let bestOffer = null; // Initialize bestOffer
+      let discountedPrice = product.price; 
+      let bestOffer = null; 
 
       if (applicableOffers.length > 0) {
+        // Find the best offer with the highest discount
         bestOffer = applicableOffers.reduce((prevOffer, currentOffer) => {
           const prevDiscount = calculateDiscount(prevOffer, product.price);
           const currentDiscount = calculateDiscount(
@@ -917,12 +889,16 @@ exports.product = async (req, res) => {
           return currentDiscount > prevDiscount ? currentOffer : prevOffer;
         });
 
+        // Apply the best offer discount
         discountedPrice = applyBestOfferDiscount(bestOffer, product.price);
       }
 
       product.discountedPrice = discountedPrice;
-      product.bestOffer = bestOffer; // Pass bestOffer to the frontend
+      product.bestOffer = bestOffer; 
+      
+      
 
+      // Update the product's discounted price in the database
       await Product.updateOne(
         { _id: product._id },
         { discountedPrice: discountedPrice }
@@ -950,9 +926,51 @@ exports.product = async (req, res) => {
       wishlistCount,
     });
   } catch (error) {
-    console.log(error.message);
+    
     res.status(500).send("Server Error");
   }
+};
+
+// Helper function to calculate the discount for an offer
+function calculateDiscount(offer, price) {
+  return offer.discountType === "percentage"
+    ? (offer.discountValue / 100) * price
+    : offer.discountValue;
+}
+
+// Helper function to apply the best offer's discount to the product price
+function applyBestOfferDiscount(offer, price) {
+  return offer.discountType === "percentage"
+    ? price - (offer.discountValue / 100) * price
+    : price - offer.discountValue;
+}
+
+exports.categoryFilter = async (req, res) => {
+  
+  const categoryId = req.params.id;
+  
+  
+  const products = await Product.find({ category: categoryId });
+
+  const isAuthenticated = req.session.userId ? true : false;
+
+  let cartProductCount = 0;
+  let wishlistCount = 0;
+
+  if (isAuthenticated) {
+    const user = await User.findById(req.session.userId);
+    const cart = await Cart.findOne({ userId: req.session.userId });
+    wishlistCount = user.wishlist.length;
+
+    if (cart) {
+      cartProductCount = cart.items.length;
+    }
+  }
+
+  
+
+  // Respond with JSON data instead of rendering a page
+  res.json({ products, isAuthenticated, cartProductCount, wishlistCount });
 };
 
 // Helper function to calculate discount
@@ -1000,7 +1018,6 @@ exports.addToWishlist = async (req, res) => {
     // Find the logged-in user
     const user = await User.findById(req.session.userId);
 
-    // Check if the product is already in the wishlist
     if (user.wishlist.includes(productId)) {
       return res
         .status(400)
@@ -1011,7 +1028,14 @@ exports.addToWishlist = async (req, res) => {
     user.wishlist.push(productId);
     await user.save();
 
-    res.json({ success: true, message: "Product added to wishlist" });
+    const wishlistCount = user.wishlist.length;
+    
+
+    res.json({
+      success: true,
+      message: "Product added to wishlist",
+      wishlistCount,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Server error" });
@@ -1052,8 +1076,8 @@ exports.getWishlist = async (req, res) => {
       wishlist: user.wishlist,
       isAuthenticated,
       categories,
-      cartProductCount, // Passing cart product count to view
-      wishlistCount, // Passing wishlist count to view
+      cartProductCount,
+      wishlistCount,
     });
   } catch (error) {
     console.error("Error fetching wishlist:", error);
@@ -1067,15 +1091,22 @@ exports.removeFromWishlist = async (req, res) => {
   const userId = req.session.userId;
 
   try {
-    const user = await User.findByIdAndUpdate(userId, {
-      $pull: { wishlist: productId },
-    });
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        $pull: { wishlist: productId },
+      },
+      { new: true }
+    );
+
+    const wishlistCount = user.wishlist.length;
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    res.status(200).json({ message: "Product removed from wishlist" });
+    res
+      .status(200)
+      .json({ message: "Product removed from wishlist", wishlistCount });
   } catch (error) {
     console.error("Error removing product from wishlist:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -1105,11 +1136,11 @@ exports.productDetails = async (req, res) => {
 //     const products = await Product.find({ listed: true })
 //       .populate("category")
 //       .exec();
-//     // console.log(products);
+//     // 
 
 //     res.render("users/product-detail", { categories, products });
 //   } catch (error) {
-//     console.log(error.message);
+//     
 //   }
 // };
 
@@ -1221,7 +1252,7 @@ exports.getUserProfile = async (req, res) => {
       wishlistCount, // Add the wishlist count here
     });
   } catch (error) {
-    console.log(error.message);
+    
     res.status(500).send("An error occurred");
   }
 };
@@ -1265,7 +1296,7 @@ exports.getaddresses = async (req, res) => {
 
     // Fetch user's addresses
     const addresses = await Address.find({ user: userId });
-    console.log(addresses);
+    
 
     const isAuthenticated = req.session.userId ? true : false;
 
@@ -1293,7 +1324,7 @@ exports.getaddresses = async (req, res) => {
       wishlistCount, // Add the wishlist count here
     });
   } catch (error) {
-    console.log(error.message);
+    
     res.status(500).send("Server error");
   }
 };
@@ -1362,7 +1393,7 @@ exports.editAddresses = async (req, res) => {
     });
     res.redirect("/addresses");
   } catch (error) {
-    console.log("Error updating address:", error);
+    
     res.status(500).send("Server error");
   }
 };
@@ -1414,26 +1445,7 @@ exports.changePassword = async (req, res) => {
   }
 };
 
-// exports.getOrder = async (req, res) => {
-//   console.log("sdfgsfdv");
-
-//   try {
-//     const userId = req.session.userId;
-//     console.log(userId)
-
-//     const orders = await Order.find({ userId }).populate("items.productId");
-
-//     console.log("Fetched orders:", orders);
-
-//     res.render("users/userorders", { user: req.user, orders });
-//   } catch (error) {
-//     console.error("Error fetching orders:", error);
-//     res.status(500).send("Server Error");
-//   }
-// };
-
 // POST route to handle profile update
-
 exports.editProfile = async (req, res) => {
   const { username, email, phone } = req.body;
 
@@ -1455,38 +1467,6 @@ exports.editProfile = async (req, res) => {
     res.status(500).send("An error occurred while updating the profile");
   }
 };
-
-// POST route to cancel an order
-
-// exports.cancelOrder = async (req, res) => {
-//   try {
-//     const orderId = req.params.id;
-//     const userId = req.session.userId; // Get the authenticated user's ID
-
-//     console.log("Canceling order with ID:", orderId); // Log order ID
-
-//     // Find the order
-//     const order = await Order.findOne({ _id: orderId, userId });
-
-//     if (!order) {
-//       return res.status(404).json({ message: 'Order not found' });
-//     }
-
-//     // Check if the order is pending
-//     if (order.status !== 'Pending') {
-//       return res.status(400).json({ message: 'Only pending orders can be canceled' });
-//     }
-
-//     // Update the order status to Canceled
-//     order.status = 'Canceled';
-//     await order.save();
-
-//     res.json({ message: 'Order canceled successfully' });
-//   } catch (error) {
-//     console.error('Error canceling order:', error);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
 
 exports.checkoutPage = async (req, res) => {
   try {
@@ -1614,7 +1594,7 @@ async function calculateTotalAfterOffers(cartItems) {
       return acc; // If product not found, return accumulated total
     }, 0);
 
-    console.log("Total Amount After Offers:", totalAmountAfterOffers);
+    
     return totalAmountAfterOffers; // Return or use totalAmountAfterOffers as needed
   } catch (error) {
     console.error("Error calculating total amount after offers:", error);
@@ -1676,13 +1656,7 @@ exports.applyCoupon = async (req, res) => {
       });
     }
 
-    console.log({
-      isValid: true,
-      discountType: coupon.discountType,
-      discountValue: coupon.discountValue,
-      maxDiscountValue: coupon.maxDiscountValue || null,
-      minCartValue: coupon.minCartValue,
-    });
+
 
     // Return coupon data to frontend if all checks pass
     res.json({
@@ -1755,25 +1729,40 @@ exports.orderPlaced = async (req, res) => {
         .json({ message: "Missing required order details" });
     }
 
+    // Calculate offer, discount, and payment totals
     const afteroffer = total - subtotal;
-    console.log("afteroffer = ", afteroffer);
+    const totalAfterDiscount = afteroffer + discountAmount;
+    const paymentTotal = total + subtotal * 0.03 - totalAfterDiscount;
 
-    const totalAfterDiscount = afteroffer + discountAmount ;
+    // Check if wallet payment is selected
+    if (paymentMethod === "walletPayment") {
+      const wallet = await Wallet.findOne({ userId });
 
-    console.log('TOTAL:',total);
-    
+      // Ensure wallet balance is sufficient
+      if (wallet.balance < paymentTotal) {
+        return res.status(400).json({
+          message: `Insufficient wallet balance for this order. Your current balance is ${wallet.balance}.`,
+        });
+      }
 
-    console.log(discountAmount);
-    console.log(subtotal * 0.03);
-    console.log("totalAfterDiscount", totalAfterDiscount);
+      // Deduct from wallet balance
+      wallet.balance -= paymentTotal;
 
-    const paymentTotal = (total + subtotal * 0.03) - totalAfterDiscount;
-    console.log("paymentTotal", paymentTotal);
+      // Add transaction to the wallet's transactions array
+      wallet.transactions.push({
+        amount: paymentTotal,
+        type: "debit",
+        description: "Order Payment",
+        date: new Date(),
+      });
+
+      await wallet.save();
+    }
 
     // Create the new order with Pending status
     const newOrder = new Order({
       userId,
-      items, // Include items in the order
+      items,
       paymentMethod,
       address,
       total,
@@ -1782,11 +1771,12 @@ exports.orderPlaced = async (req, res) => {
       totalAfterDiscount,
       paymentTotal,
       discountAmount,
-      status: status, // Set initial status to Pending
+      status: status,
     });
 
     const savedOrder = await newOrder.save();
 
+    // Update stock if payment method is COD
     if (savedOrder.status === "Pending" && paymentMethod === "CashOnDelivery") {
       for (const item of items) {
         await Product.findByIdAndUpdate(
@@ -1797,19 +1787,7 @@ exports.orderPlaced = async (req, res) => {
       }
     }
 
-    console.log(
-      userId,
-      items,
-      paymentMethod,
-      address,
-      total,
-      subtotal,
-      afteroffer,
-      totalAfterDiscount,
-      paymentTotal,
-      discountAmount
-    );
-
+    // Apply coupon if provided
     if (couponCode) {
       const coupon = await Coupon.findOne({ code: couponCode, isActive: true });
 
@@ -1832,11 +1810,8 @@ exports.orderPlaced = async (req, res) => {
         return res.status(404).json({ message: "Coupon not found" });
       }
     }
-    res.json({
-      message: "Order placed successfully",
-      orderId: savedOrder._id,
-    });
 
+    // Clear the cart after successful order placement
     if (savedOrder) {
       await Cart.findOneAndUpdate(
         { userId },
@@ -1845,6 +1820,12 @@ exports.orderPlaced = async (req, res) => {
       );
       req.session.cart = null;
     }
+
+    // Send success response
+    res.json({
+      message: "Order placed successfully",
+      orderId: savedOrder._id,
+    });
   } catch (error) {
     console.error("Error placing order:", error);
     res
@@ -1909,20 +1890,20 @@ exports.createRazorpayOrder = async (req, res) => {
     const { amount, currency } = req.body;
 
     const options = {
-      amount: amount, // Amount should be in paise (Razorpay requires this)
-      currency: currency, // Ensure this is a valid currency code
+      amount: amount,
+      currency: currency,
       receipt: `order_rcptid_${new Date().getTime()}`,
     };
 
-    console.log(amount);
-    console.log(currency);
+    
+    
 
     // Create order using Razorpay SDK
     const order = await razorpay.orders.create(options);
 
-    console.log("Order", order.id);
-    console.log(process.env.RAZORPAY_KEY_ID);
-    console.log(order.amount);
+    
+    
+    
 
     // Send the order details back to the client
     res.json({
@@ -1941,7 +1922,7 @@ exports.retryPayment = async (req, res) => {
     const order = await Order.findById(req.params.orderId);
     if (order) {
       res.json({
-        totalAfterDiscount: order.totalAfterDiscount,
+        paymentTotal: order.paymentTotal,
         razorpayOrderId: order.razorpayOrderId,
       });
     } else {
@@ -2019,21 +2000,18 @@ exports.cancelOrder = async (req, res) => {
       return res.status(404).json({ error: "Order not found" });
     }
 
-    // Mark order as canceled
     order.status = "Canceled";
     await order.save();
 
-    // Get the user's wallet
     const wallet = await Wallet.findOne({ userId: order.userId });
     if (!wallet) {
       return res.status(404).json({ error: "Wallet not found for the user" });
     }
 
-    // Refund the order amount to the wallet
-    const refundAmount = order.totalAfterDiscount;
+    const refundAmount = order.paymentTotal;
+    
     wallet.balance += refundAmount;
 
-    // Add a new transaction to the wallet
     wallet.transactions.push({
       amount: refundAmount,
       type: "credit",
@@ -2041,14 +2019,12 @@ exports.cancelOrder = async (req, res) => {
       date: new Date(),
     });
 
-    // Update the stock for each product in the order
     for (let item of order.items) {
       const product = item.productId;
       product.stock += item.quantity;
       await product.save();
     }
 
-    // Save wallet changes
     await wallet.save();
 
     res.redirect("/profile/orders");
@@ -2071,7 +2047,7 @@ exports.returnOrder = async (req, res) => {
     }
 
     order.returnRequested = true;
-    order.returnReason = returnReason; // Save the return reason
+    order.returnReason = returnReason; 
     await order.save();
 
     res.redirect("/profile/orders");
@@ -2167,13 +2143,10 @@ exports.getWallet = async (req, res) => {
   try {
     const userId = req.session.userId;
 
-    // Check if user is authenticated
     const isAuthenticated = userId ? true : false;
 
-    // Find the user's wallet
     const wallet = await Wallet.findOne({ userId });
 
-    // If the wallet is not found, return an appropriate message
     if (!wallet) {
       return res.render("users/userwallet", {
         walletBalance: 0,
@@ -2201,6 +2174,8 @@ exports.getWallet = async (req, res) => {
       wishlistCount = user.wishlist.length;
     }
 
+    
+
     // Render the user's wallet page with wallet balance, transactions, and other data
     res.render("users/userwallet", {
       user,
@@ -2220,7 +2195,6 @@ exports.getInvoice = async (req, res) => {
   const orderId = req.params.orderId;
 
   try {
-    // Fetch the order details from the database
     const order = await Order.findById(orderId)
       .populate("userId")
       .populate("items.productId");
@@ -2229,10 +2203,8 @@ exports.getInvoice = async (req, res) => {
       return res.status(404).send("Order not found");
     }
 
-    // Create a PDF document with custom layout
     const doc = new PDFDocument({ margin: 40 });
 
-    // Set the response headers for file download
     res.setHeader(
       "Content-disposition",
       `attachment; filename="invoice_${orderId}.pdf"`
@@ -2321,10 +2293,15 @@ exports.getInvoice = async (req, res) => {
         width: 80,
         align: "center",
       });
-      doc.text(`${(item.quantity * order.paymentTotal).toFixed(2)}`, 450, itemY, {
-        width: 80,
-        align: "center",
-      });
+      doc.text(
+        `${(item.quantity * order.paymentTotal).toFixed(2)}`,
+        450,
+        itemY,
+        {
+          width: 80,
+          align: "center",
+        }
+      );
 
       itemY += 20;
     });
@@ -2373,22 +2350,25 @@ exports.about = async (req, res) => {
     const isAuthenticated = req.session.userId ? true : false;
     const user = await User.findById(userId);
 
+    // Fetch cart product count
+    let cartProductCount = 0;
+    if (isAuthenticated) {
+      const cart = await Cart.findOne({ userId });
+      if (cart) {
+        cartProductCount = cart.items.length;
+      }
+    }
 
-     // Fetch cart product count
-     let cartProductCount = 0;
-     if (isAuthenticated) {
-       const cart = await Cart.findOne({ userId });
-       if (cart) {
-         cartProductCount = cart.items.length;
-       }
-     }
- 
-     // Fetch wishlist count
-     const wishlistCount = user.wishlist.length;
+    // Fetch wishlist count
+    const wishlistCount = user.wishlist.length;
 
-    res.render("users/about",{isAuthenticated,cartProductCount,wishlistCount});
+    res.render("users/about", {
+      isAuthenticated,
+      cartProductCount,
+      wishlistCount,
+    });
   } catch (error) {
-    console.log(error.message);
+    
   }
 };
 
@@ -2399,6 +2379,6 @@ exports.logout = async (req, res) => {
     res.clearCookie("connect.sid");
     res.redirect("/");
   } catch (error) {
-    console.log(error.message);
+    
   }
 };

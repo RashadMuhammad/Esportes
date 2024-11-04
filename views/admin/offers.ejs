@@ -19,974 +19,479 @@
   <!-- Layout styles -->
   <link rel="stylesheet" href="../../assets/css/style.css">
   <!-- End layout styles -->
-  <link rel="shortcut icon" href="/favicon.png" />
+  <link rel="shortcut icon" href="/favicon.ico" />
 </head>
 
 <body>
   <div class="container-scroller">
     <!-- partial:../../partials/_sidebar.html -->
     <%- include('../partials/_sidebaradmin') %>
-    
-    <!-- partial -->
-    <div class="container-fluid page-body-wrapper">
-      <!-- partial:../../partials/_navbar.html -->
-      <nav class="navbar p-0 fixed-top d-flex flex-row">
-        <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-          <a class="navbar-brand brand-logo-mini" href="../../index.html"><img src="../../assets/images/logo-mini.svg"
-              alt="logo" /></a>
-        </div>
-        <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
-          <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
-            <span class="mdi mdi-menu"></span>
-          </button>
-          <ul class="navbar-nav w-100">
-            <li class="nav-item w-100">
-              <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-                <input type="text" class="form-control" placeholder="Search products">
-              </form>
-            </li>
-          </ul>
-          <ul class="navbar-nav navbar-nav-right">
-            <!-- Add New Offer Button -->
-            <li class="nav-item dropdown d-none d-lg-block">
-              <a class="nav-link btn btn-success create-new-button" id="createOfferButton" href="#"
-                data-bs-toggle="modal" data-bs-target="#addOfferModal">
-                Add New Offer
-              </a>
-            </li>
 
-            <!-- Add New Offer Modal -->
-            <div class="modal fade" id="addOfferModal" tabindex="-1" aria-labelledby="addOfferModalLabel"
-              aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="addOfferModalLabel">Add New Offer</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                    <form id="addOfferForm" method="POST" action="/admin/offers/add">
-                      <!-- Offer Type -->
-                      <div class="form-group">
-                        <label for="offerType" class="form-label">Offer Type</label>
-                        <select id="offerType" name="offerType" class="form-control">
-                          <option value="">Select</option>
-                          <option value="product">Product</option>
-                          <option value="category">Category</option>
-                          <option value="referral">Referral</option>
-                        </select>
-                        <span class="error-message text-danger" id="offerTypeError"></span>
-                      </div>
-
-                      <!-- Product Name (Visible only for product type) -->
-                      <div class="form-group" id="productField" style="display:none;">
-                        <label for="productName" class="form-label">Product Name</label>
-                        <input type="text" id="productName" name="productName" class="form-control">
-                        <span class="error-message text-danger" id="productNameError"></span>
-                      </div>
-
-                      <!-- Category Name (Visible only for category type) -->
-                      <div class="form-group" id="categoryField" style="display:none;">
-                        <label for="categoryName" class="form-label">Category Name</label>
-                        <input type="text" id="categoryName" name="categoryName" class="form-control">
-                        <span class="error-message text-danger" id="categoryNameError"></span>
-                      </div>
-
-                      <!-- Referral Bonus Fields (Visible only for referral type) -->
-                      <div class="form-group" id="referralFields" style="display:none;">
-                        <label for="referrerBonus" class="form-label">Referrer Bonus</label>
-                        <input type="number" id="referrerBonus" name="referrerBonus" class="form-control">
-                        <span class="error-message text-danger" id="referrerBonusError"></span>
-
-                        <label for="refereeBonus" class="form-label">Referee Bonus</label>
-                        <input type="number" id="refereeBonus" name="refereeBonus" class="form-control">
-                        <span class="error-message text-danger" id="refereeBonusError"></span>
-                      </div>
-
-                      <!-- Discount Type -->
-                      <div class="form-group">
-                        <label for="discountType" class="form-label">Discount Type</label>
-                        <select id="discountType" name="discountType" class="form-control">
-                          <option value="">Select Discount Type</option>
-                          <option value="percentage">Percentage</option>
-                          <option value="fixed">Fixed Amount</option>
-                        </select>
-                        <span class="error-message text-danger" id="discountTypeError"></span>
-                      </div>
-
-                      <!-- Discount Value -->
-                      <div class="form-group">
-                        <label for="discountValue" class="form-label">Discount Value</label>
-                        <input type="number" id="discountValue" name="discountValue" class="form-control" min="0">
-                        <span class="error-message text-danger" id="discountValueError"></span>
-                      </div>
-
-                      <!-- Min Product Price (Visible only for category type) -->
-                      <div class="form-group" id="minProductPriceField" style="display:none;">
-                        <label for="minProductPrice" class="form-label">Min Product Price</label>
-                        <input type="number" id="minProductPrice" name="minProductPrice" class="form-control" min="0">
-                        <span class="error-message text-danger" id="minProductPriceError"></span>
-                      </div>
-
-                      <!-- Max Discount Value -->
-                      <div class="form-group" id="maxDiscountValueField" style="display:none;">
-                        <label for="maxDiscountValue" class="form-label">Max Discount Value</label>
-                        <input type="number" id="maxDiscountValue" name="maxDiscountValue" class="form-control" min="0">
-                        <span class="error-message text-danger" id="maxDiscountValueError"></span>
-                      </div>
-
-                      <!-- Valid From -->
-                      <div class="form-group">
-                        <label for="validFrom" class="form-label">Valid From</label>
-                        <input type="date" id="validFrom" name="validFrom" class="form-control">
-                        <span class="error-message text-danger" id="validFromError"></span>
-                      </div>
-
-                      <!-- Valid Until -->
-                      <div class="form-group">
-                        <label for="validUntil" class="form-label">Valid Until</label>
-                        <input type="date" id="validUntil" name="validUntil" class="form-control">
-                        <span class="error-message text-danger" id="validUntilError"></span>
-                      </div>
-
-                      <div class="modal-footer">
-                        <button type="submit" id="addOfferButton" class="btn btn-primary" disabled>Add Offer</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <script>
-              // Show relevant fields based on offer type
-              document.getElementById('offerType').addEventListener('change', handleOfferTypeChange);
-
-              // Real-time validation
-              document.querySelectorAll('#discountValue, #maxDiscountValue, #minProductPrice').forEach(input => {
-                input.addEventListener('input', validateDiscounts);
-              });
-
-              document.getElementById('productName').addEventListener('input', function () {
-                clearErrorMessage('productNameError');
-                validateForm(); // Check validity after clearing the error
-              });
-
-              document.getElementById('categoryName').addEventListener('input', function () {
-                clearErrorMessage('categoryNameError');
-                validateForm(); // Check validity after clearing the error
-              });
-
-              document.getElementById('validFrom').addEventListener('input', function () {
-                clearErrorMessage('validFromError');
-                validateForm(); // Check validity after clearing the error
-              });
-
-              document.getElementById('validUntil').addEventListener('input', function () {
-                clearErrorMessage('validUntilError');
-                validateForm(); // Check validity after clearing the error
-              });
-
-              // Add listener for changes to the discount type
-              document.getElementById('discountType').addEventListener('change', function () {
-                clearErrorMessage('discountTypeError');
-                handleDiscountTypeChange(); // Handle discount type change
-                validateForm(); // Check validity after clearing the error
-              });
-
-
-
-              // Validate form on submit
-              document.getElementById('addOfferForm').addEventListener('submit', function (e) {
-                const isValid = validateForm(); // Run validation for all fields
-                if (!isValid) {
-                  e.preventDefault(); // Prevent form submission if validation fails
-                }
-              });
-
-              // Add a listener for input events to validate the form in real time
-              document.getElementById('addOfferForm').addEventListener('input', function () {
-                const isValid = validateForm();
-                updateOfferButtonState(isValid); // Update button state based on validation
-              });
-
-              // Handle offer type change
-              function handleOfferTypeChange() {
-                const offerType = document.getElementById('offerType').value;
-                const discountType = document.getElementById('discountType').value;
-
-                // Show/hide fields based on offer type
-                document.getElementById('productField').style.display = offerType === 'product' ? 'block' : 'none';
-                document.getElementById('categoryField').style.display = offerType === 'category' ? 'block' : 'none';
-                document.getElementById('referralFields').style.display = offerType === 'referral' ? 'block' : 'none';
-
-                // Show max discount value field only for category offer type with percentage discount type
-                if (offerType === 'category' && discountType === 'percentage') {
-                  document.getElementById('maxDiscountValueField').style.display = 'block';
-                } else {
-                  document.getElementById('maxDiscountValueField').style.display = 'none';
-                }
-
-                // Clear error messages
-                clearErrorMessages(['offerTypeError', 'productNameError', 'categoryNameError', 'minProductPriceError']);
-
-                // Clear Product and Category inputs if they are not relevant
-                if (offerType !== 'product') {
-                  document.getElementById('productName').value = '';
-                }
-                if (offerType !== 'category') {
-                  document.getElementById('categoryName').value = '';
-                }
-
-                // Show min product price field for category offer type
-                document.getElementById('minProductPriceField').style.display = offerType === 'category' ? 'block' : 'none';
-              }
-
-              // Handle discount type change
-              function handleDiscountTypeChange() {
-                const offerType = document.getElementById('offerType').value;
-                const discountType = document.getElementById('discountType').value;
-
-                // Show max discount value field only for category offer type with percentage discount type
-                if (offerType === 'category' && discountType === 'percentage') {
-                  document.getElementById('maxDiscountValueField').style.display = 'block';
-                } else {
-                  document.getElementById('maxDiscountValueField').style.display = 'none';
-                }
-
-                validateDiscountValue(); // Call validation function when discount type changes
-              }
-
-              // Validate discount value based on discount type
-              function validateDiscountValue() {
-                const discountType = document.getElementById('discountType').value;
-                const discountValue = parseFloat(document.getElementById('discountValue').value) || 0;
-
-                clearErrorMessage('discountValueError');
-
-                // Validate discount based on type
-                if (discountType === 'percentage' && discountValue > 80) {
-                  showErrorMessage('discountValueError', 'Percentage discount cannot exceed 80%.');
-                } else if (discountType === 'fixedAmount' && (isNaN(discountValue) || discountValue < 0)) {
-                  showErrorMessage('discountValueError', 'Discount Value must be a positive number for fixed amount type.');
-                }
-
-                validateForm();
-              }
-
-              // Real-time discount validation
-              function validateDiscounts() {
-                const discountValue = parseFloat(document.getElementById('discountValue').value) || 0;
-                const minProductPrice = parseFloat(document.getElementById('minProductPrice').value) || 0;
-
-                clearErrorMessages(['discountValueError', 'maxDiscountValueError', 'minProductPriceError']);
-
-                const offerType = document.getElementById('offerType').value;
-                const discountType = document.getElementById('discountType').value;
-
-                // Additional validation for min product price if offer type is category
-                if (offerType === 'category') {
-                  if (discountType === 'percentage') {
-                    if (discountValue > 80) {
-                      showErrorMessage('discountValueError', 'Discount Value cannot exceed 80% for percentage type.');
-                    }
-                  } else if (discountType === 'fixedAmount') {
-                    if (discountValue >= minProductPrice) {
-                      showErrorMessage('discountValueError', 'Discount Value must be less than the Minimum Product Price.');
-                    }
-                  }
-
-                  // New validation: discount value should not be greater than min product price
-                  if (discountValue >= minProductPrice) {
-                    showErrorMessage('discountValueError', 'Discount Value must be less than Minimum Product Price.');
-                  }
-                }
-
-                validateForm();
-              }
-
-              // Validate the whole form
-              function validateForm() {
-                let isValid = true;
-                const today = new Date();
-                const currentDate = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
-
-                // Validate offer type
-                isValid = validateRequiredField('offerType', 'offerTypeError', 'Offer Type is required.') && isValid;
-
-                // Validate product name if offer type is product
-                if (document.getElementById('offerType').value === 'product') {
-                  isValid = validateRequiredField('productName', 'productNameError', 'Product Name is required.') && isValid;
-                }
-
-                // Validate category name if offer type is category
-                if (document.getElementById('offerType').value === 'category') {
-                  isValid = validateRequiredField('categoryName', 'categoryNameError', 'Category Name is required.') && isValid;
-                }
-
-                // Validate min product price if offer type is category
-                if (document.getElementById('offerType').value === 'category') {
-                  const minProductPrice = parseFloat(document.getElementById('minProductPrice').value) || 0;
-                  isValid = validateRequiredField('minProductPrice', 'minProductPriceError', 'Minimum Product Price is required.') && isValid;
-                  if (minProductPrice <= 0) {
-                    showErrorMessage('minProductPriceError', 'Minimum Product Price must be greater than 0.');
-                    isValid = false;
-                  }
-
-                  const discountValue = parseFloat(document.getElementById('discountValue').value) || 0;
-                  if (discountValue >= minProductPrice) {
-                    showErrorMessage('minProductPriceError', 'Discount Value must be less than Minimum Product Price.');
-                    isValid = false;
-                  }
-                }
-
-                // Validate discount type
-                isValid = validateRequiredField('discountType', 'discountTypeError', 'Discount Type is required.') && isValid;
-
-                // Validate discount value
-                const discountValue = parseFloat(document.getElementById('discountValue').value) || 0;
-                const minProductPrice = parseFloat(document.getElementById('minProductPrice').value) || 0;
-
-                if (document.getElementById('discountType').value === 'fixedAmount') {
-                  if (discountValue >= minProductPrice) {
-                    showErrorMessage('discountValueError', 'Discount Value must be less than Minimum Product Price.');
-                    isValid = false;
-                  }
-                } else if (document.getElementById('discountType').value === 'percentage') {
-                  if (discountValue > 80) {
-                    showErrorMessage('discountValueError', 'Discount Value must be less than or equal to 80%.');
-                    isValid = false;
-                  }
-                }
-
-                // Validate max discount value (only for category offers with percentage discount type)
-                const offerType = document.getElementById('offerType').value;
-                const maxDiscountValue = parseFloat(document.getElementById('maxDiscountValue').value) || 0;
-
-                if (offerType === 'category' && discountType === 'percentage' && maxDiscountValue <= 0) {
-                  showErrorMessage('maxDiscountValueError', 'Max Discount Value is required for percentage type.');
-                  isValid = false;
-                }
-
-                // Validate valid from date
-                isValid = validateDate('validFrom', currentDate, 'validFromError', 'Valid From date cannot be in the past.') && isValid;
-
-                // Validate valid until date
-                const validFrom = document.getElementById('validFrom').value;
-                isValid = validateDate('validUntil', validFrom, 'validUntilError', 'Valid Until date cannot be before Valid From date.') && isValid;
-
-                updateOfferButtonState(isValid); // Update button state based on validation
-                return isValid;
-              }
-
-              // Validate a required field
-              function validateRequiredField(fieldId, errorId, errorMessage) {
-                const field = document.getElementById(fieldId).value.trim();
-                if (!field) {
-                  showErrorMessage(errorId, errorMessage);
-                  return false;
-                }
-                return true;
-              }
-
-              // Validate a date field
-              function validateDate(fieldId, compareDate, errorId, errorMessage) {
-                const dateValue = document.getElementById(fieldId).value;
-                if (dateValue < compareDate) {
-                  showErrorMessage(errorId, errorMessage);
-                  return false;
-                }
-                return true;
-              }
-
-              // Show error message
-              function showErrorMessage(errorId, message) {
-                const errorElement = document.getElementById(errorId);
-                errorElement.innerText = message;
-                errorElement.style.display = 'block';
-              }
-
-              // Clear a specific error message
-              function clearErrorMessage(errorId) {
-                const errorElement = document.getElementById(errorId);
-                errorElement.innerText = '';
-                errorElement.style.display = 'none';
-              }
-
-              // Clear multiple error messages
-              function clearErrorMessages(errorIds) {
-                errorIds.forEach(clearErrorMessage);
-              }
-
-              // Update offer button state
-              function updateOfferButtonState(isValid) {
-                const button = document.getElementById('addOfferButton');
-                button.disabled = !isValid; // Disable button if the form is invalid
-              }
-            </script>
-
-
-
-
-
-
-
-
-
-
-            <!-- Bootstrap JS (including Popper.js) -->
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-            <li class="nav-item dropdown border-left">
-              <a class="nav-link count-indicator dropdown-toggle" id="messageDropdown" href="#" data-toggle="dropdown"
-                aria-expanded="false">
-                <i class="mdi mdi-email"></i>
-                <span class="count bg-success"></span>
-              </a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
-                aria-labelledby="messageDropdown">
-                <h6 class="p-3 mb-0">Messages</h6>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <img src="../../assets/images/faces/face4.jpg" alt="image" class="rounded-circle profile-pic">
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject ellipsis mb-1">Mark send you a message</p>
-                    <p class="text-muted mb-0"> 1 Minutes ago </p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <img src="../../assets/images/faces/face2.jpg" alt="image" class="rounded-circle profile-pic">
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject ellipsis mb-1">Cregh send you a message</p>
-                    <p class="text-muted mb-0"> 15 Minutes ago </p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <img src="../../assets/images/faces/face3.jpg" alt="image" class="rounded-circle profile-pic">
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject ellipsis mb-1">Profile picture updated</p>
-                    <p class="text-muted mb-0"> 18 Minutes ago </p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <p class="p-3 mb-0 text-center">4 new messages</p>
-              </div>
-            </li>
-            <li class="nav-item dropdown border-left">
-              <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#"
-                data-toggle="dropdown">
-                <i class="mdi mdi-bell"></i>
-                <span class="count bg-danger"></span>
-              </a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
-                aria-labelledby="notificationDropdown">
-                <h6 class="p-3 mb-0">Notifications</h6>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <div class="preview-icon bg-dark rounded-circle">
-                      <i class="mdi mdi-calendar text-success"></i>
-                    </div>
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject mb-1">Event today</p>
-                    <p class="text-muted ellipsis mb-0"> Just a reminder that you have an event today </p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <div class="preview-icon bg-dark rounded-circle">
-                      <i class="mdi mdi-settings text-danger"></i>
-                    </div>
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject mb-1">Settings</p>
-                    <p class="text-muted ellipsis mb-0"> Update dashboard </p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <div class="preview-icon bg-dark rounded-circle">
-                      <i class="mdi mdi-link-variant text-warning"></i>
-                    </div>
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject mb-1">Launch Admin</p>
-                    <p class="text-muted ellipsis mb-0"> New admin wow! </p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <p class="p-3 mb-0 text-center">See all notifications</p>
-              </div>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
-                <div class="navbar-profile">
-                  <img class="img-xs rounded-circle" src="../../assets/images/faces/rash.jpg" alt="">
-                  <p class="mb-0 d-none d-sm-block navbar-profile-name">Muhammad Rashad</p>
-                  <i class="mdi mdi-menu-down d-none d-sm-block"></i>
-                </div>
-              </a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
-                aria-labelledby="profileDropdown">
-                <h6 class="p-3 mb-0">Profile</h6>
-                <div class="dropdown-divider"></div>
-                <a href="/Settings" class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <div class="preview-icon bg-dark rounded-circle">
-                      <i class="mdi mdi-settings text-success"></i>
-                    </div>
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject mb-1">Settings</p>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="/logout" class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <div class="preview-icon bg-dark rounded-circle">
-                      <i class="mdi mdi-logout text-danger"></i>
-                    </div>
-                  </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject mb-1">Log out</p>
-                  </div>
-                </a>
-                <!-- <div class="dropdown-divider"></div>
-                  <p class="p-3 mb-0 text-center">Advanced settings</p>
-                </div> -->
-            </li>
-          </ul>
-          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
-            data-toggle="offcanvas">
-            <span class="mdi mdi-format-line-spacing"></span>
-          </button>
-        </div>
-      </nav>
       <!-- partial -->
-      <div class="main-panel">
-        <div class="content-wrapper">
-          <div class="page-header">
-            <h3 class="page-title"> Offers Management </h3>
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:../../partials/_navbar.html -->
+        <nav class="navbar p-0 fixed-top d-flex flex-row">
+          <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+            <a class="navbar-brand brand-logo-mini" href="../../index.html"><img src="../../assets/images/logo-mini.svg"
+                alt="logo" /></a>
           </div>
-          <div class="row">
-            <div class="col-lg-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Offers</h4>
-                  <div class="table-responsive">
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th>Sl.No</th>
-                          <th>Type</th>
-                          <th>Name</th>
-                          <th>Discount Type</th> <!-- New Column for Discount Type -->
-                          <th>Discount</th>
-                          <th>Max Discount Value</th> <!-- New Column -->
-                          <th>Min Product Price</th>
-                          <th>Valid From</th>
-                          <th>Valid Until</th>
-                          <th>Status</th>
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <% offers.forEach((offer, index)=> { %>
-                          <tr>
-                            <td>
-                              <%= index + 1 %>
-                            </td>
-                            <td>
-                              <%= offer.type %>
-                            </td>
-                            <td>
-                              <% if (offer.type==='product' && offer.product) { %>
-                                <%= offer.product.name %>
-                                  <% } else if (offer.type==='category' && offer.category) { %>
-                                    <%= offer.category.name %>
-                                      <% } else if (offer.type==='referral' ) { %>
-                                        Referral
-                                        <% } else { %>
-                                          N/A
-                                          <% } %>
-                            </td>
-                            <td>
-                              <%= offer.discountType==='percentage' ? 'Percentage' : 'Fixed Amount' %>
-                                <!-- Displaying Discount Type -->
-                            </td>
-                            <td>
-                              <% if (offer.discountType==='percentage' ) { %>
-                                <%= offer.discountValue + '%' %>
-                                  <% } else { %>
-                                    ₹<%= offer.discountValue %>
-                                      <% } %>
-                            </td>
-                            <td>
-                              ₹<%= offer.maxDiscountValue %> <!-- New Field -->
-                            </td>
-                            <td>
-                              ₹<%= offer.minProductPrice %>
-                            </td>
-                            <td>
-                              <%= new Date(offer.validFrom).toLocaleDateString() %>
-                            </td>
-                            <td>
-                              <%= new Date(offer.validUntil).toLocaleDateString() %>
-                            </td>
-                            <td>
-                              <label class="text text-<%= offer.status === 'active' ? 'success' : 'danger' %>">
-                                <%= offer.status %>
-                              </label>
-                            </td>
-                            <td>
-                              <!-- <a href="javascript:void(0)" onclick="editOffer('<%= offer._id %>')">
-                                <label class="badge badge-warning">Edit</label>
-                              </a> -->
-                              <a href="javascript:void(0)"
-                                onclick="openConfirmationModal('<%= offer._id %>', '<%= offer.status %>')">
-                                <label class="badge badge-<%= offer.status === 'active' ? 'primary' : 'success' %>">
-                                  <%= offer.status==='active' ? 'Unlist' : 'List' %>
-                                </label>
-                              </a>
-                              <a href="javascript:void(0)" onclick="showDeleteModal('<%= offer._id %>')">
-                                <label class="badge badge-danger">Delete</label>
-                              </a>
-                            </td>
-                          </tr>
-                          <% }) %>
-                      </tbody>
-                    </table>
+          <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+              <span class="mdi mdi-menu"></span>
+            </button>
+            <!-- <ul class="navbar-nav w-100">
+              <li class="nav-item w-100">
+                <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                  <input type="text" class="form-control" placeholder="Search products">
+                </form>
+              </li>
+            </ul> -->
+            <ul class="navbar-nav navbar-nav-right">
+              <!-- Add New Offer Button -->
+              <li class="nav-item dropdown d-none d-lg-block">
+                <a class="nav-link btn btn-success create-new-button" id="createOfferButton" href="#"
+                  data-bs-toggle="modal" data-bs-target="#addOfferModal">
+                  Add New Offer
+                </a>
+              </li>
+
+              <!-- Add New Offer Modal -->
+              <div class="modal fade" id="addOfferModal" tabindex="-1" aria-labelledby="addOfferModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="addOfferModalLabel">Add New Offer</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form id="addOfferForm" method="POST" action="/admin/offers/add">
+                        <!-- Offer Type -->
+                        <div class="form-group">
+                          <label for="offerType" class="form-label">Offer Type</label>
+                          <select id="offerType" name="offerType" class="form-control">
+                            <option value="">Select</option>
+                            <option value="product">Product</option>
+                            <option value="category">Category</option>
+                            <option value="referral">Referral</option>
+                          </select>
+                          <span class="error-message text-danger" id="offerTypeError"></span>
+                        </div>
+
+                        <!-- Product Name (Visible only for product type) -->
+                        <div class="form-group" id="productField" style="display:none;">
+                          <label for="productName" class="form-label">Product Name</label>
+                          <input type="text" id="productName" name="productName" class="form-control">
+                          <span class="error-message text-danger" id="productNameError"></span>
+                        </div>
+
+                        <!-- Category Name (Visible only for category type) -->
+                        <div class="form-group" id="categoryField" style="display:none;">
+                          <label for="categoryName" class="form-label">Category Name</label>
+                          <input type="text" id="categoryName" name="categoryName" class="form-control">
+                          <span class="error-message text-danger" id="categoryNameError"></span>
+                        </div>
+
+                        <!-- Referral Bonus Fields (Visible only for referral type) -->
+                        <div class="form-group" id="referralFields" style="display:none;">
+                          <label for="referrerBonus" class="form-label">Referrer Bonus</label>
+                          <input type="number" id="referrerBonus" name="referrerBonus" class="form-control">
+                          <span class="error-message text-danger" id="referrerBonusError"></span>
+
+                          <label for="refereeBonus" class="form-label">Referee Bonus</label>
+                          <input type="number" id="refereeBonus" name="refereeBonus" class="form-control">
+                          <span class="error-message text-danger" id="refereeBonusError"></span>
+                        </div>
+
+                        <!-- Discount Type -->
+                        <div class="form-group">
+                          <label for="discountType" class="form-label">Discount Type</label>
+                          <select id="discountType" name="discountType" class="form-control">
+                            <option value="">Select Discount Type</option>
+                            <option value="percentage">Percentage</option>
+                            <option value="fixed">Fixed Amount</option>
+                          </select>
+                          <span class="error-message text-danger" id="discountTypeError"></span>
+                        </div>
+
+                        <!-- Discount Value -->
+                        <div class="form-group">
+                          <label for="discountValue" class="form-label">Discount Value</label>
+                          <input type="number" id="discountValue" name="discountValue" class="form-control" min="0">
+                          <span class="error-message text-danger" id="discountValueError"></span>
+                        </div>
+
+                        <!-- Min Product Price (Visible only for category type) -->
+                        <div class="form-group" id="minProductPriceField" style="display:none;">
+                          <label for="minProductPrice" class="form-label">Min Product Price</label>
+                          <input type="number" id="minProductPrice" name="minProductPrice" class="form-control" min="0">
+                          <span class="error-message text-danger" id="minProductPriceError"></span>
+                        </div>
+
+                        <!-- Max Discount Value -->
+                        <div class="form-group" id="maxDiscountValueField" style="display:none;">
+                          <label for="maxDiscountValue" class="form-label">Max Discount Value</label>
+                          <input type="number" id="maxDiscountValue" name="maxDiscountValue" class="form-control"
+                            min="0">
+                          <span class="error-message text-danger" id="maxDiscountValueError"></span>
+                        </div>
+
+                        <!-- Valid From -->
+                        <div class="form-group">
+                          <label for="validFrom" class="form-label">Valid From</label>
+                          <input type="date" id="validFrom" name="validFrom" class="form-control">
+                          <span class="error-message text-danger" id="validFromError"></span>
+                        </div>
+
+                        <!-- Valid Until -->
+                        <div class="form-group">
+                          <label for="validUntil" class="form-label">Valid Until</label>
+                          <input type="date" id="validUntil" name="validUntil" class="form-control">
+                          <span class="error-message text-danger" id="validUntilError"></span>
+                        </div>
+
+                        <div class="modal-footer">
+                          <button type="submit" id="addOfferButton" class="btn btn-primary" disabled>Add Offer</button>
+                        </div>
+                      </form>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              <script
+                src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+              <li class="nav-item dropdown">
+                <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
+                  <div class="navbar-profile">
+                    <img class="img-xs rounded-circle" src="../../assets/images/faces/rash.jpg" alt="">
+                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Muhammad Rashad</p>
+                    <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                  </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
+                  aria-labelledby="profileDropdown">
+                  <h6 class="p-3 mb-0">Profile</h6>
+                  <div class="dropdown-divider"></div>
+                  <a href="/Settings" class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-settings text-success"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Settings</p>
+                    </div>
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a href="/logout" class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-logout text-danger"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Log out</p>
+                    </div>
+                  </a>
+              </li>
+            </ul>
+            <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+              data-toggle="offcanvas">
+              <span class="mdi mdi-format-line-spacing"></span>
+            </button>
+          </div>
+        </nav>
+        <!-- partial -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="page-header">
+              <h3 class="page-title"> Offers Management </h3>
             </div>
+            <% if (message.length>0) { %>
+              <div id="alert-message" class="alert alert-info">
+                <%= message %>
+              </div>
+              <% } %>
+
+                <script>
+                  const alertMessage = document.getElementById('alert-message');
+                  if (alertMessage) {
+                    setTimeout(() => {
+                      alertMessage.style.display = 'none';
+                    }, 3000);
+                  }
+                </script>
+                <div class="row">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">Offers</h4>
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th>Sl.No</th>
+                              <th>Type</th>
+                              <th>Name</th>
+                              <th>Discount Type</th>
+                              <th>Discount</th>
+                              <th>Max Discount Value</th>
+                              <th>Min Product Price</th>
+                              <th>Valid From</th>
+                              <th>Valid Until</th>
+                              <th>Status</th>
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <% offers.forEach((offer, index)=> { %>
+                              <tr>
+                                <td>
+                                  <%= index + 1 %>
+                                </td>
+                                <td>
+                                  <%= offer.type %>
+                                </td>
+                                <td>
+                                  <% if (offer.type==='product' && offer.product) { %>
+                                    <%= offer.product.name %>
+                                      <% } else if (offer.type==='category' && offer.category) { %>
+                                        <%= offer.category.name %>
+                                          <% } else if (offer.type==='referral' ) { %>
+                                            Referral
+                                            <% } else { %>
+                                              N/A
+                                              <% } %>
+                                </td>
+                                <td>
+                                  <%= offer.discountType==='percentage' ? 'Percentage' : 'Fixed Amount' %>
+                                    <!-- Displaying Discount Type -->
+                                </td>
+                                <td>
+                                  <% if (offer.discountType==='percentage' ) { %>
+                                    <%= offer.discountValue + '%' %>
+                                      <% } else { %>
+                                        ₹<%= offer.discountValue %>
+                                          <% } %>
+                                </td>
+                                <td>
+                                  ₹<%= offer.maxDiscountValue %>
+                                </td>
+                                <td>
+                                  ₹<%= offer.minProductPrice %>
+                                </td>
+                                <td>
+                                  <%= new Date(offer.validFrom).toLocaleDateString() %>
+                                </td>
+                                <td>
+                                  <%= new Date(offer.validUntil).toLocaleDateString() %>
+                                </td>
+                                <td>
+                                  <label class="text text-<%= offer.status === 'active' ? 'success' : 'danger' %>">
+                                    <%= offer.status %>
+                                  </label>
+                                </td>
+                                <td>
+                                  <a href="javascript:void(0)"
+                                    onclick="openConfirmationModal('<%= offer._id %>', '<%= offer.status %>')">
+                                    <label class="badge badge-<%= offer.status === 'active' ? 'primary' : 'success' %>">
+                                      <%= offer.status==='active' ? 'Unlist' : 'List' %>
+                                    </label>
+                                  </a>
+                                  <!-- <a href="javascript:void(0)" onclick="editOffer('<%= offer._id %>')">
+                                    <label class="badge badge-warning">Edit</label>
+                                  </a> -->
+                                  <a href="javascript:void(0)" onclick="showDeleteModal('<%= offer._id %>')">
+                                    <label class="badge badge-danger">Delete</label>
+                                  </a>
+                                </td>
+                              </tr>
+                              <% }) %>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
           </div>
         </div>
       </div>
-    </div>
+  </div>
 
 
 
 
-    <div class="modal fade" id="editOfferModal" tabindex="-1" role="dialog" aria-labelledby="editOfferModalLabel"
-      aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="editOfferModalLabel">Edit Offer</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form id="editOfferForm">
-              <input type="hidden" id="offerId" name="offerId">
+  <div class="modal fade" id="editOfferModal" tabindex="-1" role="dialog" aria-labelledby="editOfferModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editOfferModalLabel">Edit Offer</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="editOfferForm">
+            <input type="hidden" id="offerId" name="offerId">
 
-              <!-- Offer Type -->
-              <div class="form-group">
-                <label for="type">Type</label>
-                <select class="form-control" id="type" name="type" required>
-                  <option value="product">Product</option>
-                  <option value="category">Category</option>
-                  <option value="referral">Referral</option>
-                </select>
-                <div class="invalid-feedback"></div> <!-- Error message element -->
-              </div>
+            <!-- Offer Type -->
+            <div class="form-group">
+              <label for="type">Type</label>
+              <select class="form-control" id="type" name="type" required>
+                <option value="product">Product</option>
+                <option value="category">Category</option>
+                <option value="referral">Referral</option>
+              </select>
+              <div class="invalid-feedback"></div>
+            </div>
 
-              <!-- Discount Type -->
-              <div class="form-group">
-                <label for="discountType">Discount Type</label>
-                <select class="form-control" id="discountType" name="discountType" required>
-                  <option value="percentage">Percentage</option>
-                  <option value="fixed">Fixed Amount</option>
-                </select>
-                <div class="invalid-feedback"></div> <!-- Error message element -->
-              </div>
+            <!-- Discount Type -->
+            <div class="form-group">
+              <label for="discountType">Discount Type</label>
+              <select class="form-control" id="discountTyp" name="discountType" required>
+                <option value="percentage">Percentage</option>
+                <option value="fixed">Fixed Amount</option>
+              </select>
+              <div class="invalid-feedback"></div>
+            </div>
 
-              <div class="form-group">
-                <label for="product">Select Product</label>
-                <select class="form-control" id="product" name="product">
-                  <% products.forEach(product=> { %>
-                    <option value="<%= product._id %>" <%=(offer.product && offer.product._id.equals(product._id))
-                      ? 'selected' : '' %>>
-                      <%= product.name %>
-                    </option>
-                    <% }) %>
-                </select>
-                <div class="invalid-feedback"></div> <!-- Error message element -->
-              </div>
+            <!-- Product Selection -->
+            <div class="form-group">
+              <label for="product">Select Product</label>
+              <select class="form-control" id="product" name="product">
+                <% products.forEach(product=> { %>
+                  <option value="<%= product._id %>">
+                    <%= product.name %>
+                  </option>
+                  <% }) %>
+              </select>
+              <div class="invalid-feedback"></div>
+            </div>
 
-              <div class="form-group">
-                <label for="category">Select Category</label>
-                <select class="form-control" id="category" name="category">
-                  <% categories.forEach(category=> { %>
-                    <option value="<%= category._id %>" <%=(offer.category && offer.category._id.equals(category._id))
-                      ? 'selected' : '' %>>
-                      <%= category.name %>
-                    </option>
-                    <% }) %>
-                </select>
-                <div class="invalid-feedback"></div> <!-- Error message element -->
-              </div>
+            <!-- Category Selection -->
+            <div class="form-group">
+              <label for="category">Select Category</label>
+              <select class="form-control" id="category" name="category">
+                <% categories.forEach(category=> { %>
+                  <option value="<%= category._id %>">
+                    <%= category.name %>
+                  </option>
+                  <% }) %>
+              </select>
+              <div class="invalid-feedback"></div>
+            </div>
 
-              <!-- Discount Value -->
-              <div class="form-group">
-                <label for="discount">Discount Value</label>
-                <input type="number" class="form-control" id="discount" name="discount" required>
-                <div class="invalid-feedback"></div> <!-- Error message element -->
-              </div>
+            <!-- Discount Value -->
+            <div class="form-group">
+              <label for="discount">Discount Value</label>
+              <input type="number" class="form-control" id="discount" name="discount" required>
+              <div class="invalid-feedback"></div>
+            </div>
 
-              <!-- Valid From Date -->
-              <div class="form-group">
-                <label for="validF">Valid From</label>
-                <input type="date" class="form-control" id="validF" name="validF" required>
-                <div class="invalid-feedback"></div> <!-- Error message element -->
-              </div>
+            <!-- Valid From -->
+            <div class="form-group">
+              <label for="validF">Valid From</label>
+              <input type="date" class="form-control" id="validF" name="validF" required>
+              <div class="invalid-feedback"></div>
+            </div>
 
-              <!-- Valid Until Date -->
-              <div class="form-group">
-                <label for="validU">Valid Until</label>
-                <input type="date" class="form-control" id="validU" name="validU" required>
-                <div class="invalid-feedback"></div> <!-- Error message element -->
-              </div>
+            <!-- Valid Until -->
+            <div class="form-group">
+              <label for="validU">Valid Until</label>
+              <input type="date" class="form-control" id="validU" name="validU" required>
+              <div class="invalid-feedback"></div>
+            </div>
 
-              <!-- Minimum Product Price -->
-              <div class="form-group">
-                <label for="minProductPric">Minimum Product Price</label>
-                <input type="number" class="form-control" id="minProductPric" name="minProductPric" required>
-                <div class="invalid-feedback"></div> <!-- Error message element -->
-              </div>
+            <!-- Minimum Product Price -->
+            <div class="form-group">
+              <label for="minProductPric">Minimum Product Price</label>
+              <input type="number" class="form-control" id="minProductPric" name="minProductPric" required>
+              <div class="invalid-feedback"></div>
+            </div>
 
-              <!-- Maximum Discount Value -->
-              <div class="form-group">
-                <label for="maxDiscount">Maximum Discount Value</label>
-                <input type="number" class="form-control" id="maxDiscount" name="maxDiscount" required>
-                <div class="invalid-feedback"></div> <!-- Error message element -->
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" id="saveOfferBtn">Save changes</button>
-          </div>
+            <!-- Maximum Discount Value -->
+            <div class="form-group">
+              <label for="maxDiscount">Maximum Discount Value</label>
+              <input type="number" class="form-control" id="maxDiscount" name="maxDiscount" required>
+              <div class="invalid-feedback"></div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="saveOfferBtn">Save changes</button>
         </div>
       </div>
     </div>
+  </div>
 
 
-
-
-    <!-- Confirmation Modal -->
-    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
-      aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="confirmationModalLabel">Confirm Action</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            Are you sure you want to <span id="actionType"></span> this offer?
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-danger" id="confirmButton">Confirm</button>
-          </div>
+  <!-- Confirmation Modal -->
+  <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmationModalLabel">Confirm Action</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to <span id="actionType"></span> this offer?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirmButton">Confirm</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteOfferModal" tabindex="-1" role="dialog" aria-labelledby="deleteOfferModalLabel"
-      aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="deleteOfferModalLabel">Confirm Delete</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            Are you sure you want to delete this offer?
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
-          </div>
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteOfferModal" tabindex="-1" role="dialog" aria-labelledby="deleteOfferModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteOfferModalLabel">Confirm Delete</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this offer?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
         </div>
       </div>
     </div>
+  </div>
 
 
-    <script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
-    <script src="../../assets/js/off-canvas.js"></script>
-    <script src="../../assets/js/hoverable-collapse.js"></script>
-    <script src="../../assets/js/misc.js"></script>
-    <script src="../../assets/js/settings.js"></script>
-    <script src="../../assets/js/todolist.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
+  <script src="../../assets/js/off-canvas.js"></script>
+  <script src="../../assets/js/hoverable-collapse.js"></script>
+  <script src="../../assets/js/misc.js"></script>
+  <script src="../../assets/js/settings.js"></script>
+  <script src="../../assets/js/todolist.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+  <!--===============================================================================================-->
+  <script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/adminjs/offer.js"></script>
 
-    <!-- Edit Offer -->
-    <script>
-      function editOffer(offerId) {
-        axios.get(`/admin/offers/${offerId}`)
-          .then(function (response) {
-            const offer = response.data;
+  <!-- Delete Offer -->
+  <script>
 
-            // Set the values in the modal
-            document.getElementById('offerId').value = offer._id;
-            document.getElementById('type').value = offer.type;
-            document.getElementById('discountType').value = offer.discountType; // Set discount type
-            document.getElementById('product').value = offer.product ? offer.product._id : '';
-            document.getElementById('category').value = offer.category ? offer.category._id : '';
-            document.getElementById('discount').value = offer.discountValue;
-            document.getElementById('validF').value = new Date(offer.validFrom).toISOString().split('T')[0];
-            document.getElementById('validU').value = new Date(offer.validUntil).toISOString().split('T')[0];
-            document.getElementById('minProductPric').value = offer.minProductPrice;
-            document.getElementById('maxDiscount').value = offer.maxDiscountValue;
-
-            $('#editOfferModal').modal('show');
-          })
-          .catch(function (error) {
-            console.error('Error fetching the offer data:', error.response.data);
-          });
-      }
-
-      // Validation and saving logic (remains mostly unchanged)
-      document.getElementById('saveOfferBtn').addEventListener('click', function () {
-        let isValid = true;
-
-        // Validate all required fields
-        const fields = ['type', 'discountType', 'discount', 'validF', 'validU', 'minProductPric', 'maxDiscount'];
-        fields.forEach(field => {
-          const inputField = document.getElementById(field);
-          validateField(inputField);
-          if (inputField.classList.contains('is-invalid')) {
-            isValid = false;
-          }
-        });
-
-        validateOfferFields();
-        validateDateFields();
-
-        if (!isValid) {
-          return; // Prevent submission if validation fails
-        }
-
-        const offerId = document.getElementById('offerId').value;
-
-        // Prepare the updated offer data
-        const updatedOffer = {
-          type: document.getElementById('type').value,
-          discountType: document.getElementById('discountType').value,
-          product: document.getElementById('product').value || undefined,
-          category: document.getElementById('category').value || undefined,
-          discountValue: parseFloat(document.getElementById('discount').value),
-          maxDiscountValue: parseFloat(document.getElementById('maxDiscount').value),
-          minProductPrice: parseFloat(document.getElementById('minProductPric').value),
-          validFrom: new Date(document.getElementById('validF').value).toISOString(),
-          validUntil: new Date(document.getElementById('validU').value).toISOString(),
-        };
-
-        // Validate: at least one of product or category must be selected
-        if (!updatedOffer.product && !updatedOffer.category) {
-          alert('Please select either a product or a category.');
-          return; // Exit early
-        }
-
-        // Make the PUT request
-        axios.put(`/admin/offers/edit/${offerId}`, updatedOffer)
-          .then(function () {
-            $('#editOfferModal').modal('hide');
-            location.reload(); // Reload the page or update the UI as necessary
-          })
-          .catch(function (error) {
-            console.error('Error updating the offer:', error.response.data);
-          });
-      });
-    </script>
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
-    <!--===============================================================================================-->
-    <script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
-
-    <!-- Unlist offer -->
-    <script>
-      let currentOfferId = '';
-      let currentAction = '';
-
-      function openConfirmationModal(offerId, currentStatus) {
-        currentOfferId = offerId;
-        currentAction = currentStatus === 'active' ? 'unlist' : 'List';
-
-        document.getElementById('actionType').textContent = currentAction;
-
-        const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
-        confirmationModal.show();
-      }
-
-      document.getElementById('confirmButton').addEventListener('click', function () {
-        toggleOfferStatus(currentOfferId, currentAction);
-      });
-
-      function toggleOfferStatus(offerId, action) {
-        const newStatus = action === 'unlist' ? 'expired' : 'active';
-
-        axios.put(`/admin/offers/toggle-status/${offerId}`, { status: newStatus })
-          .then(function (response) {
-            location.reload();
-          })
-          .catch(function (error) {
-            console.error('Error updating offer status:', error);
-          });
-      }
-    </script>
-
-    <!-- Delete Offer -->
-    <script>
-      let offerIdToDelete = null;
-
-      // Function to show the delete confirmation modal
-      function showDeleteModal(offerId) {
-        offerIdToDelete = offerId;
-        $('#deleteOfferModal').modal('show');
-      }
-
-      // Handle the delete when "Delete" is confirmed
-      document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
-        // Send the DELETE request using Axios
-        axios.delete(`/admin/offers/delete/${offerIdToDelete}`)
-          .then(function (response) {
-            $('#deleteOfferModal').modal('hide'); // Hide the modal after deletion
-            location.reload(); // Reload the page to reflect the changes
-          })
-          .catch(function (error) {
-            console.error('Error deleting the offer:', error);
-          });
-      });
-    </script>
+  </script>
 
 
 

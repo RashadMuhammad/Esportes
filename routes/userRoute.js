@@ -59,6 +59,9 @@ const {
     sendFailure,
     retryPayment,
     getInvoice,
+    categoryFilter,
+    getProductsByCategory,
+    resendForgetPasswordOtp,
 } = require('../controllers/usercontroller');
 const multer = require('multer');
 const path = require('path');
@@ -86,6 +89,7 @@ userRoute.post('/resendotp',isNotAuthenticated,noCache, resendOtp);
 userRoute.get('/forgetpassword',isNotAuthenticated,noCache, forgetPassword);
 userRoute.post('/send-otp',isNotAuthenticated,forgetPasswordOtp)
 userRoute.get('/forgetotppage',isNotAuthenticated,noCache, forgetOtpPage);
+userRoute.post('/resendforgetotppage',isNotAuthenticated,noCache, resendForgetPasswordOtp);
 userRoute.post('/forgetverify-otp',isNotAuthenticated,noCache, forgetVerifyOtp);
 userRoute.get('/newpasswordPage', isNotAuthenticated, noCache, newPassword);
 userRoute.post('/newpassword',isNotAuthenticated,noCache, newpassVerify);
@@ -93,6 +97,7 @@ userRoute.post('/newpassword',isNotAuthenticated,noCache, newpassVerify);
 //Products and Product Details
 userRoute.get('/product',product)
 userRoute.get('/product/:id',productDetails)
+userRoute.post('/product/:name/:id', categoryFilter);
 // userRoute.get('/productdetails',isAuthenticated,productDet)
 userRoute.get('/product-detail/:id',productDetId);
 userRoute.get('/search',advancedSearch);
@@ -150,7 +155,7 @@ userRoute.get('/wallet',isAuthenticated,getWallet)
 
 
 
-userRoute.get('/about',isAuthenticated,about)
+userRoute.get('/about',about)
 
 userRoute.post('/logout', noCache, logout)
 

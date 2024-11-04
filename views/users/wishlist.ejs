@@ -34,413 +34,237 @@
     <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="css/util.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/user/userwallet.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <!--===============================================================================================-->
-    <style>
-        .modal-content {
-            border-radius: 10px;
-            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .modal-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
-            padding: 20px;
-        }
-
-        .modal-header h5 {
-            font-weight: 600;
-        }
-
-        .modal-body img {
-            max-width: 100%;
-            border-radius: 5px;
-            transition: transform 0.3s ease;
-        }
-
-        .modal-body img:hover {
-            transform: scale(1.05);
-        }
-
-        .modal-body p {
-            color: #6c757d;
-            font-size: 16px;
-        }
-
-        .modal-footer {
-            border-top: 1px solid #e9ecef;
-            padding: 15px;
-            justify-content: space-between;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-
-        #sizeSelect,
-        #quantitySelect {
-            border-radius: 5px;
-        }
-
-
-        .thumbnail-images img {
-            cursor: pointer;
-            margin-right: 5px;
-        }
-
-        .modal.fade .modal-dialog {
-            opacity: 0;
-            transition: opacity 0.15s linear;
-        }
-
-        .modal-body {
-            max-height: 170vh;
-            /* Limits the height of the modal body */
-            overflow-y: auto;
-            /* Adds scroll if content overflows */
-        }
-
-        .custom-modal {
-            margin-top: 50px;
-            /* Adjust this value as needed */
-        }
-
-        .modal.show .modal-dialog {
-            opacity: 1;
-        }
-
-        .modal {
-            z-index: 1050;
-            /* Higher than the default navbar z-index */
-        }
-
-        .wrap-menu-desktop {
-            z-index: 1000;
-            /* Lower than modal */
-        }
-
-        .modal-backdrop {
-            z-index: 1040;
-            /* Below the modal but above the navbar */
-            opacity: 0.5;
-            /* Adjust for more/less opacity */
-        }
-
-        /* Shade overlay for out-of-stock products */
-        .out-of-stock-shade {
-            position: relative;
-            /* Make sure the shade is relative to the product image */
-        }
-
-        .out-of-stock-shade::after {
-            content: "";
-            /* Create the shade layer */
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.4);
-            /* Semi-transparent black shade */
-            z-index: 1;
-            /* Ensure it appears over the product image */
-            pointer-events: none;
-            /* Allows interaction with underlying elements like the button */
-        }
-
-        .out-of-stock {
-            color: red;
-            /* Change the color to red */
-            font-weight: bold;
-            /* Optional: Make it bold for emphasis */
-        }
-    </style>
 </head>
 
 <body class="animsition">
 
     <!-- Header -->
     <%- include('../partials/_header') %>
-    
 
-    <!-- Product -->
-    <section class="bg0 p-t-23 pt-5">
-        <div class="container pt-5">
-            <div class="p-b-10">
-                <h3 class="ltext-103 cl5">
-                    Wishlist
-                </h3>
-            </div>
 
-            <div class="flex-w flex-sb-m p-b-52">
-                <div class="flex-w flex-l-m filter-tope-group m-tb-10">
-                    <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
-                        All Products
-                    </button>
+        <!-- Product -->
+        <section class="bg0 p-t-23 pt-5">
+            <div class="container pt-5">
+                <div class="p-b-10">
+                    <h3 class="ltext-103 cl5">
+                        Wishlist
+                    </h3>
+                </div>
 
-                    <% categories.forEach(category=> { %>
-                        <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 filter-button"
-                            data-filter=".category-<%= category._id %>">
-                            <%= category.name %>
+                <div class="flex-w flex-sb-m p-b-52">
+                    <div class="flex-w flex-l-m filter-tope-group m-tb-10">
+                        <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
+                            All Products
                         </button>
-                        <% }) %>
-                </div>
 
-                <div class="flex-w flex-c-m m-tb-10">
-                    <div
-                        class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4 js-show-filter">
-                        <i class="icon-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-filter-list"></i>
-                        <i class="icon-close-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
-                        Filter
+                        <% categories.forEach(category=> { %>
+                            <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 filter-button"
+                                data-filter=".category-<%= category._id %>">
+                                <%= category.name %>
+                            </button>
+                            <% }) %>
                     </div>
 
-                    <div class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
-                        <i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
-                        <i class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
-                        Search
+                    <div class="flex-w flex-c-m m-tb-10">
+                        <div
+                            class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4 js-show-filter">
+                            <i class="icon-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-filter-list"></i>
+                            <i class="icon-close-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
+                            Filter
+                        </div>
+
+                        <div
+                            class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
+                            <i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
+                            <i class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
+                            Search
+                        </div>
                     </div>
-                </div>
 
 
-                <!-- Search product -->
-                <div class="dis-none panel-search w-full p-t-10 p-b-15">
-                    <div class="bor8 dis-flex p-l-15">
-                        <button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
-                            <i class="zmdi zmdi-search"></i>
-                        </button>
-                        <input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search-product"
-                            placeholder="Search">
+                    <!-- Search product -->
+                    <div class="dis-none panel-search w-full p-t-10 p-b-15">
+                        <div class="bor8 dis-flex p-l-15">
+                            <button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
+                                <i class="zmdi zmdi-search"></i>
+                            </button>
+                            <input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search-product"
+                                placeholder="Search">
+                        </div>
                     </div>
-                </div>
 
-                <!-- Filter -->
-                <div class="dis-none panel-filter w-full p-t-10">
-                    <div class="wrap-filter flex-w bg6 w-full p-lr-40 p-t-27 p-lr-15-sm">
-                        <div class="filter-col1 p-r-15 p-b-27">
-                            <div class="mtext-102 cl2 p-b-15">
-                                Sort By
+                    <!-- Filter -->
+                    <div class="dis-none panel-filter w-full p-t-10">
+                        <div class="wrap-filter flex-w bg6 w-full p-lr-40 p-t-27 p-lr-15-sm">
+                            <div class="filter-col1 p-r-15 p-b-27">
+                                <div class="mtext-102 cl2 p-b-15">
+                                    Sort By
+                                </div>
+                                <ul>
+                                    <li class="p-b-6">
+                                        <a href="/search?sortBy=default" class="filter-link stext-106 trans-04">
+                                            Default
+                                        </a>
+                                    </li>
+                                    <li class="p-b-6">
+                                        <a href="/search?sortBy=popularity" class="filter-link stext-106 trans-04">
+                                            Popularity
+                                        </a>
+                                    </li>
+                                    <li class="p-b-6">
+                                        <a href="/search?sortBy=priceLowToHigh" class="filter-link stext-106 trans-04">
+                                            Price: Low to High
+                                        </a>
+                                    </li>
+                                    <li class="p-b-6">
+                                        <a href="/search?sortBy=priceHighToLow" class="filter-link stext-106 trans-04">
+                                            Price: High to Low
+                                        </a>
+                                    </li>
+                                    <li class="p-b-6">
+                                        <a href="/search?sortBy=averageRating" class="filter-link stext-106 trans-04">
+                                            Average Rating
+                                        </a>
+                                    </li>
+                                    <li class="p-b-6">
+                                        <a href="/search?sortBy=newArrivals" class="filter-link stext-106 trans-04">
+                                            New Arrivals
+                                        </a>
+                                    </li>
+                                    <li class="p-b-6">
+                                        <a href="/search?sortBy=featured" class="filter-link stext-106 trans-04">
+                                            Featured
+                                        </a>
+                                    </li>
+                                    <li class="p-b-6">
+                                        <a href="/search?sortBy=aToZ" class="filter-link stext-106 trans-04">
+                                            A - Z
+                                        </a>
+                                    </li>
+                                    <li class="p-b-6">
+                                        <a href="/search?sortBy=zToA" class="filter-link stext-106 trans-04">
+                                            Z - A
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
-                            <ul>
-                                <li class="p-b-6">
-                                    <a href="/search?sortBy=default" class="filter-link stext-106 trans-04">
-                                        Default
-                                    </a>
-                                </li>
-                                <li class="p-b-6">
-                                    <a href="/search?sortBy=popularity" class="filter-link stext-106 trans-04">
-                                        Popularity
-                                    </a>
-                                </li>
-                                <li class="p-b-6">
-                                    <a href="/search?sortBy=priceLowToHigh" class="filter-link stext-106 trans-04">
-                                        Price: Low to High
-                                    </a>
-                                </li>
-                                <li class="p-b-6">
-                                    <a href="/search?sortBy=priceHighToLow" class="filter-link stext-106 trans-04">
-                                        Price: High to Low
-                                    </a>
-                                </li>
-                                <li class="p-b-6">
-                                    <a href="/search?sortBy=averageRating" class="filter-link stext-106 trans-04">
-                                        Average Rating
-                                    </a>
-                                </li>
-                                <li class="p-b-6">
-                                    <a href="/search?sortBy=newArrivals" class="filter-link stext-106 trans-04">
-                                        New Arrivals
-                                    </a>
-                                </li>
-                                <li class="p-b-6">
-                                    <a href="/search?sortBy=featured" class="filter-link stext-106 trans-04">
-                                        Featured
-                                    </a>
-                                </li>
-                                <li class="p-b-6">
-                                    <a href="/search?sortBy=aToZ" class="filter-link stext-106 trans-04">
-                                        A - Z
-                                    </a>
-                                </li>
-                                <li class="p-b-6">
-                                    <a href="/search?sortBy=zToA" class="filter-link stext-106 trans-04">
-                                        Z - A
-                                    </a>
-                                </li>
-                            </ul>
                         </div>
                     </div>
                 </div>
-            </div>
 
 
 
 
-            <div class="row isotope-grid">
-                <% if (wishlist && wishlist.length> 0) { %>
-                    <% wishlist.forEach(product=> { %>
-                        <div
-                            class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item <%= product.category ? product.category.name : 'uncategorized' %>">
-                            <!-- Block2 -->
-                            <div class="block2">
-                                <!-- Add shading if product is out of stock -->
-                                <div class="block2-pic hov-img0 <%= product.stock <= 0 ? 'out-of-stock-shade' : '' %>">
-                                    <!-- Check if images exist and display the first image -->
-                                    <% if (product.images && product.images.length> 0) { %>
-                                        <img src="/uploads/<%= product.images[0] %>" alt="IMG-PRODUCT">
-                                        <% } else { %>
-                                            <img src="/path/to/default-image.jpg" alt="Default Image">
-                                            <% } %>
+                <div class="row ">
+                    <% if (wishlist && wishlist.length> 0) { %>
+                        <% wishlist.forEach(product=> { %>
+                            <div
+                                class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item <%= product.category ? product.category.name : 'uncategorized' %>">
+                                <!-- Block2 -->
+                                <div class="block2">
+                                    <!-- Add shading if product is out of stock -->
+                                    <div
+                                        class="block2-pic hov-img0 <%= product.stock <= 0 ? 'out-of-stock-shade' : '' %>">
+                                        <!-- Check if images exist and display the first image -->
+                                        <% if (product.images && product.images.length> 0) { %>
+                                            <img src="/uploads/<%= product.images[0] %>" alt="IMG-PRODUCT">
+                                            <% } else { %>
+                                                <img src="/path/to/default-image.jpg" alt="Default Image">
+                                                <% } %>
 
-                                                <a href="/product-detail/<%= product._id %>"
-                                                    class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04"
-                                                    data-id="<%= product._id %>">
-                                                    View Details
-                                                </a>
-                                </div>
-
-                                <div class="block2-txt flex-w flex-t p-t-14">
-                                    <div class="block2-txt-child1 flex-col-l" style="flex: 1;">
-                                        <a href="/product-detail/<%= product._id %>"
-                                            class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                            <%= product.name %>
-                                        </a>
-
-                                        <span class="stext-105 cl3">
-                                            ₹ <%= product.price %>
-                                        </span>
-
-                                        <!-- Display Out of Stock message -->
-                                        <% if (product.stock <=0) { %>
-                                            <span class="stext-105 cl3 out-of-stock">Out of Stock</span>
-                                            <% } %>
+                                                    <a href="/product-detail/<%= product._id %>"
+                                                        class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04"
+                                                        data-id="<%= product._id %>">
+                                                        View Details
+                                                    </a>
                                     </div>
 
-                                    <!-- Trash icon positioned here -->
-                                    <button
-                                        class="align-items-center remove-btn flex-c-m stext-103 cl2 py-2 bg0 bor2 trans-04"
-                                        data-product-id="<%= product._id %>"
-                                        onclick="removeFromWishlist('<%= product._id %>')">
-                                        <i class="fa fa-trash" aria-hidden="true"></i>
-                                    </button>
+                                    <div class="block2-txt flex-w flex-t p-t-14">
+                                        <div class="block2-txt-child1 flex-col-l" style="flex: 1;">
+                                            <a href="/product-detail/<%= product._id %>"
+                                                class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                                                <%= product.name %>
+                                            </a>
+
+                                            <span class="stext-105 cl3">
+                                                ₹ <%= product.price %>
+                                            </span>
+
+                                            <% if (product.stock <=0) { %>
+                                                <span class="stext-105 cl3 out-of-stock">Out of Stock</span>
+                                                <% } %>
+                                        </div>
+
+                                        <button
+                                            class="align-items-center remove-btn flex-c-m stext-103 cl2 py-2 bg0 bor2 trans-04"
+                                            data-product-id="<%= product._id %>"
+                                            onclick="removeFromWishlist('<%= product._id %>')">
+                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
                                 </div>
+
                             </div>
+                            <% }) %>
+                                <% } else { %>
+                                    <p>No products in your wishlist</p>
+                                    <% } %>
+                </div>
 
-                        </div>
-                        <% }) %>
-                            <% } else { %>
-                                <p>No products in your wishlist</p>
-                                <% } %>
+                <!-- Load more -->
+                <div class="flex-c-m flex-w w-full p-t-45 pb-5">
+                    <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
+                        Load More
+                    </a>
+                </div>
+            </div>
             </div>
 
 
+            <%- include('../partials/_footer') %>
 
-            <script>
-                function removeFromWishlist(productId) {
-                    fetch(`/wishlist/${productId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Removed!',
-                                    text: 'Product has been removed from your wishlist.',
-                                }).then(() => {
-                                    location.reload();
-                                });
+                <!-- Back to top -->
+                <div class="btn-back-to-top" id="myBtn">
+                    <span class="symbol-btn-back-to-top">
+                        <i class="zmdi zmdi-chevron-up"></i>
+                    </span>
+                </div>
 
-                                const productElement = document.querySelector(`[data-product-id="${productId}"]`).closest('.isotope-item');
-                                productElement.remove();
-                            } else {
-                                // Handle error response
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Oops!',
-                                    text: 'Something went wrong. Please try again.',
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error removing from wishlist:', error);
-                        });
-                }
-            </script>
+                <!--===============================================================================================-->
+                <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+                <!--===============================================================================================-->
+                <script src="vendor/animsition/js/animsition.min.js"></script>
+                <!--===============================================================================================-->
+                <script src="vendor/bootstrap/js/popper.js"></script>
+                <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+                <!--===============================================================================================-->
+                <script src="vendor/select2/select2.min.js"></script>
+                <!--===============================================================================================-->
+                <script src="vendor/daterangepicker/moment.min.js"></script>
+                <script src="vendor/daterangepicker/daterangepicker.js"></script>
+                <!--===============================================================================================-->
+                <script src="vendor/slick/slick.min.js"></script>
+                <script src="js/slick-custom.js"></script>
+                <!--===============================================================================================-->
+                <script src="vendor/parallax100/parallax100.js"></script>
 
+                <!--===============================================================================================-->
+                <script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
 
-            <!-- Load more -->
-            <div class="flex-c-m flex-w w-full p-t-45 pb-5">
-                <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
-                    Load More
-                </a>
-            </div>
-        </div>
-        </div>
+                <!--===============================================================================================-->
+                <script src="vendor/isotope/isotope.pkgd.min.js"></script>
 
-
-        <%- include('../partials/_footer') %>
-
-            <!-- Back to top -->
-            <div class="btn-back-to-top" id="myBtn">
-                <span class="symbol-btn-back-to-top">
-                    <i class="zmdi zmdi-chevron-up"></i>
-                </span>
-            </div>
-
-            <!--===============================================================================================-->
-            <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
-            <!--===============================================================================================-->
-            <script src="vendor/animsition/js/animsition.min.js"></script>
-            <!--===============================================================================================-->
-            <script src="vendor/bootstrap/js/popper.js"></script>
-            <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-            <!--===============================================================================================-->
-            <script src="vendor/select2/select2.min.js"></script>
-            <!--===============================================================================================-->
-            <script src="vendor/daterangepicker/moment.min.js"></script>
-            <script src="vendor/daterangepicker/daterangepicker.js"></script>
-            <!--===============================================================================================-->
-            <script src="vendor/slick/slick.min.js"></script>
-            <script src="js/slick-custom.js"></script>
-            <!--===============================================================================================-->
-            <script src="vendor/parallax100/parallax100.js"></script>
-
-            <!--===============================================================================================-->
-            <script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
-
-            <!--===============================================================================================-->
-            <script src="vendor/isotope/isotope.pkgd.min.js"></script>
-
-            <!--===============================================================================================-->
-            <script src="vendor/sweetalert/sweetalert.min.js"></script>
-            <!--===============================================================================================-->
-            <script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-            <!--===============================================================================================-->
-            <script src="js/main.js"></script>
-            <!-- <script src="userjs/products.js"></script> -->
-
-
-
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+                <!--===============================================================================================-->
+                <script src="vendor/sweetalert/sweetalert.min.js"></script>
+                <!--===============================================================================================-->
+                <script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+                <!--===============================================================================================-->
+                <script src="js/main.js"></script>
+                <script src="userjs/wishlist.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>
 

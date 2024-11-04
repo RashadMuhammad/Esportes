@@ -74,7 +74,7 @@
         onClick: myFunction
       }
     };
-    console.log(options);
+    
     $("#easyNotify").easyNotify(options);
   });
 }(jQuery));

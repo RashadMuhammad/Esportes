@@ -2,49 +2,23 @@
 <html lang="en">
 
 <head>
-  <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Esportes Admin</title>
-  <!-- plugins:css -->
   <link rel="stylesheet" href="../../assets/vendors/mdi/css/materialdesignicons.min.css">
   <link rel="stylesheet" href="../../assets/vendors/css/vendor.bundle.base.css">
-  <!-- Include Cropper.js CSS and JS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-  <!-- endinject -->
-  <!-- Plugin css for this page -->
-  <!-- End Plugin css for this page -->
-  <!-- inject:css -->
-  <!-- endinject -->
-  <!-- Layout styles -->
   <link rel="stylesheet" href="../../assets/css/style.css">
-  <!-- End layout styles -->
-  <link rel="shortcut icon" href="/favicon.png" />
-  <style>
-    .pagination .page-item {
-      margin: 0 5px;
-    }
-
-    .pagination .page-link {
-      padding: 5px 10px;
-    }
-
-    .pagination .page-link {
-      font-size: 10px;
-    }
-  </style>
-
+  <link rel="shortcut icon" href="/favicon.ico" />
+	<link rel="stylesheet" type="text/css" href="/css/admin/product.css">
 </head>
 
 <body>
   <div class="container-scroller">
-    <!-- partial:../../partials/_sidebar.html -->
     <%- include('../partials/_sidebaradmin') %>
     
-    <!-- partial -->
     <div class="container-fluid page-body-wrapper">
-      <!-- partial:../../partials/_navbar.html -->
       <nav class="navbar p-0 fixed-top d-flex flex-row">
         <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
           <a class="navbar-brand brand-logo-mini" href="../../index.html"><img src="../../assets/images/logo-mini.svg"
@@ -65,11 +39,9 @@
           </ul>
           <ul class="navbar-nav navbar-nav-right">
             <li class="nav-item dropdown d-none d-lg-block">
-              <!-- Add New Product Button -->
               <a class="nav-link btn btn-success create-new-button" data-toggle="modal" href="#addProductModal">
                 Add
               </a>
-              <!-- Modal for Adding Product -->
               <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog"
                 aria-labelledby="addProductModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -201,7 +173,6 @@
         </div>
       </nav>
 
-      <!-- Bootstrap Alert for duplicate product name -->
       <div class="alert alert-danger alert-dismissible fade show" role="alert" id="productErrorAlert"
         style="display:none;">
         <strong>Error!</strong> <span id="productErrorMessage"></span>
@@ -219,15 +190,6 @@
               <div class="alert alert-danger" role="alert" id="alertMessage">
                 <%= message %>
               </div>
-              <script>
-                // Hide the alert after 5 seconds (5000 milliseconds)
-                setTimeout(function () {
-                  var alertElement = document.getElementById('alertMessage');
-                  if (alertElement) {
-                    alertElement.style.display = 'none'; // Hide the alert
-                  }
-                }, 5000);
-              </script>
               <% } %>
 
           </div>
@@ -303,7 +265,6 @@
                   <!-- Pagination Controls -->
                   <nav aria-label="Page navigation" style="margin-top: 20px;">
                     <ul class="pagination pagination-sm justify-content-center">
-                      <!-- Previous Button -->
                       <% if (currentPage> 1) { %>
                         <li class="page-item">
                           <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
@@ -318,7 +279,6 @@
                           </li>
                           <% } %>
 
-                            <!-- Page Numbers -->
                             <% for (let i=1; i <=totalPages; i++) { %>
                               <li class="page-item <%= currentPage === i ? 'active' : '' %>">
                                 <a class="page-link" href="?page=<%= i %>">
@@ -327,7 +287,6 @@
                               </li>
                               <% } %>
 
-                                <!-- Next Button -->
                                 <% if (currentPage < totalPages) { %>
                                   <li class="page-item">
                                     <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
@@ -479,6 +438,9 @@
                     </div>
                   </div>
                   <% }) %>
+
+
+
                     <!-- Delete Modal -->
                     <div class="modal fade" id="deleteModal-<%= product._id %>" tabindex="-1" role="dialog"
                       aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -504,7 +466,6 @@
                       </div>
                     </div>
 
-                    <!-- Delete Confirmation Modal -->
                     <% product.forEach((product)=> { %>
                       <div class="modal fade" id="deleteModal-<%= product._id %>" tabindex="-1" role="dialog"
                         aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -562,19 +523,10 @@
                           </div>
                           <% }) %>
 
-                            <!-- partial -->
           </div>
-          <!-- main-panel ends -->
         </div>
-        <!-- page-body-wrapper ends -->
       </div>
-      <!-- container-scroller -->
-      <!-- plugins:js -->
       <script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
-      <!-- endinject -->
-      <!-- Plugin js for this page -->
-      <!-- End plugin js for this page -->
-      <!-- inject:js -->
       <script src="../../assets/js/off-canvas.js"></script>
       <script src="../../assets/js/hoverable-collapse.js"></script>
       <script src="../../assets/js/misc.js"></script>
