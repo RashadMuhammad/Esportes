@@ -1721,6 +1721,23 @@ exports.orderPlaced = async (req, res) => {
         .json({ message: "Missing required order details" });
     }
 
+     // Validate stock and listing status of each item
+     for (const item of items) {
+      const product = await Product.findById(item.productId);
+
+      if (!product) {
+        return res.status(404).json({
+          message: `Product with ID ${item.productId} not found`,
+        });
+      }
+
+      if (product.stock < item.quantity || !product.listed) {
+        return res.status(400).json({
+          message: `Product "${product.name}" is either out of stock or not available for sale.`,
+        });
+      }
+    }
+
     // Calculate offer, discount, and payment totals
     const afteroffer = total - subtotal;
     const totalAfterDiscount = afteroffer + discountAmount;

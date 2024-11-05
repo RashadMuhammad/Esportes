@@ -11,6 +11,7 @@ const bcrypt = require('bcrypt');
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const Razorpay = require('razorpay');
 const connectDB = require("./config/db");
+const { handle500Error, handle404Error } = require('./middlewares/errorHandling');
 
 // Load environment variables
 dotenv.config();
@@ -159,6 +160,10 @@ app.use("/", userRoute);
 // Import admin routes
 const adminRoute = require("./routes/adminRoute");
 app.use("/admin", adminRoute);
+
+// Error-handling middleware
+app.use(handle500Error);
+app.use(handle404Error);
 
 // Start the server
 const PORT = process.env.PORT || 3000;
