@@ -2353,23 +2353,29 @@ exports.getInvoice = async (req, res) => {
 
 exports.about = async (req, res) => {
   try {
-    // const categories = await Category.find(); // Fetch all categories from MongoDB
-    // const products = await Product.find({ listed: true }).populate('category').exec();
+    
     const userId = req.session.userId;
     const isAuthenticated = req.session.userId ? true : false;
-    const user = await User.findById(userId);
-
-    // Fetch cart product count
+    let wishlistCount = 0;
     let cartProductCount = 0;
+
+    // Fetch user if authenticated
+    let user;
     if (isAuthenticated) {
+      user = await User.findById(userId);
+
+      // Fetch wishlist count if user exists and has a wishlist
+      if (user && user.wishlist) {
+        wishlistCount = user.wishlist.length;
+      }
+
+      // Fetch cart product count
       const cart = await Cart.findOne({ userId });
       if (cart) {
         cartProductCount = cart.items.length;
       }
     }
 
-    // Fetch wishlist count
-    const wishlistCount = user.wishlist.length;
 
     res.render("users/about", {
       isAuthenticated,
@@ -2377,7 +2383,7 @@ exports.about = async (req, res) => {
       wishlistCount,
     });
   } catch (error) {
-    
+    console.log(error);
   }
 };
 
