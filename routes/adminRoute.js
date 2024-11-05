@@ -1,126 +1,125 @@
 const express = require("express");
 const router = express.Router();
 const upload = require("../middlewares/multer");
-// const uploaded = require('../public/upload');
-const adminController = require("../controllers/admincontroller");
 const auth = require("../middlewares/admin");
-const Category = require("../models/Category");
-const Product = require("../models/Product");
-const Offer = require("../models/Offer");
-const multer = require("multer");
-const path = require("path");
+const authController = require('../controllers/adminControllers/authController');
+const dashboardController = require('../controllers/adminControllers/dashboardController');
+const salesReportController = require('../controllers/adminControllers/salesReportController');
+const userController = require('../controllers/adminControllers/userController');
+const productController = require('../controllers/adminControllers/productController');
+const categoryController = require('../controllers/adminControllers/categoryController');
+const orderController = require('../controllers/adminControllers/orderController');
+const couponController = require('../controllers/adminControllers/couponController');
+const offerController = require('../controllers/adminControllers/offerController');
+const settingsController = require('../controllers/adminControllers/settingsController');
 
 // ======================================================================================================
 
 // Admin login routes
-router.get("/adminlogin", auth.islogout, adminController.adminlogin);
-router.post("/adminlogin", adminController.verifylogin);
+router.get("/adminlogin", auth.islogout, authController.adminlogin);
+router.post("/adminlogin", authController.verifylogin);
 
 // =======================================================================================================
 
 // Dashboard route
-router.get("/Dashboard", auth.islogin, adminController.renderDashboard);
-router.get("/sales-data", adminController.chartDashboard);
-
-// ========================================================================================================
-
-//Sales Report
-router.get("/sales-reportpage", auth.islogin, adminController.renderSalesReportPage);
-router.post("/sales-report", adminController.getSalesReport);
-router.post("/sales-report-pdf", adminController.downloadSalesReportPDF);
-router.post("/sales-report-csv", adminController.downloadSalesReportCSV);
+router.get("/Dashboard", auth.islogin, dashboardController.renderDashboard);
+router.get("/sales-data", dashboardController.chartDashboard);
+router.get("/sales-reportpage", auth.islogin, salesReportController.renderSalesReportPage);
+router.post("/sales-report", salesReportController.getSalesReport);
+router.post("/sales-report-pdf", salesReportController.downloadSalesReportPDF);
+router.post("/sales-report-csv", salesReportController.downloadSalesReportCSV);
 
 // =========================================================================================================
 
-router.get("/users", auth.islogin, adminController.getAllUsers);
-router.post("/users/:id/toggle-block", adminController.toggleBlock);
+router.get("/users", auth.islogin, userController.getAllUsers);
+router.post("/users/:id/toggle-block", userController.toggleBlock);
 
 // ==========================================================================================================
 
 //Product routes
-router.get("/products", auth.islogin, adminController.getAllProducts);
+router.get("/products", auth.islogin, productController.getAllProducts);
 router.post(
   "/products/add",
   upload.array("images", 3),
-  adminController.addProduct
+  productController.addProduct
 );
 router.post(
   "/products/edit/:id",
   upload.array("images", 3),
-  adminController.editProduct
+  productController.editProduct
 );
 router.post(
   "/products/toggle-listing/:id",
-  adminController.toggleProductListing
+  productController.toggleProductListing
 );
-router.post("/products/delete/:id", adminController.deleteProduct);
+router.post("/products/delete/:id", productController.deleteProduct);
 
 // ===========================================================================================================
 
 // Categories routes
-router.get("/Categories", auth.islogin, adminController.renderallcategories);
+router.get("/Categories", auth.islogin, categoryController.renderallcategories);
 router.post(
   "/Categories/toggle-listing/:id",
-  adminController.toggleCategoryListing
+  categoryController.toggleCategoryListing
 );
 // router.post('/Categories',adminController.addnewcategory)
 router.post(
   "/Categories/edit/:id",
   upload.single("image"),
-  adminController.editcategories
+  categoryController.editcategories
 );
-router.post("/unlist-category/:id", adminController.unlistcategories);
-router.post("/Categories/delete/:id", adminController.deletecategories);
+router.post("/unlist-category/:id", categoryController.unlistcategories);
+router.post("/Categories/delete/:id", categoryController.deletecategories);
 router.post(
   "/Categories/add",
   upload.single("image"),
-  adminController.addNewCategory
+  categoryController.addNewCategory
 );
-router.get("/checkName", adminController.checkname);
+router.get("/checkName", categoryController.checkname);
 
 // ===========================================================================================================
 
 // Orders route
-router.get("/Orders", auth.islogin, adminController.renderOrders);
-router.put("/orders/status", auth.islogin, adminController.updateOrderStatus);
-router.delete("/orders/:orderId", auth.islogin, adminController.cancelOrder);
+router.get("/Orders", auth.islogin, orderController.renderOrders);
+router.put("/orders/status", auth.islogin, orderController.updateOrderStatus);
+router.delete("/orders/:orderId", auth.islogin, orderController.cancelOrder);
 router.post(
   "/orders/return/:orderId/:action",
   auth.islogin,
-  adminController.handleReturnRequest
+  orderController.handleReturnRequest
 );
 
 // ============================================================================================================
 
 // Coupons route
-router.get("/Coupons", auth.islogin, adminController.renderCoupons);
-router.post("/coupons/edit/:id", adminController.updateCoupon);
-router.post("/coupons/delete/:couponId", adminController.deleteCoupon);
-router.post("/coupons/add", adminController.addCoupon);
+router.get("/Coupons", auth.islogin, couponController.renderCoupons);
+router.post("/coupons/edit/:id", couponController.updateCoupon);
+router.post("/coupons/delete/:couponId", couponController.deleteCoupon);
+router.post("/coupons/add", couponController.addCoupon);
 
 // =============================================================================================================
 
 // Offers route
-router.get("/Offers", auth.islogin, adminController.renderOffers);
-router.post("/offers/add", adminController.addOffer);
-router.get("/offers/:id", auth.islogin, adminController.editmodalof);
-router.put("/offers/edit/:id", auth.islogin, adminController.updateOffer);
+router.get("/Offers", auth.islogin, offerController.renderOffers);
+router.post("/offers/add", offerController.addOffer);
+router.get("/offers/:id", auth.islogin, offerController.editmodalof);
+router.put("/offers/edit/:id", auth.islogin, offerController.updateOffer);
 router.put(
   "/offers/toggle-status/:id",
   auth.islogin,
-  adminController.unlistOffers
+  offerController.unlistOffers
 );
-router.delete("/offers/delete/:id", auth.islogin, adminController.deleteOffer);
+router.delete("/offers/delete/:id", auth.islogin, offerController.deleteOffer);
 
 // ===============================================================================================================
 
 
 // Settings route
-router.get("/Settings", auth.islogin, adminController.renderSettings);
+router.get("/Settings", auth.islogin, settingsController.renderSettings);
 
 // ===============================================================================================================
 
 // Logout route
-router.post("/logout", auth.islogin, adminController.logout);
+router.post("/logout", auth.islogin, authController.logout);
 
 module.exports = router;
