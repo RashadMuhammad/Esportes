@@ -113,8 +113,9 @@
                                     <% }) %>
                                 </ul>
                               </td>
-                              <td>₹ <%= order.totalAfterDiscount %>
+                              <td>₹ <%= order.paymentTotal %>
                               </td>
+                              <!-- // -->
                               <td>
                                 <select class="form-control order-status-select" data-order-id="<%= order._id %>"
                                   id="orderStatus-<%= order._id %>" <%=order.status==='Canceled' ? 'disabled' : '' %>>
