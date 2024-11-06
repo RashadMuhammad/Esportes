@@ -83,6 +83,7 @@ exports.getAllProducts = async (req, res) => {
   
       await newProduct.save();
       req.flash("message", "Product added successfully!");
+      
       res.redirect("/admin/Products");
     } catch (error) {
       console.error("Error adding product:", error);

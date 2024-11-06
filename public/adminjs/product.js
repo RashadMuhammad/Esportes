@@ -379,15 +379,6 @@ document
           method: "POST",
           body: formData,
         })
-          .then((data) => {
-            
-            window.location.href = "/admin/Products";
-            // alert('Product added successfully!');
-          })
-          .catch((error) => {
-            console.error(error);
-            alert("An error occurred while uploading the product.", error);
-          });
       })
       .catch((error) => {
         console.error(error);
