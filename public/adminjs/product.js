@@ -386,7 +386,7 @@ document
           })
           .catch((error) => {
             console.error(error);
-            alert("An error occurred while uploading the product.");
+            alert("An error occurred while uploading the product.", error);
           });
       })
       .catch((error) => {
