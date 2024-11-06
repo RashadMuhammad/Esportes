@@ -1,3 +1,6 @@
+const errors = document.getElementById('errors')
+
+
 function editOffer(offerId) {
   axios
     .get(`/admin/offers/${offerId}`)
@@ -114,7 +117,10 @@ document.getElementById("saveOfferBtn").addEventListener("click", function () {
         console.error("Error updating the offer:", error.response.data);
       });
   } else {
-    alert(validationMessage);
+    errors.innerHTML = validationMessage
+    setTimeout(()=>{
+      errors.innerHTML = ''
+    },5000)
   }
 });
 

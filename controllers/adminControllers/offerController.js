@@ -132,7 +132,7 @@ exports.renderOffers = async (req, res) => {
       }
   
       await newOffer.save();
-      return res.redirect("/admin/offers");
+      res.redirect("/admin/offers");
     } catch (error) {
       console.error(error);
       return res.render("admin/offers", { message: "Server error" });
