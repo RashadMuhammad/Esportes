@@ -30,6 +30,7 @@ function editOffer(offerId) {
     });
 }
 
+
 document.getElementById("saveOfferBtn").addEventListener("click", function () {
   const offerId = document.getElementById("offerId").value;
   const type = document.getElementById("type").value;
@@ -177,14 +178,28 @@ document.getElementById("validUntil").addEventListener("input", function () {
   validateForm();
 });
 
-// Add listener for changes to the discount type
+
 document.getElementById("discountType").addEventListener("change", function () {
   clearErrorMessage("discountTypeError");
-  handleDiscountTypeChange(); // Handle discount type change
-  validateForm(); // Check validity after clearing the error
+  handleDiscountTypeChange(); 
+  validateForm(); 
 });
 
-// Validate form on submit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// add form
 document
   .getElementById("addOfferForm")
   .addEventListener("submit", function (e) {
@@ -525,6 +540,10 @@ function toggleOfferStatus(offerId, action) {
 }
 
 
+
+
+
+//offer delete
 
 let offerIdToDelete = null;
 
