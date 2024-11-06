@@ -54,43 +54,50 @@ exports.getAllProducts = async (req, res) => {
   };
   
   //To add Product
-  exports.addProduct = async (req, res) => {
-    try {
-      const { productNo, name, description, category, stock, price } = req.body;
-  
-      const existingProduct = await Product.findOne({ name: name });
-      if (existingProduct) {
-        req.flash(
-          "errorMessage",
-          "Product name already exists. Please choose another name."
-        );
-        console.log("Flash Error Set:", req.flash("errorMessage"));
-        return res.redirect("/admin/products"); 
-      }
-  
-      // Process images and save the new product
-      const imageNames = req.files.map((file) => file.filename);
-  
-      const newProduct = new Product({
-        productNo,
-        name,
-        description,
-        category,
-        stock,
-        price,
-        images: imageNames,
+exports.addProduct = async (req, res) => {
+  try {
+    const { productNo, name, description, category, stock, price } = req.body;
+
+    // Check if a product with the same name already exists
+    const existingProduct = await Product.findOne({ name: name });
+    if (existingProduct) {
+      return res.status(400).json({
+        success: false,
+        message: "Product name already exists. Please choose another name.",
       });
-  
-      await newProduct.save();
-      req.flash("message", "Product added successfully!");
-      
-      res.redirect("/admin/Products");
-    } catch (error) {
-      console.error("Error adding product:", error);
-      req.flash("errorMessage", "Error adding product.");
-      res.redirect("/admin/products");
     }
-  };
+
+    // Process images
+    const imageNames = req.files.map((file) => file.filename);
+
+    // Create and save the new product
+    const newProduct = new Product({
+      productNo,
+      name,
+      description,
+      category,
+      stock,
+      price,
+      images: imageNames,
+    });
+
+    await newProduct.save();
+    
+    // Send success response
+    res.status(201).json({
+      success: true,
+      message: "Product added successfully!",
+      product: newProduct,
+    });
+  } catch (error) {
+    console.error("Error adding product:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error adding product.",
+    });
+  }
+};
+
   
   //To edit Product
   exports.editProduct = async (req, res) => {

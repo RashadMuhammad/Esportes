@@ -373,17 +373,32 @@ document
       }
     });
 
-    Promise.all(imageUploadPromises)
-      .then(() => {
-        fetch("/admin/products/add", {
-          method: "POST",
-          body: formData,
-        })
+Promise.all(imageUploadPromises)
+  .then(() => {
+    fetch("/admin/products/add", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => {
+        if (response.ok) {
+          window.location.href = "/admin/Products";
+        } else {
+          return response.text().then((text) => {
+            console.error("Error response:", text);
+            alert("An error occurred while adding the product.");
+          });
+        }
       })
       .catch((error) => {
-        console.error(error);
-        alert("Error processing images");
+        console.error("Fetch error:", error);
+        alert("An error occurred while uploading the product.");
       });
+  })
+  .catch((error) => {
+    console.error("Image processing error:", error);
+    alert("Error processing images.");
+  });
+
   });
 
 // ===============================================================================
