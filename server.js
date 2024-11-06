@@ -22,7 +22,7 @@ const app = express();
 
 // Middleware to parse request body
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static("public"));
+app.use(express.static("public")); 
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 app.use(express.json({ limit: "50mb" }));
