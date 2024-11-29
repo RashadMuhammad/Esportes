@@ -109,30 +109,19 @@ exports.editAddresses = async (req, res) => {
   }
 };
 
-// exports.deleteAddress = async (req, res) => {
-//   try {
-//     const addressId = req.params.id;
-//     const deletedAddress = await Address.findByIdAndDelete(addressId);
-
-//     if (!deletedAddress) {
-//       return res.status(404).json({ message: "Address not found" });
-//     }
-
-//     res.json({ message: "Address deleted successfully" });
-//   } catch (error) {
-//     console.error("Error deleting address:", error);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// };
-
-exports.deleteAddress = async (req,res) => {
+exports.deleteAddress = async (req, res) => {
   try {
-    const addressId = req.params.id
-    
-    const deletedAddress = await Address.findByIdAndDelete(addressId)
-    
-    res.json({message:'Address deleted successfully'})
+    const addressId = req.params.id;
+    const deletedAddress = await Address.findByIdAndDelete(addressId);
+
+    if (!deletedAddress) {
+      return res.status(404).json({ message: "Address not found" });
+    }
+
+    res.json({ message: "Address deleted successfully" });
   } catch (error) {
-    res.status(500)
+    console.error("Error deleting address:", error);
+    res.status(500).json({ message: "Server error" });
   }
-}
+};
+
