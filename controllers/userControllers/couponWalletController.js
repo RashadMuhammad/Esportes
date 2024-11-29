@@ -126,9 +126,6 @@ exports.getWallet = async (req, res) => {
         wishlistCount = user.wishlist.length;
       }
   
-      
-  
-      // Render the user's wallet page with wallet balance, transactions, and other data
       res.render("users/userwallet", {
         user,
         walletBalance: wallet.balance,

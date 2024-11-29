@@ -90,7 +90,6 @@ let formSubmitted = false;
 function validatePasswords() {
     let isValid = true;
 
-    // Only show validation feedback if form has been submitted at least once
     if (formSubmitted) {
         // Validate current password
         if (!currentPassword.value) {
@@ -104,7 +103,7 @@ function validatePasswords() {
 
         // Validate new password
         const newPasswordValue = newPassword.value.trim();
-        const passwordLengthValid = newPasswordValue.length >= 8; // Minimum length of 8 characters
+        const passwordLengthValid = newPasswordValue.length >= 8; 
         const noSpaces = !/\s/.test(newPasswordValue); // No spaces allowed
         const notOnlySpecialChars = /[a-zA-Z0-9]/.test(newPasswordValue); // At least one alphanumeric character
 

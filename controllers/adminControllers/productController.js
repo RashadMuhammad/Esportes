@@ -13,7 +13,6 @@ const storage = multer.diskStorage({
   },
 });
 
-
 // Get all products
 exports.getAllProducts = async (req, res) => {
     try {
@@ -51,7 +50,7 @@ exports.getAllProducts = async (req, res) => {
       console.error(err);
       res.status(500).send("Server Error");
     }
-  };
+};
   
   //To add Product
 exports.addProduct = async (req, res) => {
@@ -97,10 +96,9 @@ exports.addProduct = async (req, res) => {
     });
   }
 };
-
-  
+ 
   //To edit Product
-  exports.editProduct = async (req, res) => {
+exports.editProduct = async (req, res) => {
     const productId = req.params.id;
   
     try {
@@ -143,10 +141,10 @@ exports.addProduct = async (req, res) => {
       
       res.status(400).send("Error editing product.");
     }
-  };
+ };
   
   //Toggle Unlist
-  exports.toggleProductListing = async (req, res) => {
+exports.toggleProductListing = async (req, res) => {
     try {
       // Fetch the product by ID
       const product = await Product.findById(req.params.id);
@@ -163,10 +161,10 @@ exports.addProduct = async (req, res) => {
       console.error(err);
       res.status(500).send("Server Error");
     }
-  };
+};
   
-  // Delete product
-  exports.deleteProduct = async (req, res) => {
+// Delete product
+exports.deleteProduct = async (req, res) => {
     try {
       await Product.findByIdAndDelete(req.params.id);
       res.redirect("/admin/products");
@@ -174,5 +172,4 @@ exports.addProduct = async (req, res) => {
       console.error(err);
       res.status(500).send("Server Error");
     }
-  };
-  
+};

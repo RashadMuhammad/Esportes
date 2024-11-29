@@ -1,5 +1,4 @@
 //To Delete an Address
-
 let addressIdToDelete;
 
 function setDeleteAddressId(addressId) {
@@ -90,7 +89,7 @@ const newCustomName = document.getElementById("newCustomName");
 function validateField(field) {
   const value = field.value.trim();
   const isValid =
-    value.length >= 3 && !/\s/.test(value) && /^[A-Za-z0-9]*$/.test(value); // At least 3 characters, no spaces or special characters
+    value.length >= 3 && !/\s/.test(value) && /^[A-Za-z0-9]*$/.test(value); 
 
   if (!isValid) {
     field.classList.add("is-invalid");
@@ -215,7 +214,7 @@ const editCustomName = document.getElementById("editCustomName");
 
 function validateField(field) {
   const value = field.value.trim();
-  const isValid = value.length >= 3 && /^[A-Za-z0-9\s]*$/.test(value); // At least 3 characters, no special characters
+  const isValid = value.length >= 3 && /^[A-Za-z0-9\s]*$/.test(value); 
 
   if (!isValid) {
     field.classList.add("is-invalid");
