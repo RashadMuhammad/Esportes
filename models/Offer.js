@@ -31,10 +31,10 @@ const offerSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  maxDiscountValue: { // Added maxDiscountValue field
+  maxDiscountValue: {
     type: Number,
   },
-  minProductPrice: { // Corrected typo
+  minProductPrice: { 
     type: Number,
     // required: true
   },
