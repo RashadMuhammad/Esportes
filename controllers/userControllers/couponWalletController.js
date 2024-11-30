@@ -37,7 +37,6 @@ exports.getAvailableCoupons = async (req, res) => {
     const userId = req.session.userId;
   
     try {
-      // Check for the coupon in the database
       const coupon = await Coupon.findOne({ code: couponCode });
   
       // Check if the coupon exists and is active

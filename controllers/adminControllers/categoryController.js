@@ -1,6 +1,7 @@
 const Category = require("../../models/Category");
 const multer = require("multer");
 const flash = require("flash");
+const { categoryFilter } = require("../userControllers/productController");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -123,7 +124,9 @@ exports.deletecategories = async (req, res) => {
 exports.addNewCategory = async (req, res) => {
   try {
     const { name, description } = req.body;
-    const existingCategory = await Category.findOne({ name });
+    const existingCategory = await Category.findOne({ 
+      name: { $regex: `^${name}$`, $options: "i" } 
+    });    
     if (existingCategory) {
       req.flash("message", "Category already Exists");
       return res.redirect("/admin/Categories");

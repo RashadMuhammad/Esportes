@@ -17,7 +17,7 @@ function unlistCategory(categoryId) {
           button.classList.remove('badge-warning');
           button.classList.add('badge-success');
           button.innerHTML = 'Listed';
-          button.disabled = true;  // Optionally disable the button
+          button.disabled = true;  
 
           // Close the modal
           $(`#unlistModal${categoryId}`).modal('hide');
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     descriptionInput.addEventListener('input', () => {
       const descriptionError = document.getElementById('descriptionError');
-      if (descriptionInput.value.trim().length < 5) { // Use trim() to remove spaces
+      if (descriptionInput.value.trim().length < 5) { 
         descriptionError.textContent = 'Description must be at least 5 characters long and cannot contain only spaces.';
       } else {
         descriptionError.textContent = '';
@@ -77,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 //   ======================================================================================
 
-// Get references to the input fields and error messages
 const nameInput = document.getElementById('name');
 const descriptionInput = document.getElementById('description');
 const imageInput = document.getElementById('image');
@@ -86,7 +85,6 @@ const descriptionError = document.getElementById('descriptionError');
 const imageError = document.getElementById('imageError');
 const form = document.getElementById('addCategoryForm');
 
-// Regular expression to check for special characters
 const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
 
 // Function to validate fields
@@ -131,10 +129,9 @@ function validateFields() {
     return isValid; // Return whether the form is valid
 }
 
-// Add event listener for real-time validation
 nameInput.addEventListener('input', validateFields);
 descriptionInput.addEventListener('input', validateFields);
-imageInput.addEventListener('change', validateFields); // Validate image on change
+imageInput.addEventListener('change', validateFields); 
 
 // Add event listener for form submission
 form.addEventListener('submit', function (event) {
