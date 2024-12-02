@@ -16,7 +16,7 @@ exports.addToWishlist = async (req, res) => {
         .json({ success: false, message: "Product not found" });
     }
 
-    const user = await User.findById(req.session.userId);
+    const user = await User.findById(req.session.userId || req.session.passport.user);
 
     if (user.wishlist.includes(productId)) {
       return res
@@ -42,7 +42,7 @@ exports.addToWishlist = async (req, res) => {
 
 exports.getWishlist = async (req, res) => {
   try {
-    const userId = req.session.userId;
+    const userId = req.session.userId || req.session.passport.user;
 
     const isAuthenticated = userId ? true : false;
 
@@ -80,7 +80,7 @@ exports.getWishlist = async (req, res) => {
 // DELETE route to remove product from wishlist
 exports.removeFromWishlist = async (req, res) => {
   const productId = req.params.productId;
-  const userId = req.session.userId;
+  const userId = req.session.userId || req.session.passport.user;
 
   try {
     const user = await User.findByIdAndUpdate(

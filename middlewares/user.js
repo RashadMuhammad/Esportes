@@ -5,6 +5,7 @@ const noCache = (req, res, next) => {
 };
 
 const isAuthenticated = (req, res, next) => {
+    
     if (req.session.userId || req.session.passport?.user) {
         next(); 
     } else {

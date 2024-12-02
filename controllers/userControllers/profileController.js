@@ -7,7 +7,7 @@ exports.changePassword = async (req, res) => {
   const { currentPassword, newPassword, confirmNewPassword } = req.body;
 
   try {
-    const userId = req.session.userId;
+    const userId = req.session.userId || req.session.passport.user;
     const user = await User.findById(userId);
 
     if (!user) {
@@ -60,7 +60,10 @@ exports.editProfile = async (req, res) => {
 // Controller to render the logged-in user's profile
 exports.getUserProfile = async (req, res) => {
   try {
-    const userId = req.session.userId; 
+    const userId = req.session.user || req.session.passport.user
+
+    console.log(userId);
+    
 
     const user = await User.findById(userId);
 
@@ -68,16 +71,17 @@ exports.getUserProfile = async (req, res) => {
       return res.status(404).send("User not found");
     }
 
-    const isAuthenticated = req.session.userId ? true : false;
+    const isAuthenticated = userId ? true : false;
 
     // Fetch cart product count
     let cartProductCount = 0;
     if (isAuthenticated) {
-      const cart = await Cart.findOne({ userId: req.session.userId });
+      const cart = await Cart.findOne({userId});
       if (cart) {
         cartProductCount = cart.items.length;
       }
     }
+    
 
     // Fetch wishlist count
     let wishlistCount = 0;

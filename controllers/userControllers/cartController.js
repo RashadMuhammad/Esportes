@@ -6,7 +6,7 @@ require("dotenv").config();
 exports.addToCart = async (req, res) => {
   try {
     const { productId } = req.body;
-    const userId = req.session.userId;
+    const userId = req.session.userId || req.session.passport.user;
 
     let cart = await Cart.findOne({ userId });
 
@@ -62,7 +62,7 @@ exports.addToCart = async (req, res) => {
 exports.updateCart = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
-    const userId = req.session.userId;
+    const userId = req.session.userId || req.session.passport.user;
 
     if (!quantity || isNaN(quantity) || quantity < 1 || quantity > 5) {
       return res.status(400).json({ error: "Invalid quantity" });
@@ -126,7 +126,7 @@ async function calculateTotalPrice(items) {
 exports.removeFromCart = async (req, res) => {
   try {
     const { productId } = req.body;
-    const userId = req.session.userId;
+    const userId = req.session.userId || req.session.passport.user;
 
     const cart = await Cart.findOne({ userId });
 
@@ -149,7 +149,7 @@ exports.removeFromCart = async (req, res) => {
 
 exports.shopingcart = async (req, res) => {
   try {
-    const userId = req.session.userId;
+    const userId = req.session.userId || req.session.passport.user;
 
     const isAuthenticated = !!userId;
 

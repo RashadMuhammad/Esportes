@@ -86,7 +86,8 @@ passport.use(
           // Create a new user if not found
 
           const hashedPassword = await bcrypt.hash("noPassword",10)
-
+          console.log('sdfvadfv');
+          
           user = new User({
             googleId: profile.id,
             name: profile.displayName,
@@ -95,6 +96,9 @@ passport.use(
             profileImageUrl: profile.photos[0].value,
           });
           await user.save();
+          req.session.userId = user._id;
+          console.log("req.session.userId",req.session.userId);
+          
         }
 
         // Success: pass the user to the session

@@ -6,7 +6,7 @@ require("dotenv").config();
 // Get all addresses of the logged-in user
 exports.getaddresses = async (req, res) => {
   try {
-    const userId = req.session.userId;
+    const userId = req.session.userId || req.session.passport.user;
     const user = await User.findById(userId);
 
     if (!user) {
@@ -15,7 +15,7 @@ exports.getaddresses = async (req, res) => {
 
     const addresses = await Address.find({ user: userId });
 
-    const isAuthenticated = req.session.userId ? true : false;
+    const isAuthenticated = req.session.userId || req.session.passport.user ? true : false;
 
     let cartProductCount = 0;
     if (isAuthenticated) {
@@ -55,7 +55,7 @@ exports.addaddresses = async (req, res) => {
       addressType,
       customName,
     } = req.body;
-    const userId = req.session.userId;
+    const userId = req.session.userId || req.session.passport.user;
 
     const newAddress = new Address({
       user: userId,

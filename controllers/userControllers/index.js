@@ -10,8 +10,8 @@ require("dotenv").config();
 exports.about = async (req, res) => {
     try {
       
-      const userId = req.session.userId;
-      const isAuthenticated = req.session.userId ? true : false;
+      const userId = req.session.userId || req.session.passport.user;
+      const isAuthenticated = req.session.userId || req.session.passport.user? true : false;
       let wishlistCount = 0;
       let cartProductCount = 0;
   
@@ -105,11 +105,11 @@ exports.home = async (req, res) => {
         }
       }
   
-      const isAuthenticated = req.session.userId ? true : false;
+      const isAuthenticated = req.session.userId || req.session.passport.user ? true : false;
   
       let cartProductCount = 0;
       if (isAuthenticated) {
-        const cart = await Cart.findOne({ userId: req.session.userId });
+        const cart = await Cart.findOne({ userId: req.session.userId || req.session.passport.user  });
         if (cart) {
           cartProductCount = cart.items.length;
         }
@@ -117,7 +117,7 @@ exports.home = async (req, res) => {
   
       let wishlistCount = 0;
   
-      const user = await User.findById(req.session.userId);
+      const user = await User.findById(req.session.userId || req.session.passport.user);
       if (user && user.wishlist) {
         wishlistCount = user.wishlist.length;
       }
@@ -171,7 +171,7 @@ exports.home = async (req, res) => {
   
       const products = await Product.find({}).sort(sortCondition);
       const categories = await Category.find({ isListed: true });
-      const isAuthenticated = req.session.userId ? true : false;
+      const isAuthenticated = req.session.userId || req.session.passport.user ? true : false;
   
       res.render("users/index", { products, categories, isAuthenticated });
     } catch (err) {

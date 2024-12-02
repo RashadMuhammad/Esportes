@@ -5,7 +5,6 @@ const Cart = require("../../models/Cart");
 const Offer = require("../../models/Offer");
 require("dotenv").config();
 
-
 //Product Details Page
 exports.productDetails = async (req, res) => {
   try {
@@ -15,7 +14,12 @@ exports.productDetails = async (req, res) => {
       return res.status(404).send("Product not found");
     }
 
-    const isAuthenticated = req.session.userId ? true : false;
+    const isAuthenticated =
+      req.session.userId ||
+      req.session.passport.user ||
+      req.session.passport.user
+        ? true
+        : false;
 
     res.json(product, isAuthenticated);
   } catch (error) {
@@ -39,7 +43,8 @@ exports.product = async (req, res) => {
       // validUntil: { $gte: currentDate },
     });
 
-    const isAuthenticated = req.session.userId ? true : false;
+    const isAuthenticated =
+      req.session.userId || req.session.passport.user ? true : false;
 
     for (const product of products) {
       const applicableOffers = activeOffers.filter((offer) => {
@@ -86,8 +91,12 @@ exports.product = async (req, res) => {
     let wishlistCount = 0;
 
     if (isAuthenticated) {
-      const user = await User.findById(req.session.userId);
-      const cart = await Cart.findOne({ userId: req.session.userId });
+      const user = await User.findById(
+        req.session.userId || req.session.passport.user
+      );
+      const cart = await Cart.findOne({
+        userId: req.session.userId || req.session.passport.user,
+      });
       wishlistCount = user.wishlist.length;
 
       if (cart) {
@@ -181,17 +190,22 @@ exports.productDetId = async (req, res) => {
       return res.status(404).send("Product not found");
     }
 
-    const isAuthenticated = req.session.userId ? true : false;
+    const isAuthenticated =
+      req.session.userId || req.session.passport.user ? true : false;
 
     let cartProductCount = 0;
     if (isAuthenticated) {
-      const cart = await Cart.findOne({ userId: req.session.userId });
+      const cart = await Cart.findOne({
+        userId: req.session.userId || req.session.passport.user,
+      });
       if (cart) {
         cartProductCount = cart.items.length;
       }
     }
 
-    const user = await User.findById(req.session.userId);
+    const user = await User.findById(
+      req.session.userId || req.session.passport.user
+    );
     const wishlistCount = user ? user.wishlist.length : 0;
 
     // Render the 'product-detail' view and pass the product data
@@ -208,65 +222,64 @@ exports.productDetId = async (req, res) => {
   }
 };
 
-
 // Advanced search with filters and sorting
 exports.advancedSearch = async (req, res) => {
-    try {
-      const searchQuery = req.query.search || "";
-      const sortBy = req.query.sortBy || "default";
-  
-      let sortOptions = {};
-      if (sortBy === "popularity") {
-        sortOptions.popularity = -1;
-      } else if (sortBy === "priceLowToHigh") {
-        sortOptions.price = 1;
-      } else if (sortBy === "priceHighToLow") {
-        sortOptions.price = -1;
-      } else if (sortBy === "averageRating") {
-        sortOptions.rating = -1;
-      } else if (sortBy === "newArrivals") {
-        sortOptions.createdAt = -1;
-      }
-  
-      const products = await Product.find({
-        name: { $regex: searchQuery, $options: "i" },
-      }).sort(sortOptions);
-  
-      // Send JSON response to the client
-      res.json({ products });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Server Error");
+  try {
+    const searchQuery = req.query.search || "";
+    const sortBy = req.query.sortBy || "default";
+
+    let sortOptions = {};
+    if (sortBy === "popularity") {
+      sortOptions.popularity = -1;
+    } else if (sortBy === "priceLowToHigh") {
+      sortOptions.price = 1;
+    } else if (sortBy === "priceHighToLow") {
+      sortOptions.price = -1;
+    } else if (sortBy === "averageRating") {
+      sortOptions.rating = -1;
+    } else if (sortBy === "newArrivals") {
+      sortOptions.createdAt = -1;
     }
-  };
 
-  exports.categoryFilter = async (req, res) => {
-  
-    const categoryId = req.params.id;
-    
-    
-    const products = await Product.find({ category: categoryId });
-  
-    const isAuthenticated = req.session.userId ? true : false;
-  
-    let cartProductCount = 0;
-    let wishlistCount = 0;
-  
-    if (isAuthenticated) {
-      const user = await User.findById(req.session.userId);
-      const cart = await Cart.findOne({ userId: req.session.userId });
-      wishlistCount = user.wishlist.length;
-  
-      if (cart) {
-        cartProductCount = cart.items.length;
-      }
+    const products = await Product.find({
+      name: { $regex: searchQuery, $options: "i" },
+    }).sort(sortOptions);
+
+    // Send JSON response to the client
+    res.json({ products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
+};
+
+exports.categoryFilter = async (req, res) => {
+  const categoryId = req.params.id;
+
+  const products = await Product.find({ category: categoryId });
+
+  const isAuthenticated =
+    req.session.userId || req.session.passport.user || req.session.passport.user
+      ? true
+      : false;
+
+  let cartProductCount = 0;
+  let wishlistCount = 0;
+
+  if (isAuthenticated) {
+    const user = await User.findById(
+      req.session.userId || req.session.passport.user
+    );
+    const cart = await Cart.findOne({
+      userId: req.session.userId || req.session.passport.user,
+    });
+    wishlistCount = user.wishlist.length;
+
+    if (cart) {
+      cartProductCount = cart.items.length;
     }
-  
-    
-  
-    // Respond with JSON data
-    res.json({ products, isAuthenticated, cartProductCount, wishlistCount });
-  };
+  }
 
-  
-
+  // Respond with JSON data
+  res.json({ products, isAuthenticated, cartProductCount, wishlistCount });
+};

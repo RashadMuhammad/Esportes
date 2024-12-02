@@ -7,7 +7,7 @@ require("dotenv").config();
 
 exports.getAvailableCoupons = async (req, res) => {
     try {
-      const userId = req.session.userId;
+      const userId = req.session.userId || req.session.passport.user;
   
       const coupons = await Coupon.find({
         isActive: true,
@@ -34,7 +34,7 @@ exports.getAvailableCoupons = async (req, res) => {
 
   exports.applyCoupon = async (req, res) => {
     const { couponCode } = req.body;
-    const userId = req.session.userId;
+    const userId = req.session.userId || req.session.passport.user;
   
     try {
       const coupon = await Coupon.findOne({ code: couponCode });
@@ -92,7 +92,7 @@ exports.getAvailableCoupons = async (req, res) => {
 //Wallet Page
 exports.getWallet = async (req, res) => {
     try {
-      const userId = req.session.userId;
+      const userId = req.session.userId || req.session.passport.user;
   
       const isAuthenticated = userId ? true : false;
   
@@ -141,7 +141,7 @@ exports.getWallet = async (req, res) => {
 
   exports.removeCoupon = async (req, res) => {
     const { couponCode } = req.body;
-    const userId = req.session.userId;
+    const userId = req.session.userId || req.session.passport.user;
   
     try {
       const coupon = await Coupon.findOne({ code: couponCode });
