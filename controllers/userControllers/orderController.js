@@ -172,14 +172,12 @@ exports.orderPlaced = async (req, res) => {
       status,
     } = req.body;
 
-    // Check for required details
     if (!userId || !items || !paymentMethod || !address) {
       return res
         .status(400)
         .json({ message: "Missing required order details" });
     }
 
-    // Validate stock and listing status of each item
     for (const item of items) {
       const product = await Product.findById(item.productId);
 
@@ -196,26 +194,21 @@ exports.orderPlaced = async (req, res) => {
       }
     }
 
-    // Calculate offer, discount, and payment totals
     const afteroffer = total - subtotal;
     const totalAfterDiscount = afteroffer + discountAmount;
     const paymentTotal = total + subtotal * 0.03 - totalAfterDiscount;
 
-    // Check if wallet payment is selected
     if (paymentMethod === "walletPayment") {
       const wallet = await Wallet.findOne({ userId });
 
-      // Ensure wallet balance is sufficient
       if (wallet.balance < paymentTotal) {
         return res.status(400).json({
           message: `Insufficient wallet balance for this order. Your current balance is ${wallet.balance}.`,
         });
       }
 
-      // Deduct from wallet balance
       wallet.balance -= paymentTotal;
 
-      // Add transaction to the wallet's transactions array
       wallet.transactions.push({
         amount: paymentTotal,
         type: "debit",
@@ -226,7 +219,6 @@ exports.orderPlaced = async (req, res) => {
       await wallet.save();
     }
 
-    // Create the new order with Pending status
     const newOrder = new Order({
       userId,
       items,
@@ -243,7 +235,6 @@ exports.orderPlaced = async (req, res) => {
 
     const savedOrder = await newOrder.save();
 
-    // Update stock if payment method is COD
     if (savedOrder.status === "Pending" && paymentMethod === "CashOnDelivery") {
       for (const item of items) {
         await Product.findByIdAndUpdate(
@@ -254,7 +245,6 @@ exports.orderPlaced = async (req, res) => {
       }
     }
 
-    // Apply coupon if provided
     if (couponCode) {
       const coupon = await Coupon.findOne({ code: couponCode, isActive: true });
 
@@ -278,7 +268,6 @@ exports.orderPlaced = async (req, res) => {
       }
     }
 
-    // Clear the cart after successful order placement
     if (savedOrder) {
       await Cart.findOneAndUpdate(
         { userId },
@@ -288,7 +277,6 @@ exports.orderPlaced = async (req, res) => {
       req.session.cart = null;
     }
 
-    // Send success response
     res.json({
       message: "Order placed successfully",
       orderId: savedOrder._id,
@@ -733,6 +721,9 @@ exports.createRazorpayOrder = async (req, res) => {
       currency: currency,
       receipt: `order_rcptid_${new Date().getTime()}`,
     };
+
+    console.log(amount,currency);
+    
 
     const order = await razorpay.orders.create(options);
 

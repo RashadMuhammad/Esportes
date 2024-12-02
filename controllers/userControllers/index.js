@@ -55,8 +55,6 @@ exports.home = async (req, res) => {
       validFrom: { $lte: currentDate },
       validUntil: { $gte: currentDate },
     });
-
-    console.log('sfgrgt',activeOffers);
     
 
     // Apply offers to products

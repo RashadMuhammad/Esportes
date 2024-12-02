@@ -374,9 +374,11 @@ let discountAmount = 0;
 
 												const orderData = await orderResponse.json();
 
+											
+
 												const razorpayOptions = {
 													key: 'rzp_test_jQwdUt0mQkB6AR',
-													amount: orderData.paymentTotal * 100,
+													amount: orderData.amount * 100,
 													currency: 'INR',
 													name: 'Esportes',
 													description: 'Purchase Products',
