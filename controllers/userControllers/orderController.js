@@ -734,14 +734,12 @@ exports.createRazorpayOrder = async (req, res) => {
       receipt: `order_rcptid_${new Date().getTime()}`,
     };
 
-    // Create order using Razorpay SDK
     const order = await razorpay.orders.create(options);
 
-    // Send the order details back to the client
     res.json({
-      razorpayOrderId: order.id, // Razorpay order ID
-      razorpayKeyId: process.env.RAZORPAY_KEY_ID, // Correctly return the key ID
-      amount: order.amount, // Amount in paise
+      razorpayOrderId: order.id, 
+      razorpayKeyId: process.env.RAZORPAY_KEY_ID, 
+      amount: order.paymentTotal, 
     });
   } catch (error) {
     console.error("Error creating Razorpay order:", error);
