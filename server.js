@@ -80,15 +80,10 @@ passport.use(
     async (req, accessToken, refreshToken, profile, done) => {
       try {
 
-        console.log("qweqwe")
-        // Check if the user exists
         let user = await User.findOne({ googleId: profile.id });
 
         if (!user) {
-          // Create a new user if not found
-
           const hashedPassword = await bcrypt.hash("noPassword",10)
-          console.log('sdfvadfv');
           
           user = new User({
             googleId: profile.id,
@@ -99,7 +94,6 @@ passport.use(
           });
           await user.save();
           req.session.userId = user._id;
-          console.log("req.session.userId",req.session.userId);
           
         }
 
