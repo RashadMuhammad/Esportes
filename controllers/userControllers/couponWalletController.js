@@ -117,6 +117,7 @@ exports.getWallet = async (req, res) => {
           cartProductCount = cart.items.length;
         }
       }
+
   
       // Fetch wishlist count
       const user = await User.findById(userId);
