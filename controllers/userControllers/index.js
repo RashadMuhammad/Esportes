@@ -56,6 +56,9 @@ exports.home = async (req, res) => {
       validUntil: { $gte: currentDate },
     });
 
+    console.log('sfgrgt',activeOffers);
+    
+
     // Apply offers to products
     for (const product of products) {
       const applicableOffers = activeOffers.filter((offer) => {
@@ -85,7 +88,7 @@ exports.home = async (req, res) => {
         }
 
         // Calculate discounted price
-        const discountedPrice = (product.price - discount).toFixed(2);
+        const discountedPrice = (product.price - discount).toFixed(0);
         product.discountedPrice = discountedPrice;
 
         // Save discounted price in the database
@@ -108,7 +111,7 @@ exports.home = async (req, res) => {
     let cartProductCount = 0;
     if (isAuthenticated) {
       const cart = await Cart.findOne({
-        userId: req.session.userId || req.session.passport.user,
+        userId: req.session.userId || req.session.passport?.user,
       });
       if (cart) {
         cartProductCount = cart.items.length;

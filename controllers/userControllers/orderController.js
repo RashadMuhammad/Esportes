@@ -13,7 +13,7 @@ const Razorpay = require("razorpay");
 
 exports.checkoutPage = async (req, res) => {
   try {
-    const userId = req.session.userId || req.session.passport.user;
+    const userId = req.session.userId || req.session.passport?.user;
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const user = await User.findById(userId);
     const userAddresses = user.addresses || [];
@@ -160,7 +160,7 @@ exports.fetchProducts = async (req, res) => {
 
 exports.orderPlaced = async (req, res) => {
   try {
-    const userId = req.session.userId || req.session.passport.user;
+    const userId = req.session.userId || req.session.passport?.user;
     const {
       items,
       paymentMethod,
@@ -315,7 +315,7 @@ exports.sendFailure = async (req, res) => {
 exports.orderConfrimation = async (req, res) => {
   try {
     const orderId = req.params.id;
-    const userId = req.session.userId || req.session.passport.user;
+    const userId = req.session.userId || req.session.passport?.user;
 
     const isAuthenticated = userId ? true : false;
 
@@ -358,7 +358,7 @@ exports.orderConfrimation = async (req, res) => {
 // Fetch user orders controller
 exports.getUserOrders = async (req, res) => {
   try {
-    const userId = req.session.userId || req.session.passport.user;
+    const userId = req.session.userId || req.session.passport?.user;
 
     // Find orders for the logged-in user
     const orders = await Order.find({ userId })
@@ -371,7 +371,7 @@ exports.getUserOrders = async (req, res) => {
       return res.status(404).send("User not found");
     }
 
-    const isAuthenticated = req.session.userId || req.session.passport.user ? true : false;
+    const isAuthenticated = req.session.userId || req.session.passport?.user ? true : false;
 
     // Fetch cart product count
     let cartProductCount = 0;
@@ -424,7 +424,7 @@ exports.viewOrderDetails = async (req, res) => {
       return res.status(404).send("Order not found");
     }
 
-    const isAuthenticated = req.session.userId || req.session.passport.user? true : false;
+    const isAuthenticated = req.session.userId || req.session.passport?.user? true : false;
 
     let cartProductCount = 0;
     if (isAuthenticated) {
@@ -434,7 +434,7 @@ exports.viewOrderDetails = async (req, res) => {
       }
     }
 
-    const user = await User.findById(req.session.userId || req.session.passport.user);
+    const user = await User.findById(req.session.userId || req.session.passport?.user);
     const wishlistCount = user ? user.wishlist.length : 0;
 
     res.render("users/order-details", {

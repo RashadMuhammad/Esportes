@@ -7,7 +7,7 @@ exports.changePassword = async (req, res) => {
   const { currentPassword, newPassword, confirmNewPassword } = req.body;
 
   try {
-    const userId = req.session.userId || req.session.passport.user;
+    const userId = req.session.userId || req.session.passport?.user;
     const user = await User.findById(userId);
 
     if (!user) {
@@ -60,7 +60,7 @@ exports.editProfile = async (req, res) => {
 // Controller to render the logged-in user's profile
 exports.getUserProfile = async (req, res) => {
   try {
-    const userId = req.session.user || req.session.passport.user
+    const userId = req.session.userId || req.session.passport?.user
 
     console.log(userId);
     

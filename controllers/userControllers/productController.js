@@ -16,8 +16,7 @@ exports.productDetails = async (req, res) => {
 
     const isAuthenticated =
       req.session.userId ||
-      req.session.passport.user ||
-      req.session.passport.user
+      req.session.passport?.user
         ? true
         : false;
 
@@ -39,12 +38,12 @@ exports.product = async (req, res) => {
     const currentDate = new Date();
     const activeOffers = await Offer.find({
       status: "active",
-      // validFrom: { $lte: currentDate },
-      // validUntil: { $gte: currentDate },
+      validFrom: { $lte: currentDate },
+      validUntil: { $gte: currentDate },
     });
 
     const isAuthenticated =
-      req.session.userId || req.session.passport.user ? true : false;
+      req.session.userId || req.session.passport?.user ? true : false;
 
     for (const product of products) {
       const applicableOffers = activeOffers.filter((offer) => {
@@ -75,6 +74,8 @@ exports.product = async (req, res) => {
 
         // Apply the best offer discount
         discountedPrice = applyBestOfferDiscount(bestOffer, product.price);
+
+        discountedPrice = parseFloat(discountedPrice.toFixed(0));
       }
 
       product.discountedPrice = discountedPrice;
@@ -92,10 +93,10 @@ exports.product = async (req, res) => {
 
     if (isAuthenticated) {
       const user = await User.findById(
-        req.session.userId || req.session.passport.user
+        req.session.userId || req.session.passport?.user
       );
       const cart = await Cart.findOne({
-        userId: req.session.userId || req.session.passport.user,
+        userId: req.session.userId || req.session.passport?.user,
       });
       wishlistCount = user.wishlist.length;
 
@@ -168,7 +169,7 @@ function applyBestOfferDiscount(offer, price) {
       discountedPrice = price - discount;
     }
   }
-  return discountedPrice.toFixed(2);
+  return discountedPrice.toFixed(0);
 }
 
 // Helper function to apply the best offer's discount to the product price
@@ -191,12 +192,12 @@ exports.productDetId = async (req, res) => {
     }
 
     const isAuthenticated =
-      req.session.userId || req.session.passport.user ? true : false;
+      req.session.userId || req.session.passport?.user ? true : false;
 
     let cartProductCount = 0;
     if (isAuthenticated) {
       const cart = await Cart.findOne({
-        userId: req.session.userId || req.session.passport.user,
+        userId: req.session.userId || req.session.passport?.user,
       });
       if (cart) {
         cartProductCount = cart.items.length;
@@ -204,7 +205,7 @@ exports.productDetId = async (req, res) => {
     }
 
     const user = await User.findById(
-      req.session.userId || req.session.passport.user
+      req.session.userId || req.session.passport?.user
     );
     const wishlistCount = user ? user.wishlist.length : 0;
 
@@ -259,7 +260,7 @@ exports.categoryFilter = async (req, res) => {
   const products = await Product.find({ category: categoryId });
 
   const isAuthenticated =
-    req.session.userId || req.session.passport.user || req.session.passport.user
+    req.session.userId || req.session.passport.user || req.session.passport?.user
       ? true
       : false;
 
@@ -268,10 +269,10 @@ exports.categoryFilter = async (req, res) => {
 
   if (isAuthenticated) {
     const user = await User.findById(
-      req.session.userId || req.session.passport.user
+      req.session.userId || req.session.passport?.user
     );
     const cart = await Cart.findOne({
-      userId: req.session.userId || req.session.passport.user,
+      userId: req.session.userId || req.session.passport?.user,
     });
     wishlistCount = user.wishlist.length;
 
