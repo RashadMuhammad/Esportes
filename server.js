@@ -74,11 +74,13 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/auth/google/callback",
+      callbackURL: "https://esportes.ddns.net/auth/google/callback",
       passReqToCallback: true,
     },
     async (req, accessToken, refreshToken, profile, done) => {
       try {
+
+        console.log("qweqwe")
         // Check if the user exists
         let user = await User.findOne({ googleId: profile.id });
 
@@ -148,7 +150,7 @@ app.get(
         return res.redirect("/login");
       });
     } else {
-      // Successful login; redirect to home
+      console.log("hello Hi sugaller")
       res.redirect("/");
     }
   }
