@@ -5,6 +5,7 @@ const path = require("path");
 const flash = require('connect-flash')
 const dotenv = require("dotenv");
 const User = require("./models/user"); 
+const Wallet = require("./models/Wallet")
 const authRoutes = require("./routes/auth");
 const MongoStore = require('connect-mongo');
 const bcrypt = require('bcrypt');
@@ -88,6 +89,15 @@ passport.use(
             profileImageUrl: profile.photos[0].value,
           });
           await user.save();
+
+          let wallet = new Wallet({
+            userId : user._id,
+            balance : 0,
+            transactions : [],
+          })
+
+          await wallet.save()
+
           req.session.userId = user._id;
           
         }

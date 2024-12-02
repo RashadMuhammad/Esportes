@@ -19,7 +19,7 @@ exports.getaddresses = async (req, res) => {
 
     let cartProductCount = 0;
     if (isAuthenticated) {
-      const cart = await Cart.findOne({ userId: req.session.userId });
+      const cart = await Cart.findOne({ userId: req.session.userId || req.session.passport?.user });
       if (cart) {
         cartProductCount = cart.items.length;
       }
