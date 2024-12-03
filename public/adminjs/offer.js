@@ -211,7 +211,7 @@ document
   .addEventListener("submit", function (e) {
     const isValid = validateForm(); // Run validation for all fields
     if (!isValid) {
-      e.preventDefault(); // Prevent form submission if validation fails
+      e.preventDefault(); 
     }
   });
 

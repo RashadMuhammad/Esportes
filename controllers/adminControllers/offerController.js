@@ -3,6 +3,7 @@ const Product = require("../../models/Product");
 const Offer = require("../../models/Offer");
 const multer = require("multer");
 const path = require("path");
+const { log } = require("console");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -221,6 +222,7 @@ exports.updateOffer = async (req, res) => {
       product,
       category,
     } = req.body;
+    
 
     if (!product && !category) {
       return res
@@ -246,11 +248,15 @@ exports.updateOffer = async (req, res) => {
       category: category || undefined,
     };
 
+    
+
     const updatedOffer = await Offer.findByIdAndUpdate(
       req.params.id,
       updateData,
       { new: true }
     );
+
+    
 
     if (!updatedOffer) {
       return res.status(404).json({ message: "Offer not found" });

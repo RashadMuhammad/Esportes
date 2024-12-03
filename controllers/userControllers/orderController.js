@@ -722,12 +722,6 @@ exports.createRazorpayOrder = async (req, res) => {
       receipt: `order_rcptid_${new Date().getTime()}`,
     };
 
-    console.log(amount,currency);
-    console.log(process.env.RAZORPAY_KEY_ID,
-      process.env.RAZORPAY_SECRET);
-    
-    
-
     const order = await razorpay.orders.create(options);
 
     res.json({
