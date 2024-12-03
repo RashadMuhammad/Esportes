@@ -10,8 +10,8 @@ const orderSchema = new mongoose.Schema({
         required: true,
       },
       quantity: { type: Number, required: true },
-      productOffer: { type: Number, default: 0 }, // Product-specific discount
-      offerApplied: { type: Boolean, default: false }, // Track if offer was applied
+      productOffer: { type: Number, default: 0 }, 
+      offerApplied: { type: Boolean, default: false }, 
     },
   ],
   paymentMethod: {
