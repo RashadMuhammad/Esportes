@@ -143,7 +143,7 @@
                               </td>
                               <td>
                                 <button id="cancelOrderBtn-<%= order._id %>" class="btn btn-danger"
-                                  onclick="showCancelModal('<%= order._id %>')" <%=order.status==='Canceled'
+                                  onclick="showCancelModal('<%= order._id %>')" <%=order.status==='Canceled' || 'Returned'
                                   ? 'disabled' : '' %>>Cancel</button>
 
                                 <% if (order.returnRequested) { %>
