@@ -48,38 +48,32 @@ $(document).on("click", ".js-show-modal1", function (e) {
 
 // =========================================================
 
-const zoomedView = document.getElementById("zoomedView");
-
 document.querySelectorAll(".zoom-img").forEach((image) => {
   image.addEventListener("mousemove", (e) => {
     const imgRect = image.getBoundingClientRect();
     const offsetX = e.clientX - imgRect.left;
-    const offsetY = e.clientY - imgRect.top; 
+    const offsetY = e.clientY - imgRect.top;
 
-    const zoomLevel = 2; 
+    const zoomLevel = 2;
+    const zoomedViewId = image.getAttribute("data-zoomed-view-id");
+    const zoomedView = document.getElementById(zoomedViewId);
 
     const bgPosX = (offsetX / imgRect.width) * 100;
     const bgPosY = (offsetY / imgRect.height) * 100;
 
     zoomedView.style.display = "block";
-    zoomedView.style.backgroundImage = `url(${image.getAttribute(
-      "data-image"
-    )})`;
-    zoomedView.style.backgroundSize = `${imgRect.width * zoomLevel}px ${
-      imgRect.height * zoomLevel
-    }px`; // 200% size
+    zoomedView.style.backgroundImage = `url(${image.getAttribute("data-image")})`;
+    zoomedView.style.backgroundSize = `${imgRect.width * zoomLevel}px ${imgRect.height * zoomLevel}px`;
+    zoomedView.style.backgroundPosition = `${bgPosX}% ${bgPosY}%`;
 
-    const zoomedBgPosX = (offsetX / imgRect.width) * 100 * zoomLevel + 300;
-    const zoomedBgPosY = (offsetY / imgRect.height) * 100 * zoomLevel + 300;
-
-    zoomedView.style.backgroundPosition = `${zoomedBgPosX}% ${zoomedBgPosY}%`;
-
-    zoomedView.style.left = `${e.pageX - 300}px`; 
-    zoomedView.style.top = `${e.pageY - 300}px`; 
+    zoomedView.style.left = `${e.pageX - 300}px`;
+    zoomedView.style.top = `${e.pageY - 300}px`;
   });
 
-  image.addEventListener("mouseleave", () => {
-    zoomedView.style.display = "none"; 
+  image.addEventListener("mouseleave", (e) => {
+    const zoomedViewId = image.getAttribute("data-zoomed-view-id");
+    const zoomedView = document.getElementById(zoomedViewId);
+    zoomedView.style.display = "none";
   });
 });
 

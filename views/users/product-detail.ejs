@@ -90,25 +90,27 @@
 
 							<!-- Slick3 Image Gallery -->
 							<div class="slick3 gallery-lb">
-								<% if (product.images && product.images.length> 0) { %>
-									<% product.images.forEach((image)=> { %>
-										<div class="item-slick3" data-thumb="/uploads/<%= image %>">
-											<div class="wrap-pic-w pos-relative">
-												<img src="/uploads/<%= image %>" alt="IMG-PRODUCT"
-													class="img-fluid zoom-img" data-image="/uploads/<%= image %>"
-													onmouseover="showZoom(this)" onmouseout="hideZoom(this)">
-												<div class="zoomed-view" id="zoomedView"></div>
-												<a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04"
-													href="/uploads/<%= image %>">
-													<i class="fa fa-expand"></i>
-												</a>
-											</div>
-										</div>
-										<% }) %>
-											<% } else { %>
-												<p>No images available for this product.</p>
-												<% } %>
-							</div>
+								<% if (product.images && product.images.length > 0) { %>
+								  <% product.images.forEach((image, index) => { %>
+									<div class="item-slick3" data-thumb="/uploads/<%= image %>">
+									  <div class="wrap-pic-w pos-relative">
+										<img src="/uploads/<%= image %>" alt="IMG-PRODUCT"
+										  class="img-fluid zoom-img" data-image="/uploads/<%= image %>"
+										  data-zoomed-view-id="zoomedView-<%= index %>"
+										  onmouseover="showZoom(this)" onmouseout="hideZoom(this)">
+										<div class="zoomed-view" id="zoomedView-<%= index %>"></div>
+										<a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04"
+										  href="/uploads/<%= image %>">
+										  <i class="fa fa-expand"></i>
+										</a>
+									  </div>
+									</div>
+								  <% }) %>
+								<% } else { %>
+								  <p>No images available for this product.</p>
+								<% } %>
+							  </div>
+							  
 						</div>
 					</div>
 				</div>
