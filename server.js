@@ -83,7 +83,7 @@ passport.use(
           
           user = new User({
             googleId: profile.id,
-            name: profile.displayName,
+            username: profile.displayName,
             email: profile.emails[0].value,
             password: hashedPassword,
             profileImageUrl: profile.photos[0].value,

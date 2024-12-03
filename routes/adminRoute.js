@@ -82,7 +82,7 @@ router.get("/checkName", categoryController.checkname);
 // Orders route
 router.get("/Orders", auth.islogin, orderController.renderOrders);
 router.put("/orders/status", auth.islogin, orderController.updateOrderStatus);
-// router.delete("/orders/:orderId", auth.islogin, orderController.cancelOrder);
+router.delete("/orders/:orderId", auth.islogin, orderController.cancelOrder);
 router.post(
   "/orders/return/:orderId/:action",
   auth.islogin,
