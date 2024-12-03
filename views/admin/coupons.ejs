@@ -123,15 +123,19 @@
                   </div>
                 </a>
                 <div class="dropdown-divider"></div>
-                <a href="/logout" class="dropdown-item preview-item">
+                <a href="/admin/logout" class="dropdown-item preview-item">
                   <div class="preview-thumbnail">
                     <div class="preview-icon bg-dark rounded-circle">
                       <i class="mdi mdi-logout text-danger"></i>
                     </div>
                   </div>
-                  <div class="preview-item-content">
-                    <p class="preview-subject mb-1">Log out</p>
-                  </div>
+                  <form method="post" action="/admin/logout">
+                    <div class="preview-item-content">
+                      <button class="preview-subject mb-1" type="submit"
+                        style=" margin-left: 10PX; background-color:  transparent; border: none; color: white; font-size: small;">Log
+                        out</button>
+                    </div>
+                  </form>
                 </a>
             </li>
           </ul>
